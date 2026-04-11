@@ -1,142 +1,174 @@
-# MAX-CUT on G22 — CIM, CAC, and SA implementations
+# MAX-CUT on G22 — CIM / CAC / SA の実装と比較
 
-Python/Numba implementations and a fair comparison of three Ising-inspired
-MAX-CUT solvers on the **G22** instance (N=2000, K=19990) from the
-[Stanford G-Set benchmark](https://web.stanford.edu/~yyye/yyye/Gset/).
+G22 (N=2000, K=19990) の MAX-CUT 問題を 3 つの手法で解いて比較するリポジトリです。
+G22 は [Stanford G-Set ベンチマーク](https://web.stanford.edu/~yyye/yyye/Gset/) の
+疎結合ランダムグラフで、既知最良解は **13359**。
 
-This repository reproduces two physics-inspired solvers (**CIM** and **CAC**)
-from recent papers and compares them against a classical baseline
-(**Simulated Annealing**).
+3 手法の実装はすべて Python + Numba で、外ループを JIT コンパイルし
+trial 並列(`prange`)で CPU コアに分散実行します。
 
-## Methods
+## 実装した手法
 
-| Method | Source | Idea |
+| 手法 | 元論文 | アルゴリズムの概要 |
 |---|---|---|
-| **CIM** | Inoue & Yoshida, *Opt. Commun.* **522**, 128642 (2022) | Traveling-wave model of a coherent Ising machine based on a fiber loop with a pulse-pumped phase-sensitive amplifier. |
-| **CAC** | Leleu et al., *Comm. Phys.* **4**, 266 (2021) | Chaotic Amplitude Control: per-pulse error variables, dynamic target amplitude, and a time-varying coupling ramp escape local minima. |
-| **SA**  | Kirkpatrick et al., *Science* **220**, 671 (1983) | 1-flip exponential-cooling simulated annealing (baseline). |
+| **CIM** | Inoue & Yoshida, *Opt. Commun.* **522**, 128642 (2022) | 位相感応増幅器(PSA)を持つファイバーループ型コヒーレントイジングマシンの進行波モデル。各パルスの in-phase 振幅の符号からスピンを決める。 |
+| **CAC** | Leleu et al., *Comm. Phys.* **4**, 266 (2021) | Chaotic Amplitude Control。パルスごとのエラー変数と目標振幅の動的変調、時変な結合ランプを組み合わせて準最適解を脱出する拡張 CIM。 |
+| **SA** | Kirkpatrick et al., *Science* **220**, 671 (1983) | 1-flip 指数冷却の古典的シミュレーテッドアニーリング(ベースライン)。 |
 
-All solvers maximize the number of cut edges on the **G22** graph, whose
-known-best solution is **13359**.
+## 実行結果 (G22 で各 100 trial)
 
-## Results (100 trials each on G22)
-
-| Method | Mean | Best | Worst | Std | Wall-clock |
+| 手法 | 平均 | 最良 | 最悪 | 標準偏差 | 壁時計時間 |
 |---|---|---|---|---|---|
-| CIM | 13275.3 | 13326 | 13220 | 20.5 | **3.3 s** |
-| CAC | 13284.8 | **13358** | 13214 | 25.8 | 206.5 s |
-| SA  | 13224.8 | 13314 | 13048 | 50.1 | 200.3 s |
+| CIM | 13275.3 | 13326 | 13220 | 20.5 | **3.3 秒** |
+| CAC | 13284.8 | **13358** | 13214 | 25.8 | 206.5 秒 |
+| SA  | 13224.8 | 13314 | 13048 | 50.1 | 200.3 秒 |
 
-CAC reaches within **1 edge of the known optimum** (13358 vs 13359) and has
-the best mean. CIM is the fastest by a wide margin while still reaching 99.75%
-of optimum. SA is the weakest here — it plateaus around 13300 and has much
-higher variance.
+- **CAC** が最良 13358 まで到達(既知最良解 13359 にわずか 1 差)
+- **CIM** が最速。3.3 秒で平均 13275 の安定結果(既知最良解の 99.75%)
+- **SA** はこの時間スケールでは他の 2 手法に劣る
 
-Generated figures:
+結果の可視化:
 
-- `results/compare_histogram.png` — distribution of cut values per method
-- `results/compare_running_best.png` — running best cut vs trial count
-- `results/compare_bar.png` — mean and best cut bar chart
+| 画像 | 内容 |
+|---|---|
+| `results/compare_histogram.png` | 各手法の cut 値の分布(3 パネル) |
+| `results/compare_running_best.png` | trial 進行に対する running best |
+| `results/compare_bar.png` | 平均・最良の棒グラフ比較 |
 
-### Reproducing the paper baselines
+### 論文再現の程度
 
-- **CIM** reproduction: 100 trials achieve mean **13275.3**, matching the
-  paper's mean of 13275 (Inoue & Yoshida 2022, Fig. 8). Best achieved
-  **13326**, slightly above the paper's best of 13321.
-- **CAC** reproduction: The paper reports best 13359 with
-  p₀ = 0.11 single-run success rate **on FPGA**. On CPU with ~200 s per 100
-  trials, we reach best **13358** (1 cut short of optimum). Reaching the
-  paper's p₀ would require 1–2 orders of magnitude more outer steps.
+- **CIM**: 100 trial の平均 **13275.3** は論文 (Inoue & Yoshida 2022, Fig.8) の平均
+  13275 と完全一致。最良 13326 は論文値 13321 を若干上回る。
+- **CAC**: 論文は **FPGA 実装**で p₀ = 0.11 (100 run 中 11%) で 13359 に到達すると
+  報告。本リポジトリの CPU 実装は 100 trial・約 200 秒で最良 13358(1 cut 不足)。
+  論文の成功率を再現するには外ループ数を 1〜2 桁増やす必要があります。
 
-## Setup
+## セットアップ
 
-This project uses [uv](https://docs.astral.sh/uv/) for dependency management.
+依存解決には [uv](https://docs.astral.sh/uv/) を使っています。
 
 ```bash
-# Install Python dependencies
 uv sync
 ```
 
-Dependencies: `numpy`, `scipy`, `numba`, `wandb`, `matplotlib`, `pymupdf`.
-Python 3.13+.
+主要依存: `numpy`, `scipy`, `numba`, `wandb`, `matplotlib`, `pymupdf` (Python 3.13+)。
 
-## Usage
+## 使い方
 
-### Single-run CIM (with Weights & Biases per-round logging)
+### CIM を単発で実行(ラウンドごとに wandb にログ)
 
 ```bash
 uv run python CIM.py
 ```
 
-### 100-trial CIM (parallel via Numba prange)
+### CIM を 100 trial 並列実行(wandb に統計をログ)
 
 ```bash
 uv run python CMI_multi_run.py
 ```
 
-### 100-trial CAC
+### CAC を 100 trial 並列実行
 
 ```bash
 uv run python CAC.py
 ```
 
-### Baseline SA
+### SA ベースラインを実行
 
 ```bash
 uv run python SA.py
 ```
 
-### Fair comparison (generates figures in `results/`)
+### 3 手法の比較スクリプト(`results/` に図を出力)
 
 ```bash
 uv run python compare.py
 ```
 
-## Implementation notes
+## 実装上のポイント
 
-- **Numba JIT + `prange`**: the `_simulate_cim_batch` and `_simulate_cac_batch`
-  functions are ahead-of-time compiled with Numba's parallel mode, so 100
-  trials are distributed across CPU cores and finish in seconds.
-- **Sparse coupling matrix**: G22 has only ~1% density so the coupling matrix
-  is stored as scipy CSR. The matvec `J @ c` is hand-coded inside the JIT
-  function for minimum overhead.
-- **Verification**: `scripts/verify.py` independently cross-checks the cut
-  count from the edge list vs the adjacency list to catch any bugs in the
-  solver's internal cut tracking.
+### 1. Numba JIT + `prange` による trial 並列化
 
-## Repository layout
+`_simulate_cim_batch` と `_simulate_cac_batch` は `@njit(cache=True, fastmath=True,
+parallel=True)` でネイティブコードにコンパイルされており、`prange` で trial を
+CPU コアに分散実行します。初回のみ 3〜5 秒の JIT コンパイル時間がかかりますが、
+2 回目以降は `__pycache__` のキャッシュから即起動します。
+
+### 2. スパース結合行列
+
+G22 は N=2000, K=19990 で非零要素はわずか約 1% です。`scipy.sparse.csr_matrix` で
+保持し、Numba 内では手書きの CSR matvec ループで scipy のラッパーオーバーヘッド
+を回避しています。
+
+### 3. 独立した検算モジュール
+
+`scripts/verify.py` が SA/CIM/CAC とは独立にカット数を再計算します。
+具体的には辺リスト版と隣接リスト版の 2 種類の方法でカウントして突き合わせ、
+符号規約や二重カウントのバグを検出します。
+
+### 4. CIM のノイズ式に ℏω 補正
+
+Inoue & Yoshida 2022 の Eq.(6) は真空ゆらぎ分散 `σ² = (2-η)·G/4·BW` を
+「one-photon energy 単位」で書いています。一方 Eq.(14) の飽和係数
+`γ = 42.09 W⁻¹` は物理単位(ワット)です。両者を整合させるには **ℏω**
+(1550 nm で約 1.28×10⁻¹⁹ J)を乗じる必要があります。
+
+`CIM.py` では `photon_energy_J = 1.28e-19` を config に入れてノイズ分散に
+掛けています。この補正を入れないと初期ノイズが信号を吹き飛ばし、飽和項
+`γ·I_in` が暴走して系が病的な状態でロックされます。
+
+## リポジトリ構成
 
 ```
 .
-├── CIM.py              # Inoue & Yoshida 2022 CIM simulator + single-trial entry point
-├── CAC.py              # Leleu et al. 2021 CAC simulator + multi-trial entry point
-├── SA.py               # Simple 1-flip simulated annealing baseline
-├── CMI_multi_run.py    # CIM 100-trial parallel runner + wandb logging
-├── compare.py          # Fair comparison of all three methods (produces figures)
+├── CIM.py              # CIM (Inoue & Yoshida 2022) 本体 + 単発 main()
+├── CAC.py              # CAC (Leleu et al. 2021) 本体 + 100 trial main()
+├── SA.py               # シミュレーテッドアニーリング(ベースライン)
+├── CMI_multi_run.py    # CIM の 100 trial 並列実行 + wandb ログ
+├── compare.py          # CIM / CAC / SA を 100 trial で比較して画像出力
 ├── scripts/
-│   └── verify.py       # Independent cut-count verification
+│   └── verify.py       # 独立した検算モジュール
 ├── input/
-│   └── G22.txt         # G22 instance from G-Set benchmark
-└── results/            # Output figures from compare.py
+│   └── G22.txt         # Stanford G-Set ベンチマーク G22
+├── results/
+│   ├── compare_histogram.png     # 分布ヒストグラム
+│   ├── compare_running_best.png  # running best 推移
+│   └── compare_bar.png           # 平均/最良の棒グラフ
+├── README.md
+├── LICENSE             # MIT
+├── pyproject.toml
+├── uv.lock
+└── .python-version
 ```
 
-## Unit scaling note for CIM
+## CAC の仕組み(簡単に)
 
-The noise variance formula in Inoue & Yoshida 2022 Eq. (6) is written as
-`σ² = (2-η) G / 4 · BW` in "one-photon energy units" while the saturation
-coefficient `γ = 42.09 W⁻¹` in Eq. (14) uses physical Watts. The unit
-bridge between these two conventions requires an additional factor of ℏω.
-`CIM.py` multiplies `σ²` by `photon_energy_J = 1.28e-19` (ℏω at 1550 nm) to
-reconcile the two conventions. Without this correction, the noise
-overwhelms the signal and the simulator gets stuck in a pathological state.
+通常の CIM は閾値を超えると全パルスが一斉に ±c_sat に飽和するため、
+「1 つだけスピンを反転すれば cut が増える」ような準最適解にトラップされがちです。
+CAC はこれを以下の 3 機構で解決します:
 
-## License
+1. **パルスごとのエラー変数 e_i** — 振幅の不均一性に応じて結合強度を動的に変える。
+   振幅が目標 a より大きければ e_i は小さくなり、そのパルスは結合から離脱。
+   逆に小さければ e_i が成長して結合を強める。
 
-MIT — see `LICENSE`.
+2. **目標振幅 a(t) の動的変調** — 現在解の品質と最良解の差 ΔH に応じて目標振幅
+   を `a(t) = α + ρ·tanh(δ·ΔH)` で変化させる。停滞していると a が上がって
+   強い圧力がかかる。
 
-## Citations
+3. **結合ランプ β_inj(t) の周期的リセット** — 結合スケールを 0 から線形に
+   成長させ、一定時間改善がなければ 0 にリセット。焼きなましの再加熱に相当し、
+   異なる初期ノイズから別経路で解を探す。
 
-If you use this repository, please cite the original papers.
+この 3 つが組み合わさることで、(x, e) 結合ダイナミクスが構造的な情報を使った
+「カオス軌道」を描き、SA の単純ランダム探索より効率的に解空間を訪問します。
+
+## ライセンス
+
+MIT — 詳細は `LICENSE` を参照。
+
+## 引用
+
+このリポジトリを使う場合は元論文を引用してください。
 
 ```bibtex
 @article{Inoue2022,
