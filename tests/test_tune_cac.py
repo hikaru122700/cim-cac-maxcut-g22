@@ -20,6 +20,7 @@ from scripts.tune_cac import (
     EvalResult,
     HyperparamGrid,
     apply_override,
+    default_grids,
     optimization_phase,
     rank_by_sensitivity,
     sensitivity_phase,
@@ -43,12 +44,27 @@ def _make_base_config() -> CACConfig:
 
 
 def _make_result(config: CACConfig, mean_cut: float) -> EvalResult:
-    """テスト専用: mean_cut だけ指定できるヘルパー"""
+    """テスト専用: mean_cut だけ指定できるヘルパー (max_cut = int(mean_cut))"""
     return EvalResult(
         config=config,
         mean_cut=mean_cut,
         max_cut=int(mean_cut),
         min_cut=int(mean_cut),
+        std_cut=0.0,
+        num_optimal=0,
+        eval_time_sec=0.0,
+    )
+
+
+def _make_result_xy(
+    config: CACConfig, max_cut: int, mean_cut: float
+) -> EvalResult:
+    """テスト専用: max_cut と mean_cut を独立に指定できるヘルパー"""
+    return EvalResult(
+        config=config,
+        mean_cut=mean_cut,
+        max_cut=max_cut,
+        min_cut=0,
         std_cut=0.0,
         num_optimal=0,
         eval_time_sec=0.0,
@@ -248,3 +264,168 @@ class TestOptimizationPhase:
 
         with pytest.raises(KeyError):
             optimization_phase(base, grids, priority, fake_eval)
+
+
+# ============================================================
+#  Objective: lex / max / mean
+# ============================================================
+class TestObjectiveLex:
+    """目的関数 lex (max_cut 優先, mean_cut で tie-break) の振る舞いを検証。"""
+
+    def test_rank_uses_max_cut_spread_under_lex(self) -> None:
+        """lex では max_cut のスプレッドでソートされる (mean_cut 同値でも OK)"""
+        cfg = _make_base_config()
+        alpha_results = [
+            _make_result_xy(cfg, max_cut=100, mean_cut=100.0),
+            _make_result_xy(cfg, max_cut=500, mean_cut=100.0),
+        ]  # max spread = 400, mean spread = 0
+        rho_results = [
+            _make_result_xy(cfg, max_cut=200, mean_cut=100.0),
+            _make_result_xy(cfg, max_cut=200, mean_cut=150.0),
+        ]  # max spread = 0, mean spread = 50
+        ranking = rank_by_sensitivity(
+            {"alpha": alpha_results, "rho": rho_results}, objective="lex"
+        )
+        assert ranking == ["alpha", "rho"]
+
+    def test_optimization_breaks_tie_by_mean_under_lex(self) -> None:
+        """max_cut が全候補同値のとき、mean_cut 最大の候補を選ぶ"""
+        base = _make_base_config()
+        grids = {"alpha": HyperparamGrid("alpha", (0.5, 1.0, 2.0))}
+        priority = ["alpha"]
+
+        def fake_eval(cfg: CACConfig) -> EvalResult:
+            # 全候補で max_cut=500 固定、mean_cut は alpha 比例
+            return _make_result_xy(cfg, max_cut=500, mean_cut=cfg.alpha * 10.0)
+
+        best, _ = optimization_phase(
+            base, grids, priority, fake_eval, objective="lex"
+        )
+        assert best.alpha == pytest.approx(6.0)  # 最大 mean_cut 候補
+
+    def test_optimization_prefers_higher_max_even_with_lower_mean(self) -> None:
+        """lex は max_cut 優先: mean_cut が低くても max_cut が高い方を取る"""
+        base = _make_base_config()
+        grids = {"alpha": HyperparamGrid("alpha", (0.5, 1.0, 2.0))}
+        priority = ["alpha"]
+
+        # alpha=1.5: max=1000, mean=100 (ピーク高、平均低)
+        # alpha=3.0: max=500,  mean=400
+        # alpha=6.0: max=500,  mean=480
+        def fake_eval(cfg: CACConfig) -> EvalResult:
+            table = {1.5: (1000, 100.0), 3.0: (500, 400.0), 6.0: (500, 480.0)}
+            mx, mn = table[cfg.alpha]
+            return _make_result_xy(cfg, max_cut=mx, mean_cut=mn)
+
+        best, _ = optimization_phase(
+            base, grids, priority, fake_eval, objective="lex"
+        )
+        assert best.alpha == pytest.approx(1.5)  # max_cut 優先
+
+
+class TestObjectiveMean:
+    """目的関数 mean (旧デフォルト) の振る舞いを検証。"""
+
+    def test_rank_uses_mean_cut_spread_under_mean(self) -> None:
+        """mean では mean_cut のスプレッドでソートされる"""
+        cfg = _make_base_config()
+        alpha_results = [
+            _make_result_xy(cfg, max_cut=500, mean_cut=100.0),
+            _make_result_xy(cfg, max_cut=500, mean_cut=110.0),
+        ]  # mean spread = 10
+        rho_results = [
+            _make_result_xy(cfg, max_cut=100, mean_cut=100.0),
+            _make_result_xy(cfg, max_cut=100, mean_cut=200.0),
+        ]  # mean spread = 100
+        ranking = rank_by_sensitivity(
+            {"alpha": alpha_results, "rho": rho_results}, objective="mean"
+        )
+        assert ranking == ["rho", "alpha"]
+
+    def test_optimization_picks_max_mean_under_mean_objective(self) -> None:
+        """mean では max_cut が低くても mean_cut 最大を選ぶ"""
+        base = _make_base_config()
+        grids = {"alpha": HyperparamGrid("alpha", (0.5, 1.0, 2.0))}
+        priority = ["alpha"]
+
+        def fake_eval(cfg: CACConfig) -> EvalResult:
+            table = {1.5: (1000, 100.0), 3.0: (500, 400.0), 6.0: (500, 480.0)}
+            mx, mn = table[cfg.alpha]
+            return _make_result_xy(cfg, max_cut=mx, mean_cut=mn)
+
+        best, _ = optimization_phase(
+            base, grids, priority, fake_eval, objective="mean"
+        )
+        assert best.alpha == pytest.approx(6.0)  # mean_cut 最大
+
+
+class TestObjectiveMax:
+    """目的関数 max (ピーク志向) の振る舞いを検証。"""
+
+    def test_optimization_picks_max_only(self) -> None:
+        """max では mean_cut に関係なく max_cut 最大を選ぶ"""
+        base = _make_base_config()
+        grids = {"alpha": HyperparamGrid("alpha", (0.5, 1.0, 2.0))}
+        priority = ["alpha"]
+
+        def fake_eval(cfg: CACConfig) -> EvalResult:
+            # 同じテーブル: alpha=1.5 が max=1000 で最大
+            table = {1.5: (1000, 100.0), 3.0: (500, 400.0), 6.0: (500, 480.0)}
+            mx, mn = table[cfg.alpha]
+            return _make_result_xy(cfg, max_cut=mx, mean_cut=mn)
+
+        best, _ = optimization_phase(
+            base, grids, priority, fake_eval, objective="max"
+        )
+        assert best.alpha == pytest.approx(1.5)
+
+
+class TestUnknownObjective:
+    """未知の objective は ValueError にする。"""
+
+    def test_rank_raises_on_unknown_objective(self) -> None:
+        cfg = _make_base_config()
+        results = {"alpha": [_make_result(cfg, 100.0)]}
+        with pytest.raises(ValueError):
+            rank_by_sensitivity(results, objective="bogus")  # type: ignore[arg-type]
+
+    def test_optimization_raises_on_unknown_objective(self) -> None:
+        base = _make_base_config()
+        grids = {"alpha": HyperparamGrid("alpha", (1.0,))}
+        priority = ["alpha"]
+
+        def fake_eval(cfg: CACConfig) -> EvalResult:
+            return _make_result(cfg, mean_cut=1.0)
+
+        with pytest.raises(ValueError):
+            optimization_phase(
+                base, grids, priority, fake_eval, objective="bogus"  # type: ignore[arg-type]
+            )
+
+
+# ============================================================
+#  default_grids
+# ============================================================
+class TestDefaultGrids:
+    def test_expanded_tau_grid_skews_below_default(self) -> None:
+        """tau_expanded=True で τ の乗数は (0.1, 0.25, 0.5, 1.0, 2.0)"""
+        grids = default_grids(tau_expanded=True)
+        assert grids["tau"].multipliers == (0.1, 0.25, 0.5, 1.0, 2.0)
+
+    def test_standard_tau_grid_is_symmetric(self) -> None:
+        """tau_expanded=False で τ の乗数は他と同じ対称グリッド"""
+        grids = default_grids(tau_expanded=False)
+        assert grids["tau"].multipliers == (0.5, 0.75, 1.0, 1.5, 2.0)
+
+    def test_non_tau_grids_always_symmetric(self) -> None:
+        """tau 以外は tau_expanded に関わらず対称グリッド"""
+        for flag in (True, False):
+            grids = default_grids(tau_expanded=flag)
+            for name in ("alpha", "rho", "delta", "gamma_growth"):
+                assert grids[name].multipliers == (0.5, 0.75, 1.0, 1.5, 2.0)
+
+    def test_all_expected_grids_present(self) -> None:
+        grids = default_grids()
+        assert set(grids.keys()) == {
+            "alpha", "rho", "delta", "gamma_growth", "tau"
+        }

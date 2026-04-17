@@ -91,22 +91,48 @@ uv run python compare.py
 **感度順に逐次最適化** する Method B を実装 (参考: Hanyu et al., arXiv:2507.20295)。
 
 ```bash
+# 既定: lex 目的関数 + τ 拡張グリッド (G22 BKS 追跡に推奨)
 uv run python -m scripts.tune_cac
+
+# 旧挙動 (mean_cut 目的 + 対称 τ グリッド)
+uv run python -m scripts.tune_cac --objective mean --tau-standard
 ```
 
 処理の流れ:
 
-1. **Phase 1 (感度評価)**: 各パラメータを独立に 5 段階の倍率
-   `(0.5, 0.75, 1.0, 1.5, 2.0)` で評価し、`mean_cut` の `max − min`
-   スプレッドで感度を定量化。
+1. **Phase 1 (感度評価)**: 各パラメータを独立に 5 段階の倍率で評価し、
+   主要メトリック(`max` / `lex` は `max_cut`, `mean` は `mean_cut`)の
+   `max − min` スプレッドで感度を定量化。
+   - 非 τ パラメータ: `(0.5, 0.75, 1.0, 1.5, 2.0)` の対称乗数
+   - τ (既定で拡張): `(0.1, 0.25, 0.5, 1.0, 2.0)` — τ = 9N が外ループ
+     step 数に近く、下側の感度を見るために非対称化
 2. **Phase 2 (逐次最適化)**: 感度の高い順に 1 パラメータずつ最適化し、
-   勝った値を以降の評価にロック。
+   勝った値を以降の評価にロック。目的関数は以下から選択:
+   - **`lex`** (既定, G22 BKS 追跡用): `(max_cut, mean_cut)` の辞書式比較。
+     まず `max_cut` を最大化し、同値時は `mean_cut` で tie-break。
+   - **`max`**: `max_cut` のみ。ピーク志向。
+   - **`mean`**: `mean_cut` のみ (旧デフォルト、安定志向)。
 3. **Final**: GSET 既定値と調整後 config を、full budget
-   (100 trial × 50000 outer step) で再評価して差分を表示。
+   (100 trial × 50000 outer step) で再評価して
+   `Δ max_cut`, `Δ mean_cut`, `Δ optimal_hits` を表示。
 
-評価予算は軽量スクリーニング (20 trial × 20000 step、1 eval あたり約 20 秒) で、
-Phase1+Phase2 合計約 50 eval → 約 15〜20 分。
-最終再評価で +400 秒、合計約 25 分。
+評価予算は軽量スクリーニング (20 trial × 20000 step) で Phase1+Phase2 合計約 50 eval、
+加えて Final で full budget (100 trial × 50000 step) の 2 eval を行う構成です。
+実行時間はマシン性能 (主に CPU コア数と numba JIT キャッシュの有無) に依存します。
+
+CLI フラグ:
+
+| フラグ | 既定 | 説明 |
+|---|---|---|
+| `--objective {max,mean,lex}` | `lex` | 目的関数 |
+| `--tau-standard` | off | τ グリッドを対称 (0.5〜2.0) に戻す |
+| `--graph PATH` | `input/G22.txt` | 入力グラフ |
+| `--screen-trials N` | 20 | Phase 1/2 の trial 数 |
+| `--screen-steps N` | 20000 | Phase 1/2 の外ループ step 数 |
+| `--final-trials N` | 100 | Final 評価の trial 数 |
+| `--final-steps N` | 50000 | Final 評価の外ループ step 数 |
+| `--seed-base N` | 0 | シード基点 |
+| `--output-csv PATH` | `results/tune_cac_log.csv` | ログ出力先 |
 
 ログは `results/tune_cac_log.csv` に phase 付きで書き出されます。
 
@@ -114,6 +140,77 @@ Phase1+Phase2 合計約 50 eval → 約 15〜20 分。
 
 ```bash
 uv run pytest tests/test_tune_cac.py -v
+```
+
+### CAC ビジュアライザ (AHC 風プレーヤー付き HTML)
+
+AtCoder Heuristic Contest のビジュアライザ風のインタラクティブ
+プレーヤーで、CAC の 1 run 実行時の内部状態を時間軸に沿って再生できます。
+単一の自己完結 HTML ファイル (Plotly.js CDN のみ外部依存) を生成します。
+
+```bash
+# 既定: 100 trial x 50000 step, G22
+uv run python -m scripts.run_cac_viz
+
+# 軽量実行 (動作確認用)
+uv run python -m scripts.run_cac_viz --num-trials 10 --outer-steps 5000
+
+# 出力先指定
+uv run python -m scripts.run_cac_viz --output results/viz/my_run.html
+```
+
+出力先 (既定): `results/viz/cac_<timestamp>.html`
+
+実装構成:
+
+- **バッチ実行 (JIT, 高速)** で `--num-trials` 件の final cut を集計
+- **代表 trial のトレース (純粋 Python + numpy, 低速)** で最高 cut を
+  出した seed を再実行し、内部状態を周期的に記録
+  - `snapshot_interval` ごと + `β_inj` リセット時 + 改善時に必ず記録
+    (集計メトリクス用)
+  - `spin_frame_interval` ごと + 改善時に per-spin 振幅を int8 量子化で
+    記録 (AHC プレーヤーの空間ビュー用)
+- 両者を 1 つの `RunRecord` に統合し、HTML にレンダリング
+
+AHC 風プレーヤー:
+
+- **▶/⏸ 再生・停止** (速度 0.5×〜10× 可変)
+- **seek バー** でタイムライン任意地点へジャンプ
+- **◀ ▶| ⏮ ⏭ ボタン** で ±1 frame / 先頭・末尾
+- **キーボード**: ← / → (±1), Shift+← / → (±10), Space (再生/停止)
+- **空間ビュー 1**: 2000 スピンを格子配置 (index 順) で色分け
+  (青=x&gt;0, 赤=x&lt;0, 明度=|x|) — 時間に沿って解が結晶化していく様子
+- **空間ビュー 2**: |x| 降順ソート済みレーン — 振幅の成長順序
+- **振幅分布**: この時点の x 値ヒストグラム
+- **再生ヘッド同期**: 全時系列チャートに縦線を描画、seek に応じて移動
+
+表示チャート (Plotly):
+
+1. **Cut 値の推移**: 現在 cut / best cut / 改善点 / β_inj リセット点
+2. **振幅 |x| 動態**: 平均・標準偏差の推移
+3. **エラー変数 e 動態**: 平均・標準偏差の推移
+4. **β_inj と目標振幅 a(t)**: 時変結合強度と目標のダブル軸
+5. **スピン符号バランス**: +1 スピン数の推移 (N/2 からの偏り)
+6. **最終 cut のヒストグラム**: 全 trial の分布と既知最良解マーカー
+7. **ハイパーパラメータ一覧表**: 実行時 config
+
+CLI フラグ:
+
+| フラグ | 既定 | 説明 |
+|---|---|---|
+| `--graph PATH` | `input/G22.txt` | 入力グラフ |
+| `--num-trials N` | 100 | バッチ trial 数 |
+| `--outer-steps N` | 50000 | 外ループ step 数 |
+| `--seed-base N` | 0 | シード基点 |
+| `--snapshot-interval N` | 100 | 集計スナップショット周期 |
+| `--spin-frame-interval N` | 500 | AHC プレーヤー用 per-spin フレーム周期 (小さすぎると HTML 肥大化) |
+| `--output PATH` | `results/viz/cac_<ts>.html` | HTML 出力先 |
+| `--target-cut N` | 13359 | 目標 cut (既知最良解) |
+
+単体テスト (純粋ロジックのみ, numba 不要):
+
+```bash
+uv run pytest tests/test_visualize.py -v
 ```
 
 ## 実装上のポイント
@@ -159,16 +256,21 @@ Inoue & Yoshida 2022 の Eq.(6) は真空ゆらぎ分散 `σ² = (2-η)·G/4·BW
 ├── compare.py          # CIM / CAC / SA を 100 trial で比較して画像出力
 ├── scripts/
 │   ├── verify.py       # 独立した検算モジュール
-│   └── tune_cac.py     # CAC ハイパーパラメータ調整 (Hanyu 2025 Method B)
+│   ├── tune_cac.py     # CAC ハイパーパラメータ調整 (Hanyu 2025 Method B)
+│   ├── visualize.py    # ビジュアライザ (RunRecord → HTML レンダリング)
+│   ├── trace_cac.py    # CAC 1-trial トレーサー (純粋 Python, 状態記録用)
+│   └── run_cac_viz.py  # CAC 実行 + HTML ビジュアライザ生成 CLI
 ├── tests/
-│   └── test_tune_cac.py          # tune_cac.py の純粋ロジック単体テスト
+│   ├── test_tune_cac.py          # tune_cac.py の純粋ロジック単体テスト
+│   └── test_visualize.py         # visualize.py の単体テスト
 ├── input/
 │   └── G22.txt         # Stanford G-Set ベンチマーク G22
 ├── results/
 │   ├── compare_histogram.png     # 分布ヒストグラム
 │   ├── compare_running_best.png  # running best 推移
 │   ├── compare_bar.png           # 平均/最良の棒グラフ
-│   └── tune_cac_log.csv          # Method B チューニングログ (実行時生成)
+│   ├── tune_cac_log.csv          # Method B チューニングログ (実行時生成)
+│   └── viz/                      # ビジュアライザ HTML 出力 (実行時生成)
 ├── README.md
 ├── LICENSE             # MIT
 ├── pyproject.toml

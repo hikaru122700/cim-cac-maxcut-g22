@@ -38,10 +38,17 @@ import csv
 import time
 from dataclasses import asdict, dataclass, fields, replace
 from pathlib import Path
-from typing import Callable, Mapping, Sequence
+from typing import Callable, Literal, Mapping, Sequence
 
 import numpy as np
 from scipy.sparse import csr_matrix
+
+
+# 目的関数の種類:
+#   "max":  max_cut 最大化 (ピーク志向)
+#   "mean": mean_cut 最大化 (安定志向、旧デフォルト)
+#   "lex":  (max_cut, mean_cut) 辞書式比較 — G22 BKS 追跡に推奨
+Objective = Literal["max", "mean", "lex"]
 
 
 # ============================================================
@@ -111,20 +118,42 @@ def apply_override(config: CACConfig, name: str, value: float) -> CACConfig:
     return replace(config, **{name: value})
 
 
+def _score(result: EvalResult, objective: Objective) -> tuple[float, ...]:
+    """目的関数に応じた辞書式比較用スコアタプルを返す。"""
+    if objective == "max":
+        return (float(result.max_cut),)
+    if objective == "mean":
+        return (result.mean_cut,)
+    if objective == "lex":
+        return (float(result.max_cut), result.mean_cut)
+    raise ValueError(f"Unknown objective: {objective!r}")
+
+
+def _primary_metric(result: EvalResult, objective: Objective) -> float:
+    """感度計算用の主要スカラー値。lex/max は max_cut、mean は mean_cut。"""
+    if objective in ("max", "lex"):
+        return float(result.max_cut)
+    if objective == "mean":
+        return result.mean_cut
+    raise ValueError(f"Unknown objective: {objective!r}")
+
+
 def rank_by_sensitivity(
     results: Mapping[str, Sequence[EvalResult]],
+    objective: Objective = "lex",
 ) -> list[str]:
-    """各パラメータを mean_cut の max-min スプレッドで降順ソートして返す。
+    """各パラメータを主要メトリックの max-min スプレッドで降順ソートして返す。
 
     スプレッドが大きい = そのパラメータ次第で性能が大きく変わる = 高感度 = 優先度高。
+    lex/max 目的では max_cut のスプレッド、mean 目的では mean_cut のスプレッドを使う。
     """
     scores: dict[str, float] = {}
     for name, res_list in results.items():
         if not res_list:
             scores[name] = 0.0
             continue
-        means = [r.mean_cut for r in res_list]
-        scores[name] = max(means) - min(means)
+        values = [_primary_metric(r, objective) for r in res_list]
+        scores[name] = max(values) - min(values)
     return sorted(scores.keys(), key=lambda k: scores[k], reverse=True)
 
 
@@ -132,6 +161,7 @@ def sensitivity_phase(
     base_config: CACConfig,
     grids: Sequence[HyperparamGrid],
     eval_fn: EvalFn,
+    objective: Objective = "lex",
 ) -> tuple[list[str], dict[str, list[EvalResult]]]:
     """Phase 1: 各パラメータを独立に評価し、優先度順を返す。
 
@@ -149,7 +179,7 @@ def sensitivity_phase(
             cfg = apply_override(base_config, grid.name, value)
             per_param.append(eval_fn(cfg))
         results[grid.name] = per_param
-    priority = rank_by_sensitivity(results)
+    priority = rank_by_sensitivity(results, objective=objective)
     return priority, results
 
 
@@ -158,12 +188,19 @@ def optimization_phase(
     grids: Mapping[str, HyperparamGrid],
     priority: Sequence[str],
     eval_fn: EvalFn,
+    objective: Objective = "lex",
 ) -> tuple[CACConfig, list[EvalResult]]:
     """Phase 2: 優先度順にパラメータを 1 つずつ最適化。
 
     各パラメータについて、現時点の current config から候補値を生成し
-    (既にロック済みのパラメータはそのまま使われる)、mean_cut 最大の
-    候補で config を更新してから次のパラメータに進む。
+    (既にロック済みのパラメータはそのまま使われる)、目的関数に従って
+    最良候補で config を更新してから次のパラメータに進む。
+
+    目的関数:
+      - "lex":  (max_cut, mean_cut) の辞書式比較 — まず max_cut を最大化し、
+                同値時は mean_cut で tie-break。G22 BKS 追跡に推奨。
+      - "max":  max_cut のみで選択 (ピーク志向)
+      - "mean": mean_cut のみで選択 (安定志向、旧デフォルト)
 
     Returns:
         (best_config, history): すべての評価結果を時系列で並べた履歴も返す。
@@ -184,7 +221,7 @@ def optimization_phase(
         if not per_param:
             # 候補が空なら何もせず次へ
             continue
-        best = max(per_param, key=lambda r: r.mean_cut)
+        best = max(per_param, key=lambda r: _score(r, objective))
         current = best.config
     return current, history
 
@@ -292,19 +329,24 @@ def write_history_csv(
 # ============================================================
 #  Default search grids
 # ============================================================
-def default_grids() -> dict[str, HyperparamGrid]:
+def default_grids(tau_expanded: bool = True) -> dict[str, HyperparamGrid]:
     """5 パラメータの既定探索グリッド (既定値に対する乗数)。
 
     Method B は感度分析の結果で順番が決まるので、各グリッドは
     対称な乗数 (0.5, 0.75, 1.0, 1.5, 2.0) を採用。中心 1.0 が論文既定。
+
+    τ だけは既定値 9N が外ループ step 数に近く、対称グリッドでは下側の
+    感度が見えづらいため、``tau_expanded=True`` (既定) で
+    (0.1, 0.25, 0.5, 1.0, 2.0) の非対称グリッドを使う。
     """
     mult = (0.5, 0.75, 1.0, 1.5, 2.0)
+    tau_mult = (0.1, 0.25, 0.5, 1.0, 2.0) if tau_expanded else mult
     return {
         "alpha":        HyperparamGrid("alpha", mult),
         "rho":          HyperparamGrid("rho", mult),
         "delta":        HyperparamGrid("delta", mult),
         "gamma_growth": HyperparamGrid("gamma_growth", mult),
-        "tau":          HyperparamGrid("tau", mult),
+        "tau":          HyperparamGrid("tau", tau_mult),
     }
 
 
@@ -348,17 +390,26 @@ def main(
     final_trials: int = 100,
     seed_base: int = 0,
     output_csv: str = "results/tune_cac_log.csv",
+    objective: Objective = "lex",
+    tau_expanded: bool = True,
 ) -> CACConfig:
     """Method B をエンドツーエンドで実行し、最終的な best config を返す。
 
     既定では G22, 軽量評価 20 trial × 20000 steps でスクリーニング、
     最後に full budget (100 trial × 50000 steps) で再評価する。
+
+    Args:
+        objective: 目的関数。"lex" (既定, max_cut 優先 → mean_cut tie-break)、
+                   "max" (max_cut 単独)、"mean" (mean_cut 単独、旧デフォルト)。
+        tau_expanded: τ のグリッドを (0.1, 0.25, 0.5, 1.0, 2.0) に拡張するか。
     """
     # 遅延 import (テストから main を呼ばない限り numba は起動しない)
     from CIM import build_coupling_matrix, load_graph
 
     print("=" * 60)
     print("CAC Method B hyperparameter tuner (Hanyu et al. 2025)")
+    print(f"  objective    : {objective}")
+    print(f"  tau_expanded : {tau_expanded}")
     print("=" * 60)
 
     # ---- グラフ読み込み ----
@@ -381,7 +432,7 @@ def main(
         seed_base=seed_base,
     )
 
-    grids = default_grids()
+    grids = default_grids(tau_expanded=tau_expanded)
 
     csv_path = Path(output_csv)
     csv_path.parent.mkdir(parents=True, exist_ok=True)
@@ -399,16 +450,17 @@ def main(
     print("-" * 60)
     t_phase1 = time.time()
     priority, phase1_results = sensitivity_phase(
-        base, list(grids.values()), screen_eval
+        base, list(grids.values()), screen_eval, objective=objective
     )
     t_phase1_elapsed = time.time() - t_phase1
     print(f"\nPhase 1 done in {t_phase1_elapsed:.1f} sec")
-    print("Sensitivity (max-min spread of mean_cut):")
+    metric_label = "mean_cut" if objective == "mean" else "max_cut"
+    print(f"Sensitivity (max-min spread of {metric_label}):")
     for name in priority:
-        means = [r.mean_cut for r in phase1_results[name]]
-        spread = max(means) - min(means)
+        values = [_primary_metric(r, objective) for r in phase1_results[name]]
+        spread = max(values) - min(values)
         print(f"  {name:15s}  spread = {spread:.2f}  "
-              f"(min={min(means):.1f}  max={max(means):.1f})")
+              f"(min={min(values):.1f}  max={max(values):.1f})")
     print(f"\nPriority order: {priority}")
 
     # CSV にログ
@@ -423,7 +475,7 @@ def main(
     print("-" * 60)
     t_phase2 = time.time()
     best_cfg, phase2_history = optimization_phase(
-        base, grids, priority, screen_eval
+        base, grids, priority, screen_eval, objective=objective
     )
     t_phase2_elapsed = time.time() - t_phase2
     print(f"\nPhase 2 done in {t_phase2_elapsed:.1f} sec")
@@ -468,11 +520,73 @@ def main(
     write_history_csv(csv_path, "final_tuned", [tuned_result])
 
     delta_mean = tuned_result.mean_cut - baseline_result.mean_cut
-    print(f"\nΔ mean_cut (tuned − baseline) = {delta_mean:+.2f}")
+    delta_max = tuned_result.max_cut - baseline_result.max_cut
+    delta_opt = tuned_result.num_optimal - baseline_result.num_optimal
+    print(f"\nΔ max_cut  (tuned − baseline) = {delta_max:+d}")
+    print(f"Δ mean_cut (tuned − baseline) = {delta_mean:+.2f}")
+    print(f"Δ optimal_hits (tuned − baseline) = {delta_opt:+d}")
     print(f"Log saved to: {csv_path}")
 
     return best_cfg
 
 
+def _parse_args() -> "argparse.Namespace":
+    """CLI エントリ用の引数パーサ。"""
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="CAC Method B hyperparameter tuner (Hanyu 2025)",
+    )
+    parser.add_argument(
+        "--graph", default="input/G22.txt",
+        help="入力グラフファイル (既定: input/G22.txt)",
+    )
+    parser.add_argument(
+        "--objective", choices=["max", "mean", "lex"], default="lex",
+        help="目的関数 (既定: lex). lex=max優先+meanでtie-break, "
+             "max=ピーク志向, mean=平均志向",
+    )
+    parser.add_argument(
+        "--tau-standard", action="store_true",
+        help="τ グリッドを対称 (0.5〜2.0) に戻す (既定は拡張 0.1〜2.0)",
+    )
+    parser.add_argument(
+        "--screen-steps", type=int, default=20000,
+        help="Phase 1/2 の外ループ step 数 (既定: 20000)",
+    )
+    parser.add_argument(
+        "--screen-trials", type=int, default=20,
+        help="Phase 1/2 の trial 数 (既定: 20)",
+    )
+    parser.add_argument(
+        "--final-steps", type=int, default=50000,
+        help="Final 評価の外ループ step 数 (既定: 50000)",
+    )
+    parser.add_argument(
+        "--final-trials", type=int, default=100,
+        help="Final 評価の trial 数 (既定: 100)",
+    )
+    parser.add_argument(
+        "--seed-base", type=int, default=0,
+        help="シード基点 (既定: 0)",
+    )
+    parser.add_argument(
+        "--output-csv", default="results/tune_cac_log.csv",
+        help="ログ出力パス (既定: results/tune_cac_log.csv)",
+    )
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
-    main()
+    args = _parse_args()
+    main(
+        graph_path=args.graph,
+        screen_outer_steps=args.screen_steps,
+        screen_trials=args.screen_trials,
+        final_outer_steps=args.final_steps,
+        final_trials=args.final_trials,
+        seed_base=args.seed_base,
+        output_csv=args.output_csv,
+        objective=args.objective,
+        tau_expanded=not args.tau_standard,
+    )
