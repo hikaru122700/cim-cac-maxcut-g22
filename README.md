@@ -85,6 +85,37 @@ uv run python SA.py
 uv run python compare.py
 ```
 
+### CAC ハイパーパラメータ調整 (Hanyu 2025 Method B)
+
+`α, ρ, δ, γ (β_inj 成長率), τ (β_inj リセット窓)` の 5 パラメータを
+**感度順に逐次最適化** する Method B を実装 (参考: Hanyu et al., arXiv:2507.20295)。
+
+```bash
+uv run python -m scripts.tune_cac
+```
+
+処理の流れ:
+
+1. **Phase 1 (感度評価)**: 各パラメータを独立に 5 段階の倍率
+   `(0.5, 0.75, 1.0, 1.5, 2.0)` で評価し、`mean_cut` の `max − min`
+   スプレッドで感度を定量化。
+2. **Phase 2 (逐次最適化)**: 感度の高い順に 1 パラメータずつ最適化し、
+   勝った値を以降の評価にロック。
+3. **Final**: GSET 既定値と調整後 config を、full budget
+   (100 trial × 50000 outer step) で再評価して差分を表示。
+
+評価予算は軽量スクリーニング (20 trial × 20000 step、1 eval あたり約 20 秒) で、
+Phase1+Phase2 合計約 50 eval → 約 15〜20 分。
+最終再評価で +400 秒、合計約 25 分。
+
+ログは `results/tune_cac_log.csv` に phase 付きで書き出されます。
+
+単体テスト (numba を起動せず純粋ロジックのみ):
+
+```bash
+uv run pytest tests/test_tune_cac.py -v
+```
+
 ## 実装上のポイント
 
 ### 1. Numba JIT + `prange` による trial 並列化
@@ -127,13 +158,17 @@ Inoue & Yoshida 2022 の Eq.(6) は真空ゆらぎ分散 `σ² = (2-η)·G/4·BW
 ├── CMI_multi_run.py    # CIM の 100 trial 並列実行 + wandb ログ
 ├── compare.py          # CIM / CAC / SA を 100 trial で比較して画像出力
 ├── scripts/
-│   └── verify.py       # 独立した検算モジュール
+│   ├── verify.py       # 独立した検算モジュール
+│   └── tune_cac.py     # CAC ハイパーパラメータ調整 (Hanyu 2025 Method B)
+├── tests/
+│   └── test_tune_cac.py          # tune_cac.py の純粋ロジック単体テスト
 ├── input/
 │   └── G22.txt         # Stanford G-Set ベンチマーク G22
 ├── results/
 │   ├── compare_histogram.png     # 分布ヒストグラム
 │   ├── compare_running_best.png  # running best 推移
-│   └── compare_bar.png           # 平均/最良の棒グラフ
+│   ├── compare_bar.png           # 平均/最良の棒グラフ
+│   └── tune_cac_log.csv          # Method B チューニングログ (実行時生成)
 ├── README.md
 ├── LICENSE             # MIT
 ├── pyproject.toml
