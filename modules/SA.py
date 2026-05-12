@@ -16,7 +16,7 @@ import math
 import time
 import wandb
 
-from scripts.verify import (
+from .verify import (
     compute_cut_from_edges,
     run_all_checks,
 )

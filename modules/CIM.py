@@ -35,7 +35,7 @@ from numba import njit, prange
 from scipy.sparse import csr_matrix
 from scipy.sparse._sparsetools import csr_matvec
 
-from scripts.verify import compute_cut_from_edges, run_all_checks
+from .verify import compute_cut_from_edges, run_all_checks
 
 
 # ============================================================

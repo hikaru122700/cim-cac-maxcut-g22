@@ -13,17 +13,22 @@ wandb には以下を記録する:
   - 全 trial の cut 数テーブル
 """
 
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+
+
 import time
 
 import numpy as np
 import wandb
 
-from CIM import (
+from modules.CIM import (
     build_coupling_matrix,
     load_graph,
     simulate_cim_batch,
 )
-from scripts.verify import run_all_checks
+from modules.verify import run_all_checks
 
 
 def main():

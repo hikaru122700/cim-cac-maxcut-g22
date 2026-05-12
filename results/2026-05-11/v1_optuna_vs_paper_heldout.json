@@ -1,0 +1,42 @@
+{
+  "n_trials": 100,
+  "seed_range": [
+    100,
+    199
+  ],
+  "num_rounds": 1500,
+  "paper": {
+    "params": {
+      "kappa": 130.0,
+      "L": 0.05,
+      "gamma": 42.09,
+      "loss_dB": 11.0,
+      "bandwidth": 1000000000.0,
+      "photon_energy": 1.28e-19,
+      "dP_per_round": 5e-05,
+      "coupling": -0.03
+    },
+    "mean": 13276.18,
+    "std": 21.98289334914765,
+    "best": 13322,
+    "worst": 13226
+  },
+  "optuna": {
+    "params": {
+      "kappa": 253.831,
+      "L": 0.0278291,
+      "gamma": 7.21026,
+      "loss_dB": 10.3693,
+      "bandwidth": 1640030000.0,
+      "photon_energy": 6.33518e-20,
+      "dP_per_round": 1.55374e-05,
+      "coupling": -0.0494281
+    },
+    "mean": 13297.01,
+    "std": 16.686218864679923,
+    "best": 13340,
+    "worst": 13259
+  },
+  "diff_mean": 20.829999999999927,
+  "welch_t": 7.509677795523136
+}

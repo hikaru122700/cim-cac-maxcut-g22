@@ -17,3 +17,6 @@ _cac_paper.txt
 
 # Private problem statement
 問題文.md
+
+# Optuna study database (regenerable from tune_cim_optuna.py)
+results/**/*.db

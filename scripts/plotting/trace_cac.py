@@ -10,8 +10,11 @@ JIT バッチ実装 (CAC._simulate_cac_batch) と同じダイナミクスを、
 内部ループが単純なポイントワイズ更新 (x[i] だけが i-index 依存) なので、
 JIT の逐次 for ループと numpy ベクトル化は数学的に同一。
 """
-
 from __future__ import annotations
+
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 import time
 from dataclasses import dataclass
@@ -20,7 +23,7 @@ from typing import Any, Mapping
 import numpy as np
 from scipy.sparse import csr_matrix
 
-from scripts.visualize import SpinFrame, TrajectorySnapshot
+from scripts.plotting.visualize import SpinFrame, TrajectorySnapshot
 
 
 @dataclass(frozen=True)

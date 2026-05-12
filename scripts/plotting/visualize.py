@@ -26,8 +26,11 @@ Canvas2D ベースの自己完結 HTML ファイルを生成する。
     )
     path = write_html(record, Path("results/viz/cac_run.html"))
 """
-
 from __future__ import annotations
+
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 import json
 from dataclasses import dataclass, field

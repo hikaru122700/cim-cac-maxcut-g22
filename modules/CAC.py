@@ -69,8 +69,8 @@ import wandb
 from numba import njit, prange
 from scipy.sparse import csr_matrix
 
-from CIM import build_coupling_matrix, load_graph
-from scripts.verify import run_all_checks
+from .CIM import build_coupling_matrix, load_graph
+from .verify import run_all_checks
 
 
 # ============================================================

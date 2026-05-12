@@ -1,0 +1,57 @@
+
+==== G1  N=  800  K= 19176  BKS=11624  (trials=20)  ====
+  CIM  mean=  9759.5  best=  9893  std= 85.1  (  1.5s)  best/BKS=85.11%
+  CAC  mean= 11601.8  best= 11624  std= 24.8  ( 14.2s)  best/BKS=100.00%
+  SA   mean= 11591.6  best= 11624  std= 18.4  (100.0s)  best/BKS=100.00%
+
+==== G14  N=  800  K=  4694  BKS=3064  (trials=20)  ====
+  CIM  mean=  3024.7  best=  3033  std=  3.0  (  0.7s)  best/BKS=98.99%
+  CAC  mean=  3037.8  best=  3046  std=  3.0  (  4.2s)  best/BKS=99.41%
+  SA   mean=  3053.4  best=  3059  std=  4.4  (100.0s)  best/BKS=99.84%
+
+==== G15  N=  800  K=  4661  BKS=3050  (trials=20)  ====
+  CIM  mean=  3017.0  best=  3017  std=  0.0  (  0.7s)  best/BKS=98.92%
+  CAC  mean=  3022.4  best=  3030  std=  5.2  (  4.1s)  best/BKS=99.34%
+  SA   mean=  3039.2  best=  3047  std=  5.4  (100.0s)  best/BKS=99.90%
+
+==== G22  N= 2000  K= 19990  BKS=13359  (trials=20)  ====
+  CIM  mean= 13273.9  best= 13310  std= 22.3  (  2.1s)  best/BKS=99.63%
+  CAC  mean= 13274.3  best= 13329  std= 29.2  ( 15.7s)  best/BKS=99.78%
+  SA   mean= 13326.3  best= 13352  std= 15.1  (200.0s)  best/BKS=99.95%
+
+==== G23  N= 2000  K= 19990  BKS=13344  (trials=20)  ====
+  CIM  mean= 13268.6  best= 13305  std= 21.5  (  2.1s)  best/BKS=99.71%
+  CAC  mean= 13270.0  best= 13306  std= 20.5  ( 15.9s)  best/BKS=99.72%
+  SA   mean= 13323.1  best= 13332  std=  5.9  (200.0s)  best/BKS=99.91%
+
+==== G32  N= 2000  K=  4000  BKS=1410  (trials=20)  ====
+  CIM  mean=  3875.4  best=  3950  std= 30.2  (  1.3s)  best/BKS=280.14%
+  CAC  mean=  3938.0  best=  4000  std= 29.6  (  4.8s)  best/BKS=283.69%
+  SA   mean=  3960.0  best=  4000  std= 17.9  (200.0s)  best/BKS=283.69%
+
+==== G39  N= 2000  K= 11778  BKS=2408  (trials=20)  ====
+  CIM  mean=  7581.8  best=  7595  std=  7.1  (  1.7s)  best/BKS=315.41%
+  CAC  mean=  7612.3  best=  7633  std=  9.5  ( 10.7s)  best/BKS=316.99%
+  SA   mean=  7650.8  best=  7663  std=  7.9  (200.0s)  best/BKS=318.23%
+
+==== G55  N= 5000  K= 12498  BKS=10299  (trials=10)  ====
+  CIM  mean= 10126.5  best= 10162  std= 19.5  (  1.8s)  best/BKS=98.67%
+  CAC  mean= 10164.6  best= 10203  std= 16.1  (  7.2s)  best/BKS=99.07%
+  SA   mean= 10251.3  best= 10257  std=  4.9  (150.0s)  best/BKS=99.59%
+
+==== G70  N=10000  K=  9999  BKS=9595  (trials=5)  ====
+  CIM  mean=  9395.8  best=  9418  std= 12.3  (  1.6s)  best/BKS=98.16%
+  CAC  mean=  9467.6  best=  9475  std=  5.1  ( 12.0s)  best/BKS=98.75%
+  SA   mean=  9494.2  best=  9507  std=  8.0  ( 75.0s)  best/BKS=99.08%
+
+==== G77  N=14000  K= 28000  BKS=9926  (trials=5)  ====
+  CIM  mean= 26909.6  best= 27072  std=109.3  (  1.5s)  best/BKS=272.74%
+  CAC  mean= 27917.2  best= 28000  std=101.4  (  3.4s)  best/BKS=282.09%
+  SA   mean= 27844.4  best= 28000  std=131.2  (100.0s)  best/BKS=282.09%
+
+==== G81  N=20000  K= 40000  BKS=14030  (trials=5)  ====
+  CIM  mean= 38457.2  best= 38606  std= 85.6  (  2.2s)  best/BKS=275.17%
+  CAC  mean= 39918.4  best= 40000  std= 99.9  (  5.1s)  best/BKS=285.10%
+  SA   mean= 39812.4  best= 40000  std=100.3  (100.0s)  best/BKS=285.10%
+
+Saved: results/benchmark_gset.csv

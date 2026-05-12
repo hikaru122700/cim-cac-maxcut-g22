@@ -21,6 +21,11 @@ compare.py — CIM vs CAC vs SA を G22 で比較する。
 ========================================================================
 """
 
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+
+
 import math
 import os
 import random
@@ -31,8 +36,8 @@ matplotlib.use("Agg")  # ヘッドレス環境用
 import matplotlib.pyplot as plt
 import numpy as np
 
-from CAC import compute_gset_parameters, simulate_cac_batch
-from CIM import build_coupling_matrix, load_graph, simulate_cim_batch
+from modules.CAC import compute_gset_parameters, simulate_cac_batch
+from modules.CIM import build_coupling_matrix, load_graph, simulate_cim_batch
 
 
 # ============================================================

@@ -14,8 +14,11 @@ CAC の実行 + HTML ビジュアライザ生成 CLI。
 出力: results/viz/cac_<timestamp>.html (または --output で指定)
       ブラウザで開けば全チャートが見える。
 """
-
 from __future__ import annotations
+
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 import argparse
 import time
@@ -24,8 +27,8 @@ from pathlib import Path
 
 import numpy as np
 
-from scripts.trace_cac import trace_cac_single_trial
-from scripts.visualize import RunRecord, write_html
+from scripts.plotting.trace_cac import trace_cac_single_trial
+from scripts.plotting.visualize import RunRecord, write_html
 
 
 def main(

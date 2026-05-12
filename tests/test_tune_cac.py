@@ -15,7 +15,7 @@ from typing import Callable
 
 import pytest
 
-from scripts.tune_cac import (
+from scripts.tuning.tune_cac import (
     CACConfig,
     EvalResult,
     HyperparamGrid,

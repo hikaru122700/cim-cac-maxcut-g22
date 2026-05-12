@@ -19,7 +19,7 @@ from dataclasses import FrozenInstanceError
 
 import pytest
 
-from scripts.visualize import (
+from scripts.plotting.visualize import (
     RunRecord,
     SpinFrame,
     TrajectorySnapshot,
