@@ -56,6 +56,7 @@ def _simulate_cim_batch(
     J_indptr: np.ndarray,
     edge_a: np.ndarray,
     edge_b: np.ndarray,
+    edge_w: np.ndarray,    # MAX-CUT 重み(未指定なら +1 で埋める)
     kappa: float,
     L: float,
     gamma: float,
@@ -70,9 +71,10 @@ def _simulate_cim_batch(
     prange により trial 単位で CPU コアに分散。
     各 trial は独立なので競合なく並列化できる。
     num_trials=1 で呼べば単発実行にもなる。
+    cut は edge_w 重み付き(unweighted の場合 edge_w=+1)。
     """
     # 出力バッファ
-    best_cuts_out = np.zeros(num_trials, dtype=np.int64)
+    best_cuts_out = np.zeros(num_trials, dtype=np.float64)
     best_signs_out = np.zeros((num_trials, n), dtype=np.bool_)
 
     # 事前計算可能な定数(全 trial 共通)
@@ -89,7 +91,7 @@ def _simulate_cim_batch(
         c = np.zeros(n, dtype=np.float64)
         Jc = np.zeros(n, dtype=np.float64)
         best_signs = np.zeros(n, dtype=np.bool_)
-        best_cut = 0
+        best_cut = -1.0e18
 
         for k in range(num_rounds):
             # Step 1: ポンプパワー → 非飽和利得係数 g_0
@@ -116,11 +118,11 @@ def _simulate_cim_batch(
                 noise_i = np.random.standard_normal() * (noise_const * sqrt_G_I_i)
                 c[i] = sqrt_G_I_i * coupled_in_i + noise_i
 
-            # Step 6: cut 計算
-            cut = 0
+            # Step 6: 重み付き cut 計算
+            cut = 0.0
             for e in range(num_edges):
                 if (c[edge_a[e]] > 0.0) != (c[edge_b[e]] > 0.0):
-                    cut += 1
+                    cut += edge_w[e]
 
             # ベスト更新
             if cut > best_cut:
@@ -136,52 +138,60 @@ def _simulate_cim_batch(
     return best_cuts_out, best_signs_out
 
 
-def load_graph(filepath: str):
-    """G22.txt を読み込み、隣接リストと辺リストを返す。
+def load_graph(filepath: str, return_weights: bool = False):
+    """Gset 形式のグラフを読み込み、隣接リストと辺リストを返す。
 
     入力ファイルは 1-indexed だが、Python では配列を 0-indexed で扱いたいので
     ここで -1 して変換している。
+
+    辺の 3 番目の列があれば重み w_ij として解釈する。無ければ +1 とみなす。
+    K2000 のような ±1 重み付きインスタンスでは return_weights=True で重みも取得。
     """
     with open(filepath, "r") as f:
-        # 1行目: 頂点数 N と辺数 K
         n, k = map(int, f.readline().split())
-        adj = [[] for _ in range(n)]  # 隣接リスト
-        edges = []                      # 辺リスト (検算とカット計算に使う)
+        adj = [[] for _ in range(n)]
+        edges = []
+        weights: list[float] = []
         for _ in range(k):
             parts = f.readline().split()
-            a, b = int(parts[0]) - 1, int(parts[1]) - 1  # 0-indexed に変換
+            a, b = int(parts[0]) - 1, int(parts[1]) - 1
+            w = float(parts[2]) if len(parts) >= 3 else 1.0
             adj[a].append(b)
             adj[b].append(a)
             edges.append((a, b))
+            weights.append(w)
+    if return_weights:
+        return n, k, adj, edges, weights
     return n, k, adj, edges
 
 
 def build_coupling_matrix(
-    n: int, edges: list[tuple[int, int]], coupling: float
+    n: int,
+    edges: list[tuple[int, int]],
+    coupling: float,
+    weights: list[float] | None = None,
 ) -> csr_matrix:
     """結合行列 J を CSR 形式のスパース行列として構築する。
 
-    G22 では 辺がある所だけ J_ij = -0.03 を入れ、その他は 0。
-    MAX-CUT では「反強磁性的な結合(負)」にすることで、
-    結合があるペアは互いに反対の符号を取ろうとする
-    → 異なる集合に割り振られる → カット数が増える、という仕組み。
+    通常モード (weights=None): すべての辺で J_ij = coupling(従来挙動)。
+      G22 (w=+1) なら coupling=-0.03 で J_ij = -0.03 (反強磁性、カット促進)。
 
-    【なぜスパース行列か】
-    G22 は N=2000, K=19990 で、J の非零要素は 2K=39980 個(全体の約1%)。
-    密行列 (N×N=4e6要素) で持って J @ c を計算すると 99% は 0 との掛け算で無駄。
-    CSR スパース形式なら非零要素だけを計算するので、J @ c が約100倍高速化される。
-    (`J @ c` の書き方は密行列と同じなので、呼び出し側は一切変更不要)
+    重み付きモード (weights 指定): J_ij = coupling * w_ij。
+      K2000 (w ∈ ±1) なら coupling=-1 で J_ij ∈ ±1 になり、論文の SB 設定と一致。
+      w=+1 の辺 → J=-|coupling| (cut 促進)、w=-1 の辺 → J=+|coupling| (cut 抑制)。
     """
-    # 各辺 (a,b) について、対称に (a,b) と (b,a) の2エントリを作る
     rows: list[int] = []
     cols: list[int] = []
-    for a, b in edges:
-        rows.append(a)
-        cols.append(b)
-        rows.append(b)
-        cols.append(a)
-    data = [coupling] * len(rows)
-    # CSR (Compressed Sparse Row): 行列-ベクトル積が最速な形式
+    data: list[float] = []
+    if weights is None:
+        for a, b in edges:
+            rows.append(a); cols.append(b); data.append(coupling)
+            rows.append(b); cols.append(a); data.append(coupling)
+    else:
+        for (a, b), w in zip(edges, weights):
+            val = coupling * w
+            rows.append(a); cols.append(b); data.append(val)
+            rows.append(b); cols.append(a); data.append(val)
     return csr_matrix((data, (rows, cols)), shape=(n, n), dtype=np.float64)
 
 
@@ -243,6 +253,7 @@ def simulate_cim(
     edges_np = np.asarray(edges, dtype=np.int64)  # shape: (K, 2)
     edge_a = np.ascontiguousarray(edges_np[:, 0])
     edge_b = np.ascontiguousarray(edges_np[:, 1])
+    edge_w = np.ones(edges_np.shape[0], dtype=np.float64)  # unweighted
 
     # ====== Fast path: wandb 出力が不要なら Numba JIT 版を直接呼ぶ ======
     # 内部では _simulate_cim_batch を num_trials=1 で呼び、単発実行にも対応。
@@ -258,6 +269,7 @@ def simulate_cim(
             J.indptr,
             edge_a,
             edge_b,
+            edge_w,
             float(kappa),
             float(L),
             float(gamma),
@@ -376,19 +388,23 @@ def simulate_cim_batch(
     photon_energy: float,
     dP_per_round: float,
     seeds: np.ndarray,
+    weights: list[float] | None = None,
 ) -> tuple[np.ndarray, np.ndarray]:
     """100 trial を並列実行するための公開ラッパー。
 
-    CMI_multi_run.py から呼ぶ想定。Python側では trial ごとにループせず、
-    Numba の prange で全 trial を CPU コアに分散して一気に計算する。
+    weights が指定された場合、cut は重み付きで計算される。
 
     Returns:
-        best_cuts: shape (num_trials,)      各 trial の最良カット数
+        best_cuts: shape (num_trials,)      各 trial の最良カット値
         best_signs: shape (num_trials, n)   各 trial の最良解(bool)
     """
     edges_np = np.asarray(edges, dtype=np.int64)
     edge_a = np.ascontiguousarray(edges_np[:, 0])
     edge_b = np.ascontiguousarray(edges_np[:, 1])
+    if weights is None:
+        edge_w = np.ones(edges_np.shape[0], dtype=np.float64)
+    else:
+        edge_w = np.ascontiguousarray(np.asarray(weights, dtype=np.float64))
     seeds_arr = np.ascontiguousarray(np.asarray(seeds, dtype=np.int64))
 
     best_cuts, best_signs = _simulate_cim_batch(
@@ -400,6 +416,7 @@ def simulate_cim_batch(
         J.indptr,
         edge_a,
         edge_b,
+        edge_w,
         float(kappa),
         float(L),
         float(gamma),

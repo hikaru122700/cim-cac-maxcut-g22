@@ -20,3 +20,10 @@ _cac_paper.txt
 
 # Optuna study database (regenerable from tune_cim_optuna.py)
 results/**/*.db
+
+# Portable external tools (MinGW gcc, rudy, etc. — regenerable via tools/install.md)
+tools/
+
+# Local temp / backup files
+*.tmp
+input/K2000_numpy_seed0_backup.txt

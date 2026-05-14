@@ -59,6 +59,7 @@ def _simulate_sb_batch(
     J_indptr: np.ndarray,
     edge_a: np.ndarray,
     edge_b: np.ndarray,
+    edge_w: np.ndarray,    # 各辺の MAX-CUT 重み(unweighted の場合 +1)
     a0: float,
     c0: float,
     dt: float,
@@ -68,8 +69,11 @@ def _simulate_sb_batch(
     gamma_heat: float,  # Heated SB の加熱率 (HbSB / HdSB のみ使用)
     seeds: np.ndarray,
 ):
-    """trial 並列の SB 計算。variant で 5 つの式を切り替える。"""
-    best_cuts_out = np.zeros(num_trials, dtype=np.int64)
+    """trial 並列の SB 計算。variant で 5 つの式を切り替える。
+
+    cut 値は edge_w を用いた重み付きで計算する。unweighted のときは edge_w=+1。
+    """
+    best_cuts_out = np.zeros(num_trials, dtype=np.float64)
     best_signs_out = np.zeros((num_trials, n), dtype=np.bool_)
     num_edges = edge_a.shape[0]
 
@@ -92,7 +96,7 @@ def _simulate_sb_batch(
         Jx = np.zeros(n, dtype=np.float64)
         y_old = np.zeros(n, dtype=np.float64)       # 加熱項用に y(t_k) を保存
         best_signs = np.zeros(n, dtype=np.bool_)
-        best_cut = 0
+        best_cut = -1.0e18  # 重み付き cut なので負の値もあり得る → 強い負で初期化
 
         for k in range(num_steps):
             # 分岐パラメータの線形ランプ: a(t) ∈ [0, a0]
@@ -159,11 +163,11 @@ def _simulate_sb_batch(
                 for i in range(n):
                     y[i] = y[i] + gamma_heat * y_old[i] * dt
 
-            # ---- cut 評価 ----
-            cut = 0
+            # ---- cut 評価 (重み付き) ----
+            cut = 0.0
             for e in range(num_edges):
                 if (x[edge_a[e]] > 0.0) != (x[edge_b[e]] > 0.0):
-                    cut += 1
+                    cut += edge_w[e]
 
             if cut > best_cut:
                 best_cut = cut
@@ -208,6 +212,7 @@ def simulate_sb_batch(
     K: float = 1.0,
     init_scale: float = 0.1,
     gamma_heat: float = 0.0,
+    weights: list[float] | None = None,
     seeds: np.ndarray | None = None,
 ) -> tuple[np.ndarray, np.ndarray]:
     """SB を num_trials 並列実行する。
@@ -216,10 +221,12 @@ def simulate_sb_batch(
         variant:    "aSB", "bSB", "dSB", "HbSB", "HdSB" のいずれか
         c0:         None なら auto_c0(J, n) を使用
         gamma_heat: HbSB / HdSB の加熱率(論文推奨: HbSB γ=0.5, HdSB γ=0.06)
+        weights:    各辺の MAX-CUT 重み(K2000 のような ±1 重み付きグラフ用)。
+                    None なら +1 を仮定し従来の unweighted カット数を返す。
         seeds:      各 trial の seed 配列。None なら np.arange(num_trials)
 
     Returns:
-        best_cuts:  shape (num_trials,)
+        best_cuts:  shape (num_trials,) の float (重み付き cut 値の最大)
         best_signs: shape (num_trials, n) の bool
     """
     if variant not in VARIANT_ID:
@@ -232,12 +239,16 @@ def simulate_sb_batch(
     edges_np = np.asarray(edges, dtype=np.int64)
     edge_a = np.ascontiguousarray(edges_np[:, 0])
     edge_b = np.ascontiguousarray(edges_np[:, 1])
+    if weights is None:
+        edge_w = np.ones(edges_np.shape[0], dtype=np.float64)
+    else:
+        edge_w = np.ascontiguousarray(np.asarray(weights, dtype=np.float64))
     seeds_arr = np.ascontiguousarray(np.asarray(seeds, dtype=np.int64))
 
     best_cuts, best_signs = _simulate_sb_batch(
         n, num_steps, num_trials,
         J.data, J.indices, J.indptr,
-        edge_a, edge_b,
+        edge_a, edge_b, edge_w,
         float(a0), float(c0), float(dt), float(K),
         VARIANT_ID[variant],
         float(init_scale),

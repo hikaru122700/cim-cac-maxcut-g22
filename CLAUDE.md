@@ -7,11 +7,13 @@
 ```
 modules/        # アルゴリズム実装 (CIM, CAC, SB, SA, rulebase, verify)
 scripts/        # 実行スクリプト (benchmarks/ tuning/ plotting/ runners/ utils/)
-input/          # ベンチマーク入力 (G-set)
+input/          # ベンチマーク入力 (G-set, K2000)
 results/        # 実行結果 — 年月日サブフォルダで管理 ★
 papers/         # 参照論文 PDF
+docs/           # アルゴリズム解説・設計メモなど(md ファイル)
 tests/          # ユニットテスト
 web/            # Web ビジュアライザ
+tools/          # ポータブル外部ツール (gcc, rudy など)
 ```
 
 ## results/ 配下の管理ルール
