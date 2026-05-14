@@ -1,10 +1,11 @@
-# MAX-CUT on G22 — CIM / CAC / SA の実装と比較
+# MAX-CUT on G-Set — CIM / CAC / SB / SA の実装と比較
 
-G22 (N=2000, K=19990) の MAX-CUT 問題を 3 つの手法で解いて比較するリポジトリです。
-G22 は [Stanford G-Set ベンチマーク](https://web.stanford.edu/~yyye/yyye/Gset/) の
-疎結合ランダムグラフで、既知最良解は **13359**。
+Stanford G-Set ベンチマークの MAX-CUT 問題を 4 つの手法で解いて比較するリポジトリです。
+中心評価は G22 (N=2000, K=19990, 既知最良解 **13359**) で、入力グラフは
+`input/G1.txt`, `G14`, `G15`, `G22`, `G23`, `G32`, `G39`, `G55`, `G70`, `G77`, `G81`
+を同梱しています。
 
-3 手法の実装はすべて Python + Numba で、外ループを JIT コンパイルし
+実装はすべて Python + Numba で、外ループを JIT コンパイルし
 trial 並列(`prange`)で CPU コアに分散実行します。
 
 ## 実装した手法
@@ -13,6 +14,7 @@ trial 並列(`prange`)で CPU コアに分散実行します。
 |---|---|---|
 | **CIM** | Inoue & Yoshida, *Opt. Commun.* **522**, 128642 (2022) | 位相感応増幅器(PSA)を持つファイバーループ型コヒーレントイジングマシンの進行波モデル。各パルスの in-phase 振幅の符号からスピンを決める。 |
 | **CAC** | Leleu et al., *Comm. Phys.* **4**, 266 (2021) | Chaotic Amplitude Control。パルスごとのエラー変数と目標振幅の動的変調、時変な結合ランプを組み合わせて準最適解を脱出する拡張 CIM。 |
+| **SB**  | Goto et al., *Sci. Adv.* **5**, eaav2372 (2019); **7**, eabe7953 (2021); Kanao & Goto, arXiv (2022) | Simulated Bifurcation。非線形ハミルトニアン系の断熱分岐を模倣する古典力学的アルゴリズム。`modules/SB.py` に aSB / bSB / dSB の 3 バリアントを実装。 |
 | **SA** | Kirkpatrick et al., *Science* **220**, 671 (1983) | 1-flip 指数冷却の古典的シミュレーテッドアニーリング(ベースライン)。 |
 
 ## 実行結果 (G22 で各 100 trial)
@@ -27,13 +29,15 @@ trial 並列(`prange`)で CPU コアに分散実行します。
 - **CIM** が最速。3.3 秒で平均 13275 の安定結果(既知最良解の 99.75%)
 - **SA** はこの時間スケールでは他の 2 手法に劣る
 
-結果の可視化:
+結果の可視化(`results/` は **日付サブフォルダ** で管理。詳細は `CLAUDE.md`):
 
 | 画像 | 内容 |
 |---|---|
-| `results/compare_histogram.png` | 各手法の cut 値の分布(3 パネル) |
-| `results/compare_running_best.png` | trial 進行に対する running best |
-| `results/compare_bar.png` | 平均・最良の棒グラフ比較 |
+| `results/2026-04-23/compare_histogram.png` | 各手法の cut 値の分布(3 パネル) |
+| `results/2026-04-23/compare_running_best.png` | trial 進行に対する running best |
+| `results/2026-04-23/compare_bar.png` | 平均・最良の棒グラフ比較 |
+| `results/2026-04-24/compare_all_*.png` | G-Set 全グラフでの 4 手法横断比較 |
+| `results/2026-05-12/v1_sb_all_variants.png` | SB の 3 バリアント比較 |
 
 ### 論文再現の程度
 
@@ -55,34 +59,59 @@ uv sync
 
 ## 使い方
 
+スクリプトはすべて **プロジェクトルートから** `python -m <パッケージパス>` の
+形で実行します。出力は `results/YYYY-MM-DD/v{N}_*.png` 形式で日付フォルダに
+バージョン採番して保存されます(`CLAUDE.md` 参照)。
+
 ### CIM を単発で実行(ラウンドごとに wandb にログ)
 
 ```bash
-uv run python CIM.py
+uv run python -m modules.CIM
 ```
 
 ### CIM を 100 trial 並列実行(wandb に統計をログ)
 
 ```bash
-uv run python CMI_multi_run.py
+uv run python -m scripts.runners.CMI_multi_run
 ```
 
 ### CAC を 100 trial 並列実行
 
 ```bash
-uv run python CAC.py
+uv run python -m modules.CAC
 ```
 
 ### SA ベースラインを実行
 
 ```bash
-uv run python SA.py
+uv run python -m modules.SA
 ```
 
-### 3 手法の比較スクリプト(`results/` に図を出力)
+### SB(aSB / bSB / dSB)を実行
 
 ```bash
-uv run python compare.py
+uv run python -m scripts.benchmarks.compare_sb_all
+uv run python -m scripts.benchmarks.compare_sb_cim
+```
+
+### CIM / CAC / SA の比較スクリプト(`results/<date>/` に図を出力)
+
+```bash
+uv run python -m scripts.benchmarks.compare
+```
+
+### G-Set 全グラフでのベンチマーク
+
+```bash
+uv run python -m scripts.benchmarks.benchmark_gset
+uv run python -m scripts.benchmarks.plot_benchmark_gset
+```
+
+### CIM のハイパーパラメータ調整(Optuna)
+
+```bash
+uv run python -m scripts.tuning.tune_cim_optuna
+uv run python -m scripts.tuning.verify_optuna_best
 ```
 
 ### CAC ハイパーパラメータ調整 (Hanyu 2025 Method B)
@@ -92,10 +121,10 @@ uv run python compare.py
 
 ```bash
 # 既定: lex 目的関数 + τ 拡張グリッド (G22 BKS 追跡に推奨)
-uv run python -m scripts.tune_cac
+uv run python -m scripts.tuning.tune_cac
 
 # 旧挙動 (mean_cut 目的 + 対称 τ グリッド)
-uv run python -m scripts.tune_cac --objective mean --tau-standard
+uv run python -m scripts.tuning.tune_cac --objective mean --tau-standard
 ```
 
 処理の流れ:
@@ -150,13 +179,13 @@ AtCoder Heuristic Contest のビジュアライザ風のインタラクティブ
 
 ```bash
 # 既定: 100 trial x 50000 step, G22
-uv run python -m scripts.run_cac_viz
+uv run python -m scripts.plotting.run_cac_viz
 
 # 軽量実行 (動作確認用)
-uv run python -m scripts.run_cac_viz --num-trials 10 --outer-steps 5000
+uv run python -m scripts.plotting.run_cac_viz --num-trials 10 --outer-steps 5000
 
 # 出力先指定
-uv run python -m scripts.run_cac_viz --output results/viz/my_run.html
+uv run python -m scripts.plotting.run_cac_viz --output results/viz/my_run.html
 ```
 
 出力先 (既定): `results/viz/cac_<timestamp>.html`
@@ -230,7 +259,7 @@ G22 は N=2000, K=19990 で非零要素はわずか約 1% です。`scipy.sparse
 
 ### 3. 独立した検算モジュール
 
-`scripts/verify.py` が SA/CIM/CAC とは独立にカット数を再計算します。
+`modules/verify.py` が SA/CIM/CAC とは独立にカット数を再計算します。
 具体的には辺リスト版と隣接リスト版の 2 種類の方法でカウントして突き合わせ、
 符号規約や二重カウントのバグを検出します。
 
@@ -241,7 +270,7 @@ Inoue & Yoshida 2022 の Eq.(6) は真空ゆらぎ分散 `σ² = (2-η)·G/4·BW
 `γ = 42.09 W⁻¹` は物理単位(ワット)です。両者を整合させるには **ℏω**
 (1550 nm で約 1.28×10⁻¹⁹ J)を乗じる必要があります。
 
-`CIM.py` では `photon_energy_J = 1.28e-19` を config に入れてノイズ分散に
+`modules/CIM.py` では `photon_energy_J = 1.28e-19` を config に入れてノイズ分散に
 掛けています。この補正を入れないと初期ノイズが信号を吹き飛ばし、飽和項
 `γ·I_in` が暴走して系が病的な状態でロックされます。
 
@@ -249,30 +278,60 @@ Inoue & Yoshida 2022 の Eq.(6) は真空ゆらぎ分散 `σ² = (2-η)·G/4·BW
 
 ```
 .
-├── CIM.py              # CIM (Inoue & Yoshida 2022) 本体 + 単発 main()
-├── CAC.py              # CAC (Leleu et al. 2021) 本体 + 100 trial main()
-├── SA.py               # シミュレーテッドアニーリング(ベースライン)
-├── CMI_multi_run.py    # CIM の 100 trial 並列実行 + wandb ログ
-├── compare.py          # CIM / CAC / SA を 100 trial で比較して画像出力
+├── modules/                          # アルゴリズム実装本体
+│   ├── CIM.py                        # CIM (Inoue & Yoshida 2022) + 単発 main()
+│   ├── CAC.py                        # CAC (Leleu et al. 2021) + 100 trial main()
+│   ├── SB.py                         # Simulated Bifurcation (aSB/bSB/dSB)
+│   ├── SA.py                         # シミュレーテッドアニーリング
+│   ├── rulebase.py                   # 1パス貪欲法
+│   └── verify.py                     # 独立した検算モジュール
 ├── scripts/
-│   ├── verify.py       # 独立した検算モジュール
-│   ├── tune_cac.py     # CAC ハイパーパラメータ調整 (Hanyu 2025 Method B)
-│   ├── visualize.py    # ビジュアライザ (RunRecord → HTML レンダリング)
-│   ├── trace_cac.py    # CAC 1-trial トレーサー (純粋 Python, 状態記録用)
-│   └── run_cac_viz.py  # CAC 実行 + HTML ビジュアライザ生成 CLI
+│   ├── benchmarks/                   # 比較・ベンチマーク
+│   │   ├── compare.py                # CIM / CAC / SA の 100 trial 比較
+│   │   ├── compare_sb_all.py         # SB 3 バリアント横断比較
+│   │   ├── compare_sb_cim.py         # SB vs CIM
+│   │   ├── benchmark_gset.py         # G-Set 全グラフでのベンチマーク
+│   │   └── plot_benchmark_gset.py    # benchmark_gset の結果可視化
+│   ├── runners/                      # 単発/バッチ実行ランナー
+│   │   ├── CMI_multi_run.py          # CIM 100 trial + wandb
+│   │   ├── rulebase.py               # rulebase 1パス実行
+│   │   └── run_no_wandb.py           # wandb なしバッチ実行
+│   ├── tuning/                       # ハイパーパラメータ探索
+│   │   ├── tune_cac.py               # CAC Hanyu 2025 Method B
+│   │   ├── tune_cim_optuna.py        # CIM の Optuna 探索
+│   │   └── verify_optuna_best.py     # 最良 config の再評価
+│   ├── plotting/                     # 可視化・ビジュアライザ
+│   │   ├── visualize.py              # RunRecord → HTML レンダリング
+│   │   ├── trace_cac.py              # CAC 1-trial トレーサー
+│   │   ├── run_cac_viz.py            # CAC + HTML ビジュアライザ CLI
+│   │   ├── plot_amplitude_8nodes.py  # 8 頂点の振幅軌道
+│   │   ├── plot_cim_amplitudes.py    # CIM 振幅ダイナミクス
+│   │   ├── plot_cim_8vertices.py     # 8 頂点の個別軌道
+│   │   ├── zoom_cim_tail.py          # 末端ラウンドの拡大
+│   │   ├── investigate_tail_oscillation.py  # 末端振動の詳細解析
+│   │   ├── diag_cim_tail.py          # 末端振動の数値診断
+│   │   ├── plot_cut_distribution.py  # cut 分布
+│   │   ├── plot_cim_only_histogram.py
+│   │   └── plot_rulebase_score.py
+│   └── utils/                        # ユーティリティ
+│       ├── save_assignment.py
+│       ├── download_sb_papers.py
+│       └── verify_sb_determinism.py
 ├── tests/
-│   ├── test_tune_cac.py          # tune_cac.py の純粋ロジック単体テスト
-│   └── test_visualize.py         # visualize.py の単体テスト
-├── input/
-│   └── G22.txt         # Stanford G-Set ベンチマーク G22
-├── results/
-│   ├── compare_histogram.png     # 分布ヒストグラム
-│   ├── compare_running_best.png  # running best 推移
-│   ├── compare_bar.png           # 平均/最良の棒グラフ
-│   ├── tune_cac_log.csv          # Method B チューニングログ (実行時生成)
-│   └── viz/                      # ビジュアライザ HTML 出力 (実行時生成)
+│   ├── test_tune_cac.py
+│   └── test_visualize.py
+├── input/                            # Stanford G-Set ベンチマーク
+│   ├── G1.txt, G14.txt, G15.txt, G22.txt, G23.txt,
+│   ├── G32.txt, G39.txt, G55.txt, G70.txt, G77.txt, G81.txt
+├── papers/                           # 参照論文 PDF (SB 系)
+├── results/                          # 日付サブフォルダ管理 (CLAUDE.md 参照)
+│   ├── YYYY-MM-DD/                   # 日付ごとに v{N}_*.png でバージョン採番
+│   ├── benchmark_gset.csv            # 全期間共通の集計マスタ
+│   ├── tune_cac_log.csv
+│   └── viz/                          # ビジュアライザ HTML 出力
+├── CLAUDE.md                         # プロジェクト共通ルール
 ├── README.md
-├── LICENSE             # MIT
+├── LICENSE                           # MIT
 ├── pyproject.toml
 ├── uv.lock
 └── .python-version
