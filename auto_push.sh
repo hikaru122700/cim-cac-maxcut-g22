@@ -36,18 +36,42 @@ while true; do
   fi
 
   # pull (rebase + autostash で衝突を最小化)
-  pull_err=$(git pull --rebase --autostash origin "$BRANCH" 2>&1 >/dev/null) || {
+  # 失敗してもローカル commit は試みる（push だけ skip）。
+  # ネット瞬断時に変更が宙ぶらりんになるのを防ぐ。
+  pull_online=1
+  if pull_err=$(git pull --rebase --autostash origin "$BRANCH" 2>&1 >/dev/null); then
+    : # ok
+  else
     log "pull=fail: $(echo "$pull_err" | tr '\n' ' ' | cut -c1-200)"
-    sleep "$INTERVAL"
-    continue
-  }
+    pull_online=0
+  fi
 
-  # stage（ネスト worktree を除外、エラーは表示）
-  add_err=$(git add -A -- . ':!.claude/worktrees' 2>&1 >/dev/null) || {
-    log "add=fail: $(echo "$add_err" | tr '\n' ' ' | cut -c1-200)"
-    sleep "$INTERVAL"
-    continue
-  }
+  # stage（ネスト worktree と SQLite 補助ファイルを除外、エラーは表示）
+  # SQLite の *.db-journal / *.db-wal / *.db-shm は瞬間的に生成・消滅するため
+  # git add -A と race する。.gitignore でも弾いているが pathspec でも除外する。
+  add_pathspec=(
+    '--'
+    '.'
+    ':!.claude/worktrees'
+    ':!*.db-journal'
+    ':!*.db-wal'
+    ':!*.db-shm'
+  )
+  if ! add_err=$(git add -A "${add_pathspec[@]}" 2>&1 >/dev/null); then
+    # 「unable to stat」系は transient な可能性が高いので 1 回だけリトライ
+    if echo "$add_err" | grep -q "unable to stat"; then
+      sleep 1
+      if ! add_err2=$(git add -A "${add_pathspec[@]}" 2>&1 >/dev/null); then
+        log "add=fail (after retry): $(echo "$add_err2" | tr '\n' ' ' | cut -c1-200)"
+        sleep "$INTERVAL"
+        continue
+      fi
+    else
+      log "add=fail: $(echo "$add_err" | tr '\n' ' ' | cut -c1-200)"
+      sleep "$INTERVAL"
+      continue
+    fi
+  fi
 
   # 変更が無ければ静かに次へ
   if git diff --cached --quiet; then
@@ -70,7 +94,11 @@ while true; do
   fi
 
   sha="$(git rev-parse --short HEAD)"
-  if push_err=$(git push origin "$BRANCH" 2>&1 >/dev/null); then
+  if [ "$pull_online" -eq 0 ]; then
+    # pull が失敗したサイクルでは push もほぼ確実に失敗するので、無駄打ちを避ける。
+    # 次に pull 成功する tick でまとめて push される。
+    log "commit=ok sha=$sha files=$n_files push=skip(offline)"
+  elif push_err=$(git push origin "$BRANCH" 2>&1 >/dev/null); then
     log "push=ok sha=$sha files=$n_files"
   else
     log "push=fail sha=$sha: $(echo "$push_err" | tr '\n' ' ' | cut -c1-200)"
