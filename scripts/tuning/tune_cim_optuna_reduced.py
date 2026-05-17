@@ -39,10 +39,11 @@ NUM_ROUNDS: int = int(os.environ.get("NUM_ROUNDS", 1500))
 SEED_BASE: int = 0
 KNOWN_BEST: int = 13359
 
-# --- v1 best から流用する固定値(重要度 < 0.01 のパラメータ) ---
-FIXED_KAPPA: float = 253.83145431791291
-FIXED_BANDWIDTH: float = 1640034004.7080789
-FIXED_PHOTON_ENERGY: float = 6.335180067425749e-20
+# --- 固定値(論文値: 物理/装置パラメータは文献値のまま) ---
+# 論文の物理セットアップを保持した上でアルゴリズム側を最適化する、という建付け。
+FIXED_KAPPA: float = 130.0
+FIXED_BANDWIDTH: float = 1.0e9
+FIXED_PHOTON_ENERGY: float = 1.28e-19
 
 # --- v1 best の値(warm start 用) ---
 V1_BEST_PARAMS: dict[str, float] = {
