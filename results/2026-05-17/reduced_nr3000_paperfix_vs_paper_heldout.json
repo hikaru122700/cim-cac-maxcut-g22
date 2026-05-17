@@ -1,0 +1,44 @@
+{
+  "n_trials": 100,
+  "seed_range": [
+    100,
+    199
+  ],
+  "num_rounds": 3000,
+  "tag": "reduced_nr3000_paperfix",
+  "source_best_json": "results\\2026-05-17\\reduced_nr3000_paperfix_optuna_best_params.json",
+  "paper": {
+    "params": {
+      "kappa": 130.0,
+      "L": 0.05,
+      "gamma": 42.09,
+      "loss_dB": 11.0,
+      "bandwidth": 1000000000.0,
+      "photon_energy": 1.28e-19,
+      "dP_per_round": 5e-05,
+      "coupling": -0.03
+    },
+    "mean": 13276.18,
+    "std": 21.98289334914765,
+    "best": 13322,
+    "worst": 13226
+  },
+  "optuna": {
+    "params": {
+      "kappa": 130.0,
+      "bandwidth": 1000000000.0,
+      "photon_energy": 1.28e-19,
+      "L": 0.11444844307584666,
+      "gamma": 48.54184314187996,
+      "loss_dB": 17.75519467871175,
+      "dP_per_round": 6.753117166188587e-06,
+      "coupling": -0.01868308074703014
+    },
+    "mean": 13297.27,
+    "std": 16.42915396482728,
+    "best": 13330,
+    "worst": 13256
+  },
+  "diff_mean": 21.090000000000146,
+  "welch_t": 7.646262413635962
+}
