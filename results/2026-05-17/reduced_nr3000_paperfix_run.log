@@ -1,0 +1,46 @@
+Loading G22...
+  N=2000, K=19990
+  Fixed: kappa=130, bandwidth=1e+09, photon_energy=1.28e-19
+  Searching: L, gamma, loss_dB, dP_per_round, abs_coupling
+Starting Optuna (reduced): 1000 trials, 20 CIM trials each...
+[  50/1000] best mean_cut = 13295.90  (0.95 trial/s, elapsed 52.7s)
+[ 100/1000] best mean_cut = 13296.65  (1.00 trial/s, elapsed 100.3s)
+[ 150/1000] best mean_cut = 13301.50  (0.97 trial/s, elapsed 154.1s)
+[ 200/1000] best mean_cut = 13301.50  (0.94 trial/s, elapsed 211.9s)
+[ 250/1000] best mean_cut = 13305.65  (0.93 trial/s, elapsed 268.3s)
+[ 300/1000] best mean_cut = 13307.50  (0.93 trial/s, elapsed 323.3s)
+[ 350/1000] best mean_cut = 13307.50  (0.93 trial/s, elapsed 377.6s)
+[ 400/1000] best mean_cut = 13307.50  (0.93 trial/s, elapsed 432.2s)
+[ 450/1000] best mean_cut = 13307.50  (0.93 trial/s, elapsed 486.2s)
+[ 500/1000] best mean_cut = 13307.50  (0.92 trial/s, elapsed 542.6s)
+[ 550/1000] best mean_cut = 13307.50  (0.92 trial/s, elapsed 598.1s)
+[ 600/1000] best mean_cut = 13307.50  (0.92 trial/s, elapsed 653.2s)
+[ 650/1000] best mean_cut = 13307.50  (0.92 trial/s, elapsed 707.0s)
+[ 700/1000] best mean_cut = 13307.50  (0.92 trial/s, elapsed 761.9s)
+[ 750/1000] best mean_cut = 13307.50  (0.92 trial/s, elapsed 816.9s)
+[ 800/1000] best mean_cut = 13308.50  (0.92 trial/s, elapsed 872.2s)
+[ 850/1000] best mean_cut = 13308.50  (0.92 trial/s, elapsed 928.2s)
+[ 900/1000] best mean_cut = 13308.50  (0.92 trial/s, elapsed 983.5s)
+[ 950/1000] best mean_cut = 13308.50  (0.91 trial/s, elapsed 1038.6s)
+[1000/1000] best mean_cut = 13308.50  (0.91 trial/s, elapsed 1094.8s)
+
+Done in 1094.8 s (1095 ms/optuna_trial)
+============================================================
+best mean_cut    : 13308.500
+  std            : 13.655
+  best of 20     : 13329
+  worst of 20    : 13280
+best params (searched):
+  L = 0.114448
+  gamma = 48.5418
+  loss_dB = 17.7552
+  dP_per_round = 6.75312e-06
+  abs_coupling = 0.0186831
+fixed params:
+  kappa = 130
+  bandwidth = 1e+09
+  photon_energy = 1.28e-19
+============================================================
+Saved: results\2026-05-17\reduced_nr3000_paperfix_optuna_best_params.json
+Saved: results\2026-05-17\reduced_nr3000_paperfix_optuna_history.png
+importance plot skipped: Tried to import 'sklearn' but failed. Please make sure that the package is installed correctly to use this feature. Actual error: No module named 'sklearn'.
