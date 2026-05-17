@@ -1,0 +1,334 @@
+"""compare_cim_sa.py — CIM と SA の解品質を同一インスタンスで比較する。
+
+両手法を同じ trial 数だけ走らせ、解品質分布・running-best 曲線・統計サマリを
+画像と .npz に保存する。SA は modules/SA.py の Numba JIT 並列版を使うので、
+trial 数を増やしても CIM と同程度のスケールで回せる。
+
+使い方:
+    python scripts/benchmarks/compare_cim_sa.py
+    python scripts/benchmarks/compare_cim_sa.py --graph input/G22.txt --num-trials 100
+    python scripts/benchmarks/compare_cim_sa.py --graph input/G15.txt --cim-rounds 1500 --sa-iters 1000000
+
+出力:
+    results/<今日>/v{N}_compare_cim_sa_hist.png
+    results/<今日>/v{N}_compare_cim_sa_running_best.png
+    results/<今日>/v{N}_compare_cim_sa_bar.png
+    results/<今日>/v{N}_compare_cim_sa_cuts.npz
+    results/<今日>/v{N}_compare_cim_sa_summary.json
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+import time
+from datetime import date
+from pathlib import Path
+
+# プロジェクトルートを sys.path に追加（CWD = ルート前提）
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import numpy as np
+
+from modules.CIM import build_coupling_matrix, load_graph, simulate_cim_batch
+from modules.SA import simulate_sa_batch
+
+
+# 既知ベスト（G-set 系）
+KNOWN_BEST: dict[str, int] = {
+    "G15": 3050,
+    "G22": 13359,
+    "G55": 10299,
+    "G70": 9591,
+}
+
+
+# ============================================================
+#  日本語フォント・プロットスタイル設定
+# ============================================================
+def setup_plot_style() -> None:
+    plt.rcParams["font.family"] = "Yu Gothic"
+    plt.rcParams["axes.unicode_minus"] = False
+
+
+def apply_ticks_inward(ax: plt.Axes) -> None:
+    ax.tick_params(direction="in", which="both", top=True, right=True)
+
+
+# ============================================================
+#  出力ディレクトリ・バージョン採番
+# ============================================================
+def get_output_dir() -> Path:
+    out = Path("results") / date.today().isoformat()
+    out.mkdir(parents=True, exist_ok=True)
+    return out
+
+
+def next_version(out_dir: Path, stem: str) -> int:
+    """同日に既に存在する v{N}_<stem>_* を見て次の N を返す。"""
+    existing = list(out_dir.glob(f"v*_{stem}_*"))
+    max_v = 0
+    for p in existing:
+        head = p.name.split("_", 1)[0]
+        if head.startswith("v") and head[1:].isdigit():
+            max_v = max(max_v, int(head[1:]))
+    return max_v + 1
+
+
+# ============================================================
+#  メイン
+# ============================================================
+def main() -> None:
+    parser = argparse.ArgumentParser(description="CIM vs SA 比較ベンチ")
+    parser.add_argument("--graph", default="input/G22.txt", help="入力グラフファイル")
+    parser.add_argument("--num-trials", type=int, default=100, help="各手法の trial 数")
+    parser.add_argument("--seed-base", type=int, default=0, help="seed の起点")
+    parser.add_argument("--cim-rounds", type=int, default=1500, help="CIM の num_rounds")
+    parser.add_argument("--cim-coupling", type=float, default=-0.03, help="CIM の J スケール")
+    parser.add_argument("--sa-iters", type=int, default=500_000, help="SA の 1 trial 反復数")
+    parser.add_argument("--sa-t-start", type=float, default=2.0, help="SA 初期温度")
+    parser.add_argument("--sa-t-end", type=float, default=0.001, help="SA 終端温度")
+    parser.add_argument("--known-best", type=int, default=None, help="既知ベスト（未指定なら自動）")
+    args = parser.parse_args()
+
+    setup_plot_style()
+
+    graph_path = Path(args.graph)
+    graph_name = graph_path.stem
+
+    # ==== グラフ読み込み（重み対応） ====
+    n, k_edges, _adj, edges, weights = load_graph(str(graph_path), return_weights=True)
+    use_weights = any(w != 1.0 for w in weights)
+    print(f"Graph: {graph_path} N={n} K={k_edges} weighted={use_weights}")
+
+    known_best = args.known_best if args.known_best is not None else KNOWN_BEST.get(graph_name)
+    if known_best is not None:
+        print(f"Known best: {known_best}")
+
+    seeds = np.arange(args.seed_base, args.seed_base + args.num_trials, dtype=np.int64)
+
+    # ==== CIM 実行 ====
+    print(f"\n[CIM] {args.num_trials} trials  num_rounds={args.cim_rounds}  J={args.cim_coupling}")
+    J_cim = build_coupling_matrix(
+        n, edges, args.cim_coupling, weights=(weights if use_weights else None)
+    )
+    cim_params = dict(
+        kappa=130.0,
+        L=0.05,
+        gamma=42.09,
+        eta=10.0 ** (-1.1),
+        bandwidth=1.0e9,
+        photon_energy=1.28e-19,
+        dP_per_round=0.05e-3,
+    )
+    t0 = time.time()
+    cim_cuts, _cim_signs = simulate_cim_batch(
+        n=n,
+        J=J_cim,
+        edges=edges,
+        num_rounds=args.cim_rounds,
+        num_trials=args.num_trials,
+        seeds=seeds,
+        weights=(weights if use_weights else None),
+        **cim_params,
+    )
+    cim_time = time.time() - t0
+    print(
+        f"  time={cim_time:.2f}s ({cim_time / args.num_trials * 1000:.1f} ms/trial)  "
+        f"mean={cim_cuts.mean():.1f}  best={cim_cuts.max():.0f}"
+    )
+
+    # ==== SA 実行 ====
+    print(f"\n[SA]  {args.num_trials} trials  num_iters={args.sa_iters}  T:{args.sa_t_start}→{args.sa_t_end}")
+    t0 = time.time()
+    sa_cuts, _sa_signs = simulate_sa_batch(
+        n=n,
+        edges=edges,
+        weights=(weights if use_weights else None),
+        num_iters=args.sa_iters,
+        num_trials=args.num_trials,
+        t_start=args.sa_t_start,
+        t_end=args.sa_t_end,
+        seeds=seeds,
+    )
+    sa_time = time.time() - t0
+    print(
+        f"  time={sa_time:.2f}s ({sa_time / args.num_trials * 1000:.1f} ms/trial)  "
+        f"mean={sa_cuts.mean():.1f}  best={sa_cuts.max():.0f}"
+    )
+
+    # ==== 統計サマリ ====
+    results = {"CIM": cim_cuts, "SA": sa_cuts}
+    times = {"CIM": cim_time, "SA": sa_time}
+
+    print("\n" + "=" * 78)
+    header = f"{'Method':<6} {'Mean':>10} {'Best':>10} {'Worst':>10} {'Std':>8} {'Time[s]':>10}"
+    if known_best is not None:
+        header += f" {'Ratio':>8}"
+    print(header)
+    print("-" * 78)
+    for name in ["CIM", "SA"]:
+        cuts = results[name]
+        line = (
+            f"{name:<6} {cuts.mean():>10.1f} {cuts.max():>10.1f} {cuts.min():>10.1f} "
+            f"{cuts.std():>8.1f} {times[name]:>10.2f}"
+        )
+        if known_best is not None:
+            line += f" {cuts.max() / known_best:>8.4f}"
+        print(line)
+    print("=" * 78)
+
+    # ==== 出力ディレクトリ ====
+    out_dir = get_output_dir()
+    stem = f"compare_cim_sa_{graph_name}"
+    v = next_version(out_dir, stem)
+    prefix = f"v{v}_{stem}"
+    print(f"\n[output] dir={out_dir}  version=v{v}")
+
+    colors = {"CIM": "#1f77b4", "SA": "#2ca02c"}
+
+    # --- Figure 1: ヒストグラム ---
+    fig1, axes = plt.subplots(1, 2, figsize=(12, 4.6))
+    all_cuts = np.concatenate([cim_cuts, sa_cuts])
+    x_min = float(all_cuts.min()) - max(20, abs(all_cuts.min()) * 0.005)
+    x_max = float(all_cuts.max()) + max(20, abs(all_cuts.max()) * 0.005)
+    if known_best is not None:
+        x_max = max(x_max, known_best + 10)
+    bins = np.linspace(x_min, x_max, 30)
+
+    for ax, name in zip(axes, ["CIM", "SA"]):
+        cuts = results[name]
+        ax.hist(cuts, bins=bins, color=colors[name], alpha=0.75, edgecolor="black", linewidth=0.5)
+        ax.axvline(cuts.mean(), color="black", linestyle=":", linewidth=1.2,
+                   label=f"平均 {cuts.mean():.0f}")
+        if known_best is not None:
+            ax.axvline(known_best, color="red", linestyle="--", linewidth=1.2,
+                       label=f"既知ベスト {known_best}")
+        ax.set_title(
+            f"{name}  時間: {times[name]:.1f}s  平均: {cuts.mean():.0f}  最良: {cuts.max():.0f}",
+            fontsize=11,
+        )
+        ax.set_xlabel("カット値")
+        ax.set_ylabel("頻度")
+        ax.set_xlim(x_min, x_max)
+        ax.grid(axis="y", alpha=0.25)
+        ax.legend(fontsize=9, loc="upper left")
+        apply_ticks_inward(ax)
+    fig1.suptitle(
+        f"CIM vs SA — {graph_name} (各 {args.num_trials} trial)",
+        fontsize=13,
+    )
+    fig1.tight_layout()
+    hist_path = out_dir / f"{prefix}_hist.png"
+    fig1.savefig(hist_path, dpi=150)
+    plt.close(fig1)
+    print(f"  saved: {hist_path}")
+
+    # --- Figure 2: running best ---
+    fig2, ax2 = plt.subplots(figsize=(10, 5.4))
+    for name in ["CIM", "SA"]:
+        cuts = results[name]
+        running = np.maximum.accumulate(cuts)
+        ax2.plot(
+            np.arange(1, args.num_trials + 1),
+            running,
+            label=f"{name}  (壁時計 {times[name]:.1f}s)",
+            color=colors[name],
+            linewidth=2.0,
+        )
+    if known_best is not None:
+        ax2.axhline(known_best, color="red", linestyle="--", linewidth=1.2,
+                    label=f"既知ベスト {known_best}")
+    ax2.set_xlabel("trial 数")
+    ax2.set_ylabel("これまでの最良カット")
+    ax2.set_title(f"trial 数に対する累積最良カット ({graph_name})")
+    ax2.legend(loc="lower right")
+    ax2.grid(alpha=0.3)
+    apply_ticks_inward(ax2)
+    fig2.tight_layout()
+    running_path = out_dir / f"{prefix}_running_best.png"
+    fig2.savefig(running_path, dpi=150)
+    plt.close(fig2)
+    print(f"  saved: {running_path}")
+
+    # --- Figure 3: bar (mean & best) ---
+    fig3, ax3 = plt.subplots(figsize=(7, 5))
+    methods = ["CIM", "SA"]
+    means = [float(results[m].mean()) for m in methods]
+    bests = [float(results[m].max()) for m in methods]
+    x = np.arange(len(methods))
+    width = 0.35
+    ax3.bar(x - width / 2, means, width, label="平均",
+            color=[colors[m] for m in methods], alpha=0.55, edgecolor="black", linewidth=0.5)
+    ax3.bar(x + width / 2, bests, width, label="最良",
+            color=[colors[m] for m in methods], alpha=1.0, edgecolor="black", linewidth=0.5)
+    if known_best is not None:
+        ax3.axhline(known_best, color="red", linestyle="--", linewidth=1.2,
+                    label=f"既知ベスト {known_best}")
+    ax3.set_xticks(x)
+    ax3.set_xticklabels(methods)
+    ax3.set_ylabel("カット値")
+    ax3.set_title(f"{args.num_trials} trial における平均と最良 ({graph_name})")
+    y_min = min(means) - max(50, abs(min(means)) * 0.005)
+    y_max = (known_best + 30) if known_best is not None else max(bests) * 1.005
+    ax3.set_ylim(y_min, y_max)
+    ax3.legend(loc="lower right")
+    ax3.grid(axis="y", alpha=0.3)
+    for i, _m in enumerate(methods):
+        ax3.text(i - width / 2, means[i] + (y_max - y_min) * 0.005, f"{means[i]:.0f}",
+                 ha="center", fontsize=9)
+        ax3.text(i + width / 2, bests[i] + (y_max - y_min) * 0.005, f"{bests[i]:.0f}",
+                 ha="center", fontsize=9)
+    apply_ticks_inward(ax3)
+    fig3.tight_layout()
+    bar_path = out_dir / f"{prefix}_bar.png"
+    fig3.savefig(bar_path, dpi=150)
+    plt.close(fig3)
+    print(f"  saved: {bar_path}")
+
+    # --- 生データ ---
+    npz_path = out_dir / f"{prefix}_cuts.npz"
+    np.savez(npz_path, cim_cuts=cim_cuts, sa_cuts=sa_cuts, seeds=seeds)
+    print(f"  saved: {npz_path}")
+
+    # --- 設定と統計を JSON で保存 ---
+    summary = {
+        "graph": str(graph_path),
+        "n": n,
+        "k": k_edges,
+        "weighted": use_weights,
+        "num_trials": args.num_trials,
+        "seed_base": args.seed_base,
+        "known_best": known_best,
+        "cim": {
+            "num_rounds": args.cim_rounds,
+            "coupling": args.cim_coupling,
+            **{kk: float(vv) for kk, vv in cim_params.items()},
+            "mean": float(cim_cuts.mean()),
+            "best": float(cim_cuts.max()),
+            "worst": float(cim_cuts.min()),
+            "std": float(cim_cuts.std()),
+            "time_sec": cim_time,
+        },
+        "sa": {
+            "num_iters": args.sa_iters,
+            "t_start": args.sa_t_start,
+            "t_end": args.sa_t_end,
+            "mean": float(sa_cuts.mean()),
+            "best": float(sa_cuts.max()),
+            "worst": float(sa_cuts.min()),
+            "std": float(sa_cuts.std()),
+            "time_sec": sa_time,
+        },
+    }
+    json_path = out_dir / f"{prefix}_summary.json"
+    json_path.write_text(json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
+    print(f"  saved: {json_path}")
+
+
+if __name__ == "__main__":
+    main()
