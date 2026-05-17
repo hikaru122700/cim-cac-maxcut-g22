@@ -48,32 +48,57 @@ def main() -> None:
     running_best = np.fmax.accumulate(np.where(np.isnan(values), -np.inf, values))
     running_best = np.where(np.isfinite(running_best), running_best, np.nan)
 
-    fig, ax = plt.subplots(figsize=(11, 6), dpi=130)
+    best_val = float(np.nanmax(values))
 
-    ax.plot(
-        idx, values, color="#1f77b4", linewidth=0.9, alpha=0.65,
-        label="各試行の mean_cut",
+    fig, (ax_top, ax_bot) = plt.subplots(
+        2, 1, figsize=(11, 8), dpi=130,
+        gridspec_kw={"height_ratios": [1.0, 1.6]},
+        sharex=True,
     )
-    ax.plot(
-        idx, running_best, color="#d62728", linewidth=2.2,
+
+    # --- 上段: 全試行の生スコア (フルスケール) ---
+    ax_top.plot(
+        idx, values, color="#1f77b4", linewidth=0.7, alpha=0.55,
+        label="各試行の mean_cut (生スコア)",
+    )
+    ax_top.plot(
+        idx, running_best, color="#d62728", linewidth=2.0,
         label="これまでの最良 mean_cut",
     )
-    ax.axhline(
-        ref_paper, color="black", linestyle=":", linewidth=1.2,
+    ax_top.axhline(ref_paper, color="black", linestyle=":", linewidth=1.2)
+    ax_top.axhline(ref_best, color="goldenrod", linestyle="--", linewidth=1.3)
+    ax_top.set_ylabel("Optuna に返したスコア\n(フルスケール)")
+    ax_top.set_title(f"{title}\n最終 best = {best_val:.2f} / {len(values)} trials")
+    ax_top.legend(loc="lower right", fontsize=9)
+    ax_top.grid(alpha=0.3)
+    ax_top.tick_params(direction="in", which="both", top=True, right=True)
+
+    # --- 下段: ズーム (running best の上昇が見える領域) ---
+    ymin = max(13200.0, float(np.nanmin(running_best)) - 5.0)
+    ymax = ref_best + 5.0
+    ax_bot.plot(
+        idx, values, color="#1f77b4", linewidth=0.6, alpha=0.35,
+        label="各試行の mean_cut",
+    )
+    ax_bot.plot(
+        idx, running_best, color="#d62728", linewidth=2.4,
+        label="これまでの最良 mean_cut",
+    )
+    ax_bot.axhline(
+        ref_paper, color="black", linestyle=":", linewidth=1.3,
         label=f"論文 Fig.8 平均 {ref_paper:.0f}",
     )
-    ax.axhline(
-        ref_best, color="goldenrod", linestyle="--", linewidth=1.3,
+    ax_bot.axhline(
+        ref_best, color="goldenrod", linestyle="--", linewidth=1.4,
         label=f"既知最良値 {ref_best:.0f}",
     )
+    ax_bot.set_xlabel("Optuna 試行番号")
+    ax_bot.set_ylabel("Optuna に返したスコア\n(ズーム)")
+    ax_bot.set_ylim(ymin, ymax)
+    ax_bot.legend(loc="lower right", fontsize=9)
+    ax_bot.grid(alpha=0.3)
+    ax_bot.tick_params(direction="in", which="both", top=True, right=True)
 
-    best_val = float(np.nanmax(values))
-    ax.set_xlabel("Optuna 試行番号")
-    ax.set_ylabel("Optuna に返したスコア (mean best_cut)")
-    ax.set_title(f"{title}\n最終 best = {best_val:.2f} / {len(values)} trials")
-    ax.legend(loc="lower right", fontsize=10)
-    ax.grid(alpha=0.3)
-    ax.tick_params(direction="in", which="both", top=True, right=True)
     fig.tight_layout()
 
     default_out = f"results/{study_name}_line.png"
