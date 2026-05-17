@@ -1,0 +1,44 @@
+{
+  "n_trials": 100,
+  "seed_range": [
+    100,
+    199
+  ],
+  "num_rounds": 3000,
+  "tag": "reduced_nr3000",
+  "source_best_json": "results\\2026-05-17\\reduced_nr3000_optuna_best_params.json",
+  "paper": {
+    "params": {
+      "kappa": 130.0,
+      "L": 0.05,
+      "gamma": 42.09,
+      "loss_dB": 11.0,
+      "bandwidth": 1000000000.0,
+      "photon_energy": 1.28e-19,
+      "dP_per_round": 5e-05,
+      "coupling": -0.03
+    },
+    "mean": 13276.18,
+    "std": 21.98289334914765,
+    "best": 13322,
+    "worst": 13226
+  },
+  "optuna": {
+    "params": {
+      "kappa": 253.83145431791291,
+      "bandwidth": 1640034004.7080789,
+      "photon_energy": 6.335180067425749e-20,
+      "L": 0.023393756916293054,
+      "gamma": 182.97008457438463,
+      "loss_dB": 10.11567756263879,
+      "dP_per_round": 1.7703799769062957e-05,
+      "coupling": -0.05021960716519533
+    },
+    "mean": 13300.11,
+    "std": 15.425235816673922,
+    "best": 13344,
+    "worst": 13263
+  },
+  "diff_mean": 23.93000000000029,
+  "welch_t": 8.866185281752456
+}

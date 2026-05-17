@@ -1,0 +1,11 @@
+N=2000, K=19990, num_rounds=3000, n_trials=100, seeds=100..199
+  optuna source: results\2026-05-17\reduced_nr3000_optuna_best_params.json
+  tag: reduced_nr3000
+
+paper       mean=13276.18  std=21.98  best=13322.0  worst=13226.0  median=13274.0  time=4.60s
+optuna      mean=13300.11  std=15.43  best=13344.0  worst=13263.0  median=13300.0  time=3.45s
+
+diff (optuna - paper): +23.93
+Welch t-statistic: 8.866  (|t| > 2 ‚Å 95%, > 2.6 ‚Å 99% —LˆÓ)
+Saved: results\2026-05-17\reduced_nr3000_vs_paper_heldout.png
+Saved: results\2026-05-17\reduced_nr3000_vs_paper_heldout.json
