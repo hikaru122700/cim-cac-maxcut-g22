@@ -1,0 +1,24 @@
+{
+  "best_value_mean_cut": 13308.5,
+  "best_params": {
+    "L": 0.11444844307584666,
+    "gamma": 48.54184314187996,
+    "loss_dB": 17.75519467871175,
+    "dP_per_round": 6.753117166188587e-06,
+    "abs_coupling": 0.01868308074703014
+  },
+  "fixed_params": {
+    "kappa": 130.0,
+    "bandwidth": 1000000000.0,
+    "photon_energy": 1.28e-19
+  },
+  "best_std": 13.654669530969983,
+  "best_max": 13329,
+  "best_min": 13280,
+  "known_best": 13359,
+  "n_optuna_trials": 1000,
+  "n_cim_trials_per_optuna": 20,
+  "num_rounds": 3000,
+  "elapsed_sec": 1094.8330187797546,
+  "tag": "reduced_nr3000_paperfix"
+}
