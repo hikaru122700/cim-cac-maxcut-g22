@@ -1,0 +1,46 @@
+Loading G22...
+  N=2000, K=19990
+  Fixed: kappa=253.8, bandwidth=1.64e+09, photon_energy=6.335e-20
+  Searching: L, gamma, loss_dB, dP_per_round, abs_coupling
+Starting Optuna (reduced): 1000 trials, 20 CIM trials each...
+[  50/1000] best mean_cut = 13307.35  (1.04 trial/s, elapsed 48.1s)
+[ 100/1000] best mean_cut = 13307.35  (1.05 trial/s, elapsed 94.9s)
+[ 150/1000] best mean_cut = 13307.35  (1.05 trial/s, elapsed 142.3s)
+[ 200/1000] best mean_cut = 13307.35  (1.06 trial/s, elapsed 189.1s)
+[ 250/1000] best mean_cut = 13307.35  (1.04 trial/s, elapsed 239.8s)
+[ 300/1000] best mean_cut = 13307.75  (1.03 trial/s, elapsed 292.5s)
+[ 350/1000] best mean_cut = 13307.75  (0.88 trial/s, elapsed 399.3s)
+[ 400/1000] best mean_cut = 13307.75  (0.79 trial/s, elapsed 506.5s)
+[ 450/1000] best mean_cut = 13307.75  (0.81 trial/s, elapsed 554.1s)
+[ 500/1000] best mean_cut = 13307.75  (0.83 trial/s, elapsed 604.2s)
+[ 550/1000] best mean_cut = 13307.75  (0.84 trial/s, elapsed 655.4s)
+[ 600/1000] best mean_cut = 13307.75  (0.85 trial/s, elapsed 706.8s)
+[ 650/1000] best mean_cut = 13307.75  (0.86 trial/s, elapsed 758.1s)
+[ 700/1000] best mean_cut = 13307.75  (0.87 trial/s, elapsed 807.6s)
+[ 750/1000] best mean_cut = 13307.75  (0.88 trial/s, elapsed 856.4s)
+[ 800/1000] best mean_cut = 13307.75  (0.88 trial/s, elapsed 905.8s)
+[ 850/1000] best mean_cut = 13307.75  (0.89 trial/s, elapsed 958.1s)
+[ 900/1000] best mean_cut = 13307.75  (0.88 trial/s, elapsed 1017.3s)
+[ 950/1000] best mean_cut = 13307.75  (0.88 trial/s, elapsed 1076.0s)
+[1000/1000] best mean_cut = 13307.75  (0.88 trial/s, elapsed 1135.7s)
+
+Done in 1135.7 s (1136 ms/optuna_trial)
+============================================================
+best mean_cut    : 13307.750
+  std            : 13.740
+  best of 20     : 13343
+  worst of 20    : 13286
+best params (searched):
+  L = 0.0233938
+  gamma = 182.97
+  loss_dB = 10.1157
+  dP_per_round = 1.77038e-05
+  abs_coupling = 0.0502196
+fixed params:
+  kappa = 253.831
+  bandwidth = 1.64003e+09
+  photon_energy = 6.33518e-20
+============================================================
+Saved: results\2026-05-17\reduced_nr3000_optuna_best_params.json
+Saved: results\2026-05-17\reduced_nr3000_optuna_history.png
+importance plot skipped: Tried to import 'sklearn' but failed. Please make sure that the package is installed correctly to use this feature. Actual error: No module named 'sklearn'.
