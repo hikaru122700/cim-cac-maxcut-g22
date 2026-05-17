@@ -45,13 +45,14 @@ FIXED_KAPPA: float = 130.0
 FIXED_BANDWIDTH: float = 1.0e9
 FIXED_PHOTON_ENERGY: float = 1.28e-19
 
-# --- v1 best の値(warm start 用) ---
-V1_BEST_PARAMS: dict[str, float] = {
-    "L": 0.027829145901910754,
-    "gamma": 7.2102623149028435,
-    "loss_dB": 10.369319116625467,
-    "dP_per_round": 1.553743564765986e-05,
-    "abs_coupling": 0.04942805518421356,
+# --- warm start 用(論文値の 5 パラ) ---
+# 固定パラメータと整合させた論文ベースラインを最初の trial として評価する。
+PAPER_WARM_START: dict[str, float] = {
+    "L": 0.05,
+    "gamma": 42.09,
+    "loss_dB": 11.0,
+    "dP_per_round": 5.0e-5,
+    "abs_coupling": 0.03,
 }
 
 OUT_DIR: Path = Path(os.environ.get("OUT_DIR", "results/2026-05-17"))
