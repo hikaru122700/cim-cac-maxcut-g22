@@ -46,6 +46,19 @@ while true; do
     pull_online=0
   fi
 
+  # ネット復帰後の catch-up: 過去 tick で offline 中に作った未 push コミットを
+  # ここでまとめて push する（新しい diff が無くても push される）。
+  if [ "$pull_online" -eq 1 ]; then
+    ahead=$(git rev-list --count '@{u}..HEAD' 2>/dev/null || echo 0)
+    if [ "$ahead" -gt 0 ]; then
+      if catchup_err=$(git push origin "$BRANCH" 2>&1 >/dev/null); then
+        log "push=ok (catchup $ahead commits)"
+      else
+        log "push=fail (catchup): $(echo "$catchup_err" | tr '\n' ' ' | cut -c1-200)"
+      fi
+    fi
+  fi
+
   # stage（ネスト worktree と SQLite 補助ファイルを除外、エラーは表示）
   # SQLite の *.db-journal / *.db-wal / *.db-shm は瞬間的に生成・消滅するため
   # git add -A と race する。.gitignore でも弾いているが pathspec でも除外する。
