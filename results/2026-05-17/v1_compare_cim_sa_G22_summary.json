@@ -1,0 +1,35 @@
+{
+  "graph": "input\\G22.txt",
+  "n": 2000,
+  "k": 19990,
+  "weighted": false,
+  "num_trials": 5,
+  "seed_base": 0,
+  "known_best": 13359,
+  "cim": {
+    "num_rounds": 200,
+    "coupling": -0.03,
+    "kappa": 130.0,
+    "L": 0.05,
+    "gamma": 42.09,
+    "eta": 0.07943282347242814,
+    "bandwidth": 1000000000.0,
+    "photon_energy": 1.28e-19,
+    "dP_per_round": 5e-05,
+    "mean": 11587.0,
+    "best": 11761.0,
+    "worst": 11481.0,
+    "std": 99.67747990393818,
+    "time_sec": 1.3312480449676514
+  },
+  "sa": {
+    "num_iters": 50000,
+    "t_start": 2.0,
+    "t_end": 0.001,
+    "mean": 13019.6,
+    "best": 13043.0,
+    "worst": 12970.0,
+    "std": 25.69513572643663,
+    "time_sec": 1.9565155506134033
+  }
+}
