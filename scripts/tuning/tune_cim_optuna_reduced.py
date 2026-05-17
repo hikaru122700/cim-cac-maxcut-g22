@@ -122,8 +122,8 @@ def main() -> None:
         load_if_exists=True,
     )
 
-    # warm start: v1 best を最初に enqueue
-    study.enqueue_trial(V1_BEST_PARAMS)
+    # warm start: 論文値の 5 パラを最初に enqueue
+    study.enqueue_trial(PAPER_WARM_START)
 
     t0 = time.time()
     log_every = 50
