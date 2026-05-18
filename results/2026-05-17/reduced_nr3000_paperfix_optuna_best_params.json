@@ -7,7 +7,6 @@
     "dP_per_round": 6.753117166188587e-06,
     "abs_coupling": 0.01868308074703014
   },
-  
   "fixed_params": {
     "kappa": 130.0,
     "bandwidth": 1000000000.0,
