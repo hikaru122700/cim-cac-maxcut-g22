@@ -1,0 +1,7 @@
+{
+  "30": {
+    "max_cut_optimized": 11607,
+    "max_cut_baseline": 10296,
+    "elapsed_sec": 22.036235570907593
+  }
+}
