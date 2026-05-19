@@ -31,7 +31,7 @@ from scipy.sparse._sparsetools import csr_matvec
 
 from modules.CIM import build_coupling_matrix, load_graph
 
-plt.rcParams["font.family"] = ["Yu Gothic", "Meiryo", "MS Gothic", "sans-serif"]
+plt.rcParams["font.family"] = ["Yu Gothic", "Meiryo", "MS Gothic", "Noto Sans CJK JP", "sans-serif"]
 plt.rcParams["axes.unicode_minus"] = False
 
 N_OPTUNA_TRIALS_PER_PHASE = 100
