@@ -119,7 +119,7 @@ def simulate_full_with_phase_params(
     phase_params_list: list[PhaseParams],
     seed: int,
 ) -> tuple[np.ndarray, list[int], list[np.ndarray]]:
-    """各フェーズに異なるパラメータを使用してシミュレーションを実行。"""
+    """各フェーズに異なるパラメータを使用してシミュレーションを実行（単発、振幅履歴付き）。"""
     rng = np.random.default_rng(seed)
     c = np.zeros(n, dtype=np.float64)
 
@@ -138,6 +138,46 @@ def simulate_full_with_phase_params(
         all_histories.append(history)
 
     return c, all_cuts, all_histories
+
+
+N_FINAL_EVAL_SEEDS = 100
+FINAL_EVAL_SEED_START = 100
+
+
+def evaluate_full_with_phase_params_multi_seed(
+    n: int,
+    edges: list,
+    edges_np: np.ndarray,
+    phase_params_list: list[PhaseParams],
+    n_seeds: int = N_FINAL_EVAL_SEEDS,
+    seed_start: int = FINAL_EVAL_SEED_START,
+) -> np.ndarray:
+    """各フェーズに異なるパラメータを使用、複数 held-out シードで評価。
+
+    各シードについて全フェーズを通したシミュレーションを実行し、
+    最終的な全体ベストカット(全フェーズを通した最大cut)を返す。
+    """
+    overall_best_cuts = np.zeros(n_seeds, dtype=np.int64)
+
+    for seed_idx in range(n_seeds):
+        rng = np.random.default_rng(seed_start + seed_idx)
+        c = np.zeros(n, dtype=np.float64)
+        best_overall = 0
+
+        for phase_idx, params in enumerate(phase_params_list):
+            J = build_coupling_matrix(n, edges, params.coupling)
+            start_round = phase_idx * ROUNDS_PER_PHASE
+            end_round = (phase_idx + 1) * ROUNDS_PER_PHASE
+
+            c, best_cut, _ = simulate_phase(
+                n, J, edges_np, c, start_round, end_round, params, rng
+            )
+            if best_cut > best_overall:
+                best_overall = best_cut
+
+        overall_best_cuts[seed_idx] = best_overall
+
+    return overall_best_cuts
 
 
 def run_batch_for_phase(
@@ -474,21 +514,33 @@ def run_optimization(total_rounds: int, out_dir: Path):
     elapsed = time.time() - t0
     print(f"\n最適化完了: {elapsed:.1f}秒")
 
-    print("\n最適化パラメータでシミュレーション実行中...")
+    print("\n最適化パラメータでシミュレーション実行中（振幅履歴用、seed=42）...")
     c_final_opt, cuts_opt, histories_opt = simulate_full_with_phase_params(
         n, edges, edges_np, optimized_params, seed=42
     )
 
-    print("ベースラインパラメータでシミュレーション実行中...")
+    print("ベースラインパラメータでシミュレーション実行中（振幅履歴用、seed=42）...")
     baseline_list = [baseline_params] * n_phases
     c_final_base, cuts_base, histories_base = simulate_full_with_phase_params(
         n, edges, edges_np, baseline_list, seed=42
     )
 
-    print(f"\n結果サマリー ({total_rounds}ラウンド):")
-    print(f"  最適化パラメータでの最良カット: {max(cuts_opt)}")
-    print(f"  ベースラインでの最良カット: {max(cuts_base)}")
-    print(f"  既知最良値: {KNOWN_BEST}")
+    print(f"\n最終評価実行中: held-out seeds {FINAL_EVAL_SEED_START}..{FINAL_EVAL_SEED_START + N_FINAL_EVAL_SEEDS - 1} ({N_FINAL_EVAL_SEEDS}個)")
+    print("  最適化パラメータを評価中...")
+    final_cuts_opt = evaluate_full_with_phase_params_multi_seed(
+        n, edges, edges_np, optimized_params
+    )
+    print("  ベースラインパラメータを評価中...")
+    final_cuts_base = evaluate_full_with_phase_params_multi_seed(
+        n, edges, edges_np, baseline_list
+    )
+
+    print(f"\n結果サマリー ({total_rounds}ラウンド, held-out {N_FINAL_EVAL_SEEDS}シード):")
+    print(f"  最適化パラメータ: mean={final_cuts_opt.mean():.2f}, std={final_cuts_opt.std():.2f}, "
+          f"max={final_cuts_opt.max()}, min={final_cuts_opt.min()}")
+    print(f"  ベースライン    : mean={final_cuts_base.mean():.2f}, std={final_cuts_base.std():.2f}, "
+          f"max={final_cuts_base.max()}, min={final_cuts_base.min()}")
+    print(f"  既知最良値      : {KNOWN_BEST}")
 
     subdir = out_dir / f"rounds_{total_rounds}"
     subdir.mkdir(parents=True, exist_ok=True)
@@ -506,8 +558,20 @@ def run_optimization(total_rounds: int, out_dir: Path):
         "baseline_params": baseline_params._asdict(),
         "phase_params": [p._asdict() for p in optimized_params],
         "phase_best_values": phase_best_values,
-        "cuts_optimized": cuts_opt,
-        "cuts_baseline": cuts_base,
+        "cuts_optimized_phasewise_seed42": cuts_opt,
+        "cuts_baseline_phasewise_seed42": cuts_base,
+        "final_eval_n_seeds": N_FINAL_EVAL_SEEDS,
+        "final_eval_seed_start": FINAL_EVAL_SEED_START,
+        "final_cuts_optimized": final_cuts_opt.tolist(),
+        "final_cuts_baseline": final_cuts_base.tolist(),
+        "final_optimized_mean": float(final_cuts_opt.mean()),
+        "final_optimized_std": float(final_cuts_opt.std()),
+        "final_optimized_max": int(final_cuts_opt.max()),
+        "final_optimized_min": int(final_cuts_opt.min()),
+        "final_baseline_mean": float(final_cuts_base.mean()),
+        "final_baseline_std": float(final_cuts_base.std()),
+        "final_baseline_max": int(final_cuts_base.max()),
+        "final_baseline_min": int(final_cuts_base.min()),
         "known_best": KNOWN_BEST,
     }
 
@@ -541,19 +605,25 @@ def main():
         all_results[total_rounds] = results
 
     print("\n" + "=" * 70)
-    print("全ラウンド数での結果サマリー")
+    print(f"全ラウンド数での結果サマリー (held-out {N_FINAL_EVAL_SEEDS}シード平均)")
     print("=" * 70)
     for total_rounds, res in all_results.items():
         print(f"  {total_rounds:>5} ラウンド: "
-              f"最適化={max(res['cuts_optimized'])}, "
-              f"ベースライン={max(res['cuts_baseline'])}, "
+              f"最適化={res['final_optimized_mean']:.1f}±{res['final_optimized_std']:.1f} "
+              f"(max={res['final_optimized_max']}), "
+              f"ベースライン={res['final_baseline_mean']:.1f}±{res['final_baseline_std']:.1f} "
+              f"(max={res['final_baseline_max']}), "
               f"時間={res['elapsed_sec']:.1f}秒")
 
     summary_path = out_dir / "per_round_summary.json"
     summary_data = {
         str(k): {
-            "max_cut_optimized": max(v["cuts_optimized"]),
-            "max_cut_baseline": max(v["cuts_baseline"]),
+            "final_optimized_mean": v["final_optimized_mean"],
+            "final_optimized_std": v["final_optimized_std"],
+            "final_optimized_max": v["final_optimized_max"],
+            "final_baseline_mean": v["final_baseline_mean"],
+            "final_baseline_std": v["final_baseline_std"],
+            "final_baseline_max": v["final_baseline_max"],
             "elapsed_sec": v["elapsed_sec"],
         }
         for k, v in all_results.items()
