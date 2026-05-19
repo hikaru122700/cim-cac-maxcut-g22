@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SA(シミュレーテッドアニーリング)とPT-ICM — 直感重視の解説</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Source+Code+Pro&display=swap');
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Noto Sans JP', 'Yu Gothic', 'Hiragino Kaku Gothic Pro', sans-serif;
+      line-height: 1.8;
+      color: #333;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      background: #fff;
+    }
+
+    h1 {
+      color: #1a5f7a;
+      border-bottom: 3px solid #1a5f7a;
+      padding-bottom: 10px;
+      font-size: 1.8em;
+    }
+
+    h2 {
+      color: #2c3e50;
+      border-left: 5px solid #1a5f7a;
+      padding-left: 15px;
+      margin-top: 40px;
+      font-size: 1.4em;
+    }
+
+    h3 {
+      color: #34495e;
+      font-size: 1.2em;
+      margin-top: 25px;
+    }
+
+    .summary-box {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px 25px;
+      border-radius: 10px;
+      font-size: 1.1em;
+      margin: 20px 0;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .analogy-box {
+      background: #fff3e0;
+      border-left: 5px solid #ff9800;
+      padding: 15px 20px;
+      margin: 20px 0;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .key-point {
+      background: #e3f2fd;
+      border: 1px solid #2196f3;
+      padding: 15px 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+    }
+
+    .key-point strong {
+      color: #1565c0;
+    }
+
+    pre {
+      background: #2d3748;
+      color: #e2e8f0;
+      padding: 20px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-family: 'Source Code Pro', 'Consolas', monospace;
+      font-size: 0.9em;
+      line-height: 1.5;
+    }
+
+    code {
+      font-family: 'Source Code Pro', 'Consolas', monospace;
+      background: #edf2f7;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 0.95em;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 12px 15px;
+      text-align: left;
+    }
+
+    th {
+      background: #1a5f7a;
+      color: white;
+      font-weight: 700;
+    }
+
+    tr:nth-child(even) {
+      background: #f8f9fa;
+    }
+
+    tr:hover {
+      background: #e8f4f8;
+    }
+
+    .diagram {
+      background: #1a202c;
+      color: #68d391;
+      padding: 20px;
+      border-radius: 8px;
+      font-family: 'Source Code Pro', monospace;
+      white-space: pre;
+      line-height: 1.4;
+      margin: 20px 0;
+      overflow-x: auto;
+    }
+
+    .section-number {
+      display: inline-block;
+      background: #1a5f7a;
+      color: white;
+      width: 30px;
+      height: 30px;
+      text-align: center;
+      line-height: 30px;
+      border-radius: 50%;
+      margin-right: 10px;
+      font-size: 0.9em;
+    }
+
+    .toc {
+      background: #f7fafc;
+      padding: 20px 30px;
+      border-radius: 10px;
+      margin: 30px 0;
+    }
+
+    .toc h3 {
+      margin-top: 0;
+      color: #1a5f7a;
+    }
+
+    .toc ol {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .toc li {
+      margin: 8px 0;
+    }
+
+    .toc a {
+      color: #2c3e50;
+      text-decoration: none;
+    }
+
+    .toc a:hover {
+      color: #1a5f7a;
+      text-decoration: underline;
+    }
+
+    .footer {
+      margin-top: 60px;
+      padding-top: 20px;
+      border-top: 1px solid #ddd;
+      color: #666;
+      font-size: 0.9em;
+    }
+
+    @media print {
+      body {
+        font-size: 11pt;
+        padding: 0;
+        max-width: none;
+      }
+
+      h1 { page-break-after: avoid; }
+      h2, h3 { page-break-after: avoid; }
+      pre, table, .diagram { page-break-inside: avoid; }
+
+      .summary-box {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<h1>SA(シミュレーテッドアニーリング)とPT-ICM<br>— 直感重視の解説</h1>
+
+<p style="color: #666; font-size: 0.95em;">
+  最終更新: 2026-05-19<br>
+  CIM比較資料 — SA担当パート
+</p>
+
+<div class="toc">
+  <h3>目次</h3>
+  <ol>
+    <li><a href="#sec1">1行で言うと</a></li>
+    <li><a href="#sec2">SAの基本原理 — 金属焼きなましのアナロジー</a></li>
+    <li><a href="#sec3">アルゴリズムの核心 — Metropolis基準</a></li>
+    <li><a href="#sec4">冷却スケジュール — 温度の下げ方</a></li>
+    <li><a href="#sec5">SAの限界 — なぜ単純SAでは不十分か</a></li>
+    <li><a href="#sec6">PT-ICMとは — 最強の古典ベンチマーク</a></li>
+    <li><a href="#sec7">なぜPT-ICMがCIM比較の主流か</a></li>
+    <li><a href="#sec8">SA / PT-ICM / CIM / SB の比較</a></li>
+    <li><a href="#sec9">まとめ</a></li>
+  </ol>
+</div>
+
+<!-- Section 1 -->
+<h2 id="sec1"><span class="section-number">1</span>1行で言うと</h2>
+
+<div class="summary-box">
+  <strong>SA</strong> = 高温で「悪手も許容」→ 徐々に冷却して「良い手だけ」に絞り込む確率的探索<br><br>
+  <strong>PT-ICM</strong> = 複数温度のSAを並列実行 + クラスター単位の大胆な入れ替えで<br>
+  　　　　　　局所最適を強力に脱出する、古典アルゴリズムの最高峰
+</div>
+
+<!-- Section 2 -->
+<h2 id="sec2"><span class="section-number">2</span>SAの基本原理 — 金属焼きなましのアナロジー</h2>
+
+<div class="analogy-box">
+  <strong>物理のアナロジー:</strong><br>
+  金属を高温に加熱すると原子が自由に動き回る。ゆっくり冷却すると原子は<strong>最も安定な結晶構造</strong>（エネルギー最小）に落ち着く。急冷すると欠陥だらけの脆い金属になる。
+</div>
+
+<p>これを最適化問題に応用したのが<strong>シミュレーテッドアニーリング (SA)</strong>:</p>
+
+<div class="diagram">
+高温 (T=高)                          低温 (T≈0)
+    ↓                                    ↓
+┌─────────────┐                    ┌─────────────┐
+│ ●    ●   ● │ 解がランダムに      │             │
+│   ●  ●    ● │ 飛び回る           │      ●      │ 最良解付近に
+│ ●      ●   │ (悪化も許容)       │             │ 収束
+└─────────────┘                    └─────────────┘
+
+エネルギー地形:
+    ╱╲    ╱╲                         ╱╲    ╱╲
+   ╱  ╲  ╱  ╲   高温: どこでも      ╱  ╲  ╱  ╲
+  ╱    ╲╱    ╲  行ける             ╱    ╲╱    ╲
+ ╱            ╲                    ╱      ●     ╲ 低温: 谷底に
+╱              ╲                  ╱              ╲ 閉じ込められる
+</div>
+
+<div class="key-point">
+  <strong>核心:</strong> 高温では「悪い方向への移動」も確率的に許可することで、局所最適の谷から脱出できる。温度を下げるにつれて悪化を許さなくなり、最終的に良い解に落ち着く。
+</div>
+
+<!-- Section 3 -->
+<h2 id="sec3"><span class="section-number">3</span>アルゴリズムの核心 — Metropolis基準</h2>
+
+<p>SAの心臓部は<strong>Metropolis基準</strong>と呼ばれる受理判定:</p>
+
+<pre>
+現在の解: x,  エネルギー: E(x)
+提案された新解: x',  エネルギー: E(x')
+
+ΔE = E(x') - E(x)  (エネルギー変化量)
+
+【受理判定】
+if ΔE < 0:
+    # 改善 → 常に受理
+    x ← x'
+else:
+    # 悪化 → 確率 exp(-ΔE/T) で受理
+    if random() < exp(-ΔE/T):
+        x ← x'
+</pre>
+
+<h3>直感的な理解</h3>
+
+<table>
+  <tr>
+    <th>状況</th>
+    <th>高温 (T=10)</th>
+    <th>低温 (T=0.1)</th>
+  </tr>
+  <tr>
+    <td>ΔE = +1 の悪化</td>
+    <td>exp(-1/10) = <strong>90%</strong> で受理</td>
+    <td>exp(-1/0.1) = <strong>0.005%</strong> で受理</td>
+  </tr>
+  <tr>
+    <td>ΔE = +5 の悪化</td>
+    <td>exp(-5/10) = <strong>60%</strong> で受理</td>
+    <td>exp(-5/0.1) ≈ <strong>0%</strong> で受理</td>
+  </tr>
+</table>
+
+<div class="analogy-box">
+  高温では「ちょっと悪くなってもOK」と寛容。低温では「絶対に悪化させない」と厳格。この性格の変化が、広い探索→精密な収束の流れを作る。
+</div>
+
+<!-- Section 4 -->
+<h2 id="sec4"><span class="section-number">4</span>冷却スケジュール — 温度の下げ方</h2>
+
+<p>温度 T(t) の下げ方を<strong>冷却スケジュール</strong>と呼ぶ。主に3種類:</p>
+
+<table>
+  <tr>
+    <th>種類</th>
+    <th>式</th>
+    <th>特徴</th>
+  </tr>
+  <tr>
+    <td><strong>線形冷却</strong></td>
+    <td>T(t) = T₀ - αt</td>
+    <td>単純だが収束が遅い</td>
+  </tr>
+  <tr>
+    <td><strong>指数冷却</strong></td>
+    <td>T(t) = T₀ · αᵗ (0 < α < 1)</td>
+    <td>実用で最も一般的</td>
+  </tr>
+  <tr>
+    <td><strong>対数冷却</strong></td>
+    <td>T(t) = T₀ / log(1+t)</td>
+    <td>理論的に最適だが極端に遅い</td>
+  </tr>
+</table>
+
+<div class="diagram">
+温度 T
+  ↑
+  │╲
+  │ ╲_____ 線形
+  │  ╲
+  │   ╲____ 指数 (実用的)
+  │    ╲
+  │     ╲_______ 対数 (理論最適)
+  └──────────────→ 時間 t
+</div>
+
+<div class="key-point">
+  <strong>本リポジトリの実装 (modules/SA.py):</strong><br>
+  指数冷却を採用。<code>T = T_start × exp(log(T_end/T_start) × progress)</code><br>
+  デフォルト: T_start=2.0, T_end=0.001
+</div>
+
+<!-- Section 5 -->
+<h2 id="sec5"><span class="section-number">5</span>SAの限界 — なぜ単純SAでは不十分か</h2>
+
+<p>標準SAには構造的な弱点がある:</p>
+
+<h3>弱点1: 1-flipの局所性</h3>
+<div class="diagram">
+MAX-CUT での 1-flip:
+
+  A ─── B         A ─── B
+  │     │    →    │     │
+  C ─── D         C ─── D
+
+  頂点Aだけ反転 → 隣接辺3本の寄与が変わる
+
+問題: 「A,B,Cを同時に反転すれば大改善」という
+      大域的な構造変化を見つけられない
+</div>
+
+<h3>弱点2: 温度の単一性</h3>
+<p>1つの温度しか持たないため、「高温での広い探索」と「低温での精密収束」を同時にできない。</p>
+
+<h3>弱点3: 局所最適トラップ</h3>
+<div class="diagram">
+エネルギー地形:
+
+        ╱╲
+       ╱  ╲        ╱╲
+      ╱    ╲      ╱  ╲
+     ╱   ●  ╲____╱    ╲
+    ╱  局所     大域    ╲
+   ╱   最適     最適     ╲
+
+低温になると局所最適から抜け出せず、
+大域最適に到達できない
+</div>
+
+<div class="key-point">
+  <strong>G22での結果:</strong> 単純SAは平均13224.8、最良13314（既知最良13359に対して45不足）。CIM (13275.3) やCAC (13284.8) に劣る。
+</div>
+
+<!-- Section 6 -->
+<h2 id="sec6"><span class="section-number">6</span>PT-ICMとは — 最強の古典ベンチマーク</h2>
+
+<p><strong>PT-ICM = Parallel Tempering + Isoenergetic Cluster Moves</strong></p>
+<p>SAの弱点を2つの強力な拡張で克服:</p>
+
+<h3>拡張1: Parallel Tempering (レプリカ交換)</h3>
+
+<div class="diagram">
+【複数温度のレプリカを並列実行】
+
+温度 T₁=10.0  ●────────●────────●  高温レプリカ (広い探索)
+              ↕ 交換    ↕ 交換
+温度 T₂=5.0   ●────────●────────●
+              ↕ 交換    ↕ 交換
+温度 T₃=1.0   ●────────●────────●
+              ↕ 交換    ↕ 交換
+温度 T₄=0.1   ●────────●────────●  低温レプリカ (精密収束)
+
+→ 時間軸 →
+
+【レプリカ交換の仕組み】
+隣接温度間で、Metropolis基準に従って「解を入れ替え」
+低温で良い解を見つけたら、高温に送って別経路を探索
+高温で見つけた有望領域を、低温に送って精密化
+</div>
+
+<div class="analogy-box">
+  <strong>アナロジー:</strong> 登山隊が複数チームに分かれ、高所チーム（大胆に動く）と低所チーム（慎重に探す）が無線で情報共有。有望なルートが見つかったらチーム間でポジションを交換。
+</div>
+
+<h3>拡張2: Isoenergetic Cluster Moves (ICM)</h3>
+
+<div class="diagram">
+【クラスター単位の非局所移動】
+
+通常SA:  1頂点ずつ反転
+         ○─○─●─○
+         │ │ │ │
+         ●─○─○─●
+         ↓
+         ○─○─●─○   (Aだけ反転)
+         │ │ │ │
+         ○─○─○─●
+
+ICM:     クラスター全体を一度に反転
+         ○─○─●─○
+         │ │ │ │
+         ●─○─○─●
+         ↓
+         ●─●─○─●   (接続したクラスターを一括反転)
+         │ │ │ │
+         ○─●─●─○
+
+【Houdayerクラスターアルゴリズム】
+1. 同じ温度の2つのレプリカを選ぶ
+2. 両者で「スピンが異なる」頂点の部分グラフを構築
+3. そのグラフ上でランダムなクラスターを生成
+4. クラスター内のスピンを2レプリカ間で交換
+   → エネルギーが変わらない（isoenergetic）ので常に受理！
+</div>
+
+<div class="key-point">
+  <strong>ICMの威力:</strong><br>
+  - 1-flipでは到達できない「大域的な構造変化」を実現<br>
+  - エネルギー不変なので<strong>100%受理</strong>（Metropolis判定不要）<br>
+  - システムサイズが大きいほど効果が増大
+</div>
+
+<h3>PT-ICMの全体フロー</h3>
+
+<pre>
+【PT-ICMアルゴリズム】
+
+初期化:
+  - M個の温度 T₁ > T₂ > ... > Tₘ を設定
+  - 各温度に複数のICMレプリカを配置 (例: 温度あたり4個)
+
+メインループ:
+  for step in 1 to N_steps:
+
+    1. 局所更新 (標準SA)
+       各レプリカで K回の 1-flip Metropolis 更新
+
+    2. レプリカ交換 (PT)
+       隣接温度ペアを選び、Metropolis基準で解を交換
+       P_swap = min(1, exp((β₁-β₂)(E₁-E₂)))
+
+    3. クラスター移動 (ICM)
+       同じ温度の2レプリカペアを選び、
+       Houdayerクラスター交換を実行
+
+最終出力:
+  最低温度レプリカの最良解
+</pre>
+
+<!-- Section 7 -->
+<h2 id="sec7"><span class="section-number">7</span>なぜPT-ICMがCIM比較の主流か</h2>
+
+<h3>理由1: 古典アルゴリズムの最高性能</h3>
+<p>PT-ICMは、スピングラスやMAX-CUT問題において<strong>古典的手法の中で最も強力</strong>とされる。量子コンピュータやCIMの「優位性」を示すには、最強の古典手法と比較する必要がある。</p>
+
+<h3>理由2: 学術的スタンダード</h3>
+<table>
+  <tr>
+    <th>論文/プロジェクト</th>
+    <th>PT-ICMの使用</th>
+  </tr>
+  <tr>
+    <td>D-Wave Systems (量子アニーラ)</td>
+    <td>性能比較のベンチマーク標準</td>
+  </tr>
+  <tr>
+    <td>Google Quantum AI</td>
+    <td>量子優位性検証の古典対照</td>
+  </tr>
+  <tr>
+    <td>CIM研究 (Stanford, NTT)</td>
+    <td>光イジングマシンの性能評価</td>
+  </tr>
+</table>
+
+<h3>理由3: 公平な比較のため</h3>
+<div class="analogy-box">
+  「新しいスポーツカーの性能を測るなら、軽自動車ではなくF1マシンと比較すべき」<br><br>
+  同様に、CIMの真の性能を評価するには、単純SAではなくPT-ICMと比較する必要がある。PT-ICMに勝てれば、真に価値のある技術革新と言える。
+</div>
+
+<h3>理由4: スケーリング特性</h3>
+<div class="diagram">
+計算時間 vs 問題サイズ (概念図):
+
+時間
+  ↑
+  │           ╱ 単純SA (O(N³~⁴))
+  │         ╱
+  │       ╱
+  │     ╱_____ PT-ICM (O(N²~³))
+  │   ╱  ____
+  │ ╱  ╱     CIM (O(N²) or better?)
+  └──────────────────→ 問題サイズ N
+
+大規模問題でPT-ICMに勝てるかが、
+CIMの実用価値を決める
+</div>
+
+<!-- Section 8 -->
+<h2 id="sec8"><span class="section-number">8</span>SA / PT-ICM / CIM / SB の比較</h2>
+
+<table>
+  <tr>
+    <th>項目</th>
+    <th>単純SA</th>
+    <th>PT-ICM</th>
+    <th>CIM</th>
+    <th>SB</th>
+  </tr>
+  <tr>
+    <td><strong>基本原理</strong></td>
+    <td>Metropolis MCMC</td>
+    <td>レプリカ交換 + クラスター移動</td>
+    <td>光パルスの位相干渉</td>
+    <td>ハミルトン力学の分岐</td>
+  </tr>
+  <tr>
+    <td><strong>1ステップの更新</strong></td>
+    <td>1スピン</td>
+    <td>1スピン + クラスター</td>
+    <td>全Nスピン同時</td>
+    <td>全Nスピン同時</td>
+  </tr>
+  <tr>
+    <td><strong>並列性</strong></td>
+    <td>低（順次処理）</td>
+    <td>中（レプリカ間並列）</td>
+    <td>高（全スピン並列）</td>
+    <td>高（全スピン並列）</td>
+  </tr>
+  <tr>
+    <td><strong>局所最適脱出</strong></td>
+    <td>温度による確率的</td>
+    <td>PT + ICM（非常に強力）</td>
+    <td>ASEノイズ</td>
+    <td>エルゴード性 + dSBトンネル</td>
+  </tr>
+  <tr>
+    <td><strong>確率性</strong></td>
+    <td>毎ステップ乱数</td>
+    <td>毎ステップ乱数</td>
+    <td>毎ステップ光ノイズ</td>
+    <td>初期値のみ（決定論的）</td>
+  </tr>
+  <tr>
+    <td><strong>実装の複雑さ</strong></td>
+    <td>低</td>
+    <td>高</td>
+    <td>中</td>
+    <td>低</td>
+  </tr>
+  <tr>
+    <td><strong>ハードウェア実装</strong></td>
+    <td>汎用CPU</td>
+    <td>汎用CPU/GPU</td>
+    <td>光ファイバー回路</td>
+    <td>GPU/FPGA最適化容易</td>
+  </tr>
+</table>
+
+<h3>G22 (N=2000) での性能比較</h3>
+
+<table>
+  <tr>
+    <th>手法</th>
+    <th>平均cut</th>
+    <th>最良cut</th>
+    <th>既知最良との差</th>
+    <th>壁時計時間</th>
+  </tr>
+  <tr>
+    <td>単純SA</td>
+    <td>13224.8</td>
+    <td>13314</td>
+    <td>-45</td>
+    <td>200.3秒</td>
+  </tr>
+  <tr>
+    <td>CIM</td>
+    <td>13275.3</td>
+    <td>13326</td>
+    <td>-33</td>
+    <td><strong>3.3秒</strong></td>
+  </tr>
+  <tr>
+    <td>CAC</td>
+    <td>13284.8</td>
+    <td><strong>13358</strong></td>
+    <td><strong>-1</strong></td>
+    <td>206.5秒</td>
+  </tr>
+</table>
+
+<p style="color: #666; font-size: 0.9em;">※PT-ICMは本リポジトリ未実装。文献によれば、十分な計算時間があればG22で既知最良解13359に到達可能。</p>
+
+<!-- Section 9 -->
+<h2 id="sec9"><span class="section-number">9</span>まとめ</h2>
+
+<div class="summary-box">
+  <h3 style="margin-top:0; color: #fff;">SA（シミュレーテッドアニーリング）</h3>
+  <ul style="margin-bottom: 0;">
+    <li>金属焼きなましに着想を得た確率的最適化手法</li>
+    <li>Metropolis基準で「高温→低温」の冷却により解を収束</li>
+    <li>シンプルで実装容易だが、1-flipの局所性が限界</li>
+  </ul>
+</div>
+
+<div class="summary-box" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+  <h3 style="margin-top:0; color: #fff;">PT-ICM</h3>
+  <ul style="margin-bottom: 0;">
+    <li><strong>Parallel Tempering</strong>: 複数温度のレプリカ並列実行 + 交換</li>
+    <li><strong>ICM</strong>: クラスター単位の非局所移動（エネルギー不変で100%受理）</li>
+    <li>古典アルゴリズムの最高峰、CIM/量子計算機ベンチマークの標準</li>
+    <li>「PT-ICMに勝てるか」がCIMの真価を問う試金石</li>
+  </ul>
+</div>
+
+<div class="key-point">
+  <strong>CIM比較における位置づけ:</strong><br>
+  単純SAは「弱い古典ベースライン」。PT-ICMは「最強の古典チャレンジャー」。CIMがPT-ICMより高速・高精度であることを示せれば、物理実装の真の優位性が証明される。
+</div>
+
+<div class="footer">
+  <p>
+    <strong>参考文献:</strong><br>
+    - Kirkpatrick et al., "Optimization by Simulated Annealing", Science 220, 671 (1983)<br>
+    - Houdayer, "A cluster Monte Carlo algorithm for 2-dimensional spin glasses", Eur. Phys. J. B (2001)<br>
+    - Zhu et al., "Efficient cluster algorithm for spin glasses in any space dimension", Phys. Rev. Lett. 115, 077201 (2015)<br>
+    - 本リポジトリ: modules/SA.py, docs/SB_algorithm.md
+  </p>
+  <p style="text-align: center; color: #999;">
+    CIM vs SA 比較資料 — SA担当パート<br>
+    Generated: 2026-05-19
+  </p>
+</div>
+
+</body>
+</html>
