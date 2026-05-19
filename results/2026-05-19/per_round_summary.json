@@ -1,7 +1,11 @@
 {
   "30": {
-    "max_cut_optimized": 11607,
-    "max_cut_baseline": 10296,
-    "elapsed_sec": 22.036235570907593
+    "final_optimized_mean": 12734.58,
+    "final_optimized_std": 400.2131976834347,
+    "final_optimized_max": 12956,
+    "final_baseline_mean": 10333.94,
+    "final_baseline_std": 31.865912822324738,
+    "final_baseline_max": 10435,
+    "elapsed_sec": 21.494913816452026
   }
 }
