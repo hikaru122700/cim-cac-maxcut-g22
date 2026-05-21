@@ -1,0 +1,78 @@
+{
+  "graph": "input/G22.txt",
+  "n": 2000,
+  "k": 19990,
+  "known_best": 13359,
+  "fixed_params": {
+    "kappa": 130.0,
+    "bandwidth": 1000000000.0,
+    "photon_energy": 1.28e-19
+  },
+  "searched_params": [
+    "L",
+    "gamma",
+    "loss_dB",
+    "dP_per_round",
+    "abs_coupling"
+  ],
+  "n_optuna_trials": 300,
+  "n_cim_trials": 20,
+  "rounds_results": {
+    "30": {
+      "best_mean_cut": 13035.2,
+      "best_params": {
+        "L": 0.05148180770138525,
+        "gamma": 92.3257511664198,
+        "loss_dB": 3.818002572165116,
+        "dP_per_round": 0.00015534939997809575,
+        "abs_coupling": 0.10886914489301136
+      },
+      "best_std": 31.14739154407637,
+      "best_max": 13086,
+      "best_min": 12966,
+      "elapsed_sec": 8.818751335144043
+    },
+    "300": {
+      "best_mean_cut": 13262.55,
+      "best_params": {
+        "L": 0.02665759741706779,
+        "gamma": 21.14511341662175,
+        "loss_dB": 9.694445796182178,
+        "dP_per_round": 0.00026928646227013735,
+        "abs_coupling": 0.051590902065266064
+      },
+      "best_std": 25.00094998195069,
+      "best_max": 13323,
+      "best_min": 13219,
+      "elapsed_sec": 33.94152331352234
+    },
+    "1500": {
+      "best_mean_cut": 13304.65,
+      "best_params": {
+        "L": 0.018433990086047614,
+        "gamma": 23.509967140164296,
+        "loss_dB": 10.46551355986308,
+        "dP_per_round": 0.00016204477812971208,
+        "abs_coupling": 0.047208585442377396
+      },
+      "best_std": 18.292826462851497,
+      "best_max": 13338,
+      "best_min": 13275,
+      "elapsed_sec": 102.39550423622131
+    },
+    "10000": {
+      "best_mean_cut": 13315.0,
+      "best_params": {
+        "L": 0.07495076275554483,
+        "gamma": 16.873461704014698,
+        "loss_dB": 13.234368063764322,
+        "dP_per_round": 3.1492786601021036e-06,
+        "abs_coupling": 0.027802838751588708
+      },
+      "best_std": 14.205632685663812,
+      "best_max": 13325,
+      "best_min": 13283,
+      "elapsed_sec": 636.3838436603546
+    }
+  }
+}
