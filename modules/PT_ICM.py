@@ -345,8 +345,9 @@ def simulate_pticm_batch(
     T_ladder: np.ndarray | None = None,
     swap_interval: int = 1,
     icm_interval: int = 5,
+    sample_interval: int | None = None,
     seeds: np.ndarray | None = None,
-) -> tuple[np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """PT-ICM を num_trials 並列実行する公開 API。
 
     Parameters
@@ -361,7 +362,16 @@ def simulate_pticm_batch(
     T_ladder : 直接指定する場合の昇順温度配列(優先)
     swap_interval : PT swap を試みるスイープ間隔
     icm_interval : ICM cluster move を試みるスイープ間隔
+    sample_interval : このスイープ間隔ごとに best-so-far を trajectory に記録。
+        None なら num_sweeps(= 最終値のみ)。
     seeds : 各 trial の乱数シード(None なら 0..num_trials-1)
+
+    Returns
+    -------
+    best_cuts : (num_trials,) 各 trial の最終最良カット
+    best_signs : (num_trials, n) 最終最良解の ±1 ベクトル
+    trajectory : (num_trials, num_samples) 各サンプル時点での best-so-far
+        sample 時刻は (sample_interval, 2*sample_interval, ..., num_sweeps)
     """
     if seeds is None:
         seeds = np.arange(num_trials, dtype=np.int64)
