@@ -296,9 +296,51 @@ def main() -> None:
     plt.close(fig3)
     print(f"  saved: {bar_path}")
 
+    # --- Figure 4: PT-ICM trajectory (sweep 数 vs cut) ---
+    fig4, ax4 = plt.subplots(figsize=(10, 5.4))
+    traj_mean = pticm_traj.mean(axis=0)
+    traj_best = pticm_traj.max(axis=0)
+    traj_p10 = np.percentile(pticm_traj, 10, axis=0)
+    traj_p90 = np.percentile(pticm_traj, 90, axis=0)
+    ax4.fill_between(sample_sweeps, traj_p10, traj_p90,
+                     color=colors["PT-ICM"], alpha=0.18, label="PT-ICM 10–90%ile")
+    ax4.plot(sample_sweeps, traj_mean, color=colors["PT-ICM"], linewidth=2.2,
+             label=f"PT-ICM 平均 (最終 {traj_mean[-1]:.0f})")
+    ax4.plot(sample_sweeps, traj_best, color=colors["PT-ICM"], linewidth=1.5,
+             linestyle="--", label=f"PT-ICM 最良 (最終 {traj_best[-1]:.0f})")
+    # CIM の最終値を水平線で参照
+    ax4.axhline(cim_cuts.mean(), color=colors["CIM"], linestyle=":", linewidth=1.6,
+                label=f"CIM 平均 {cim_cuts.mean():.0f}")
+    ax4.axhline(cim_cuts.max(), color=colors["CIM"], linestyle="-.", linewidth=1.4,
+                label=f"CIM 最良 {cim_cuts.max():.0f}")
+    if known_best is not None:
+        ax4.axhline(known_best, color="red", linestyle="--", linewidth=1.2,
+                    label=f"既知ベスト {known_best}")
+    ax4.set_xlabel("PT-ICM スイープ数")
+    ax4.set_ylabel("これまでの最良カット")
+    ax4.set_title(
+        f"PT-ICM の収束軌跡 ({graph_name}, {args.num_trials} trial, sample/{sample_interval} sweeps)"
+    )
+    ax4.legend(loc="lower right", fontsize=9)
+    ax4.grid(alpha=0.3)
+    apply_ticks_inward(ax4)
+    fig4.tight_layout()
+    traj_path = out_dir / f"{prefix}_pticm_trajectory.png"
+    fig4.savefig(traj_path, dpi=150)
+    plt.close(fig4)
+    print(f"  saved: {traj_path}")
+
     # --- 生データ ---
     npz_path = out_dir / f"{prefix}_cuts.npz"
-    np.savez(npz_path, cim_cuts=cim_cuts, pticm_cuts=pticm_cuts, seeds=seeds, T_ladder=T_ladder)
+    np.savez(
+        npz_path,
+        cim_cuts=cim_cuts,
+        pticm_cuts=pticm_cuts,
+        pticm_trajectory=pticm_traj,
+        sample_sweeps=sample_sweeps,
+        seeds=seeds,
+        T_ladder=T_ladder,
+    )
     print(f"  saved: {npz_path}")
 
     # --- summary JSON ---
@@ -329,6 +371,10 @@ def main() -> None:
             "T_ladder": T_ladder.tolist(),
             "swap_interval": args.pticm_swap_interval,
             "icm_interval": args.pticm_icm_interval,
+            "sample_interval": sample_interval,
+            "trajectory_mean": traj_mean.tolist(),
+            "trajectory_best": traj_best.tolist(),
+            "sample_sweeps": sample_sweeps.tolist(),
             "mean": float(pticm_cuts.mean()),
             "best": float(pticm_cuts.max()),
             "worst": float(pticm_cuts.min()),
