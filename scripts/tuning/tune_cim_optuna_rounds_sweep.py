@@ -318,6 +318,8 @@ def main() -> None:
     parser.add_argument("--seed-base", type=int, default=0)
     parser.add_argument("--traj-samples", type=int, default=200,
                         help="振幅軌跡の記録サンプル数(round 軸)")
+    parser.add_argument("--tag", type=str, default="",
+                        help="出力ディレクトリ名末尾に付ける任意の説明タグ")
     args = parser.parse_args()
 
     setup_plot_style()
@@ -399,19 +401,20 @@ def main() -> None:
         print(f"  num_rounds={nr}: traj recorded ({time.time() - t0:.2f}s)  best_cut={best_cut:.0f}")
 
     # ==== 出力 ====
-    out_dir = get_output_dir()
-    stem = "rounds_sweep"
-    v = next_version(out_dir, stem)
-    prefix = f"v{v}_{stem}"
-    print(f"\n[output] dir={out_dir}  version=v{v}")
+    kind_root = get_kind_root()
+    v = next_version(kind_root)
+    desc = build_description(args)
+    out_dir = kind_root / f"v{v}_{desc}"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    print(f"\n[output] dir={out_dir}")
 
-    plot_history(studies, out_dir / f"{prefix}_history.png", args.n_optuna_trials)
-    plot_amplitudes(traj_data, out_dir / f"{prefix}_amplitudes.png")
-    plot_cut_curves(traj_data, out_dir / f"{prefix}_cut_curves.png")
-    plot_best_vs_rounds(summary_per_rounds, out_dir / f"{prefix}_best_vs_rounds.png")
+    plot_history(studies, out_dir / "history.png", args.n_optuna_trials)
+    plot_amplitudes(traj_data, out_dir / "amplitudes.png")
+    plot_cut_curves(traj_data, out_dir / "cut_curves.png")
+    plot_best_vs_rounds(summary_per_rounds, out_dir / "best_vs_rounds.png")
 
     # --- 生データ (npz) ---
-    npz_path = out_dir / f"{prefix}_trajectories.npz"
+    npz_path = out_dir / "trajectories.npz"
     npz_payload = {}
     for nr in args.rounds:
         npz_payload[f"c_history_R{nr}"] = traj_data[nr]["c_history"]
