@@ -103,6 +103,9 @@ def build_description(args) -> str:
     parts = [f"{len(args.rounds)}cond", f"{args.n_optuna_trials}trial"]
     if args.n_cim_trials != 20:
         parts.append(f"cim{args.n_cim_trials}seed")
+    # 非デフォルトの探索範囲はサフィックスに反映
+    if args.dP_min != 1e-6 or args.dP_max != 5e-4:
+        parts.append(f"dPmin{args.dP_min:.0e}".replace("e-0", "e-"))
     if args.tag:
         parts.append(args.tag)
     return "_".join(parts)
@@ -526,7 +529,7 @@ def main() -> None:
     for nr in args.rounds:
         print(f"\n[num_rounds={nr}] Optuna チューニング開始...")
         best, study, elapsed = tune_one_rounds(
-            n, edges, nr, seeds, args.n_optuna_trials
+            n, edges, nr, seeds, args.n_optuna_trials, search_ranges
         )
         studies[nr] = {"study": study, "elapsed": elapsed}
         summary_per_rounds[nr] = {
