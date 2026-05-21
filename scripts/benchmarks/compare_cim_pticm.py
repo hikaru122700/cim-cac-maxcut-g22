@@ -56,20 +56,34 @@ def apply_ticks_inward(ax: plt.Axes) -> None:
     ax.tick_params(direction="in", which="both", top=True, right=True)
 
 
-def get_output_dir() -> Path:
-    out = Path("results") / date.today().isoformat()
+def get_kind_root() -> Path:
+    """results/<today>/<EXPERIMENT_KIND>/ を返す(必要なら作成)。"""
+    out = Path("results") / date.today().isoformat() / EXPERIMENT_KIND
     out.mkdir(parents=True, exist_ok=True)
     return out
 
 
-def next_version(out_dir: Path, stem: str) -> int:
-    existing = list(out_dir.glob(f"v*_{stem}_*"))
+def next_version(kind_root: Path) -> int:
+    """kind_root 配下の v{N}_* サブディレクトリを見て次の N を返す。"""
     max_v = 0
-    for p in existing:
-        head = p.name.split("_", 1)[0]
-        if head.startswith("v") and head[1:].isdigit():
-            max_v = max(max_v, int(head[1:]))
+    for p in kind_root.iterdir():
+        if p.is_dir() and p.name.startswith("v"):
+            head = p.name.split("_", 1)[0]
+            if head[1:].isdigit():
+                max_v = max(max_v, int(head[1:]))
     return max_v + 1
+
+
+def build_description(args, sample_interval: int) -> str:
+    """CLI 引数から run 内容を表す簡潔な説明文字列を生成する。"""
+    parts = [f"sweeps{args.pticm_sweeps}", f"NT{args.pticm_num_temps}"]
+    if args.num_trials != 100:
+        parts.append(f"trials{args.num_trials}")
+    if args.pticm_sample_interval > 0 and args.pticm_sample_interval != args.pticm_sweeps:
+        parts.append("trajectory")
+    if args.tag:
+        parts.append(args.tag)
+    return "_".join(parts)
 
 
 def main() -> None:
