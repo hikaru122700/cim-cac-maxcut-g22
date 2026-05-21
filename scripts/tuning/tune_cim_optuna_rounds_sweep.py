@@ -156,12 +156,16 @@ def make_objective(n, edges, num_rounds, seeds, search_ranges: dict):
     return objective
 
 
-def tune_one_rounds(n, edges, num_rounds, seeds, n_optuna_trials):
+def tune_one_rounds(n, edges, num_rounds, seeds, n_optuna_trials, search_ranges):
     """1 条件分のチューニングを実行し、(best_params, study, elapsed) を返す。"""
     optuna.logging.set_verbosity(optuna.logging.WARNING)
     sampler = optuna.samplers.TPESampler(seed=0)
     study = optuna.create_study(direction="maximize", sampler=sampler)
-    study.enqueue_trial(PAPER_WARM_START)
+    # warm start は探索範囲内のものだけ
+    warm = {k: v for k, v in PAPER_WARM_START.items()
+            if _in_range(k, v, search_ranges)}
+    if len(warm) == len(PAPER_WARM_START):
+        study.enqueue_trial(warm)
 
     t0 = time.time()
     log_every = max(1, n_optuna_trials // 10)
@@ -177,12 +181,26 @@ def tune_one_rounds(n, edges, num_rounds, seeds, n_optuna_trials):
                 f"elapsed {elapsed:.1f}s)"
             )
 
-    objective = make_objective(n, edges, num_rounds, seeds)
+    objective = make_objective(n, edges, num_rounds, seeds, search_ranges)
     study.optimize(objective, n_trials=n_optuna_trials, callbacks=[cb])
     elapsed = time.time() - t0
 
     best = study.best_trial
     return best, study, elapsed
+
+
+def _in_range(key: str, value: float, search_ranges: dict) -> bool:
+    """warm start 値が探索範囲内かチェック。範囲指定なければ常に True。"""
+    # PAPER_WARM_START のキーと search_ranges のキーは対応関係がある
+    mapping = {
+        "L": "L", "gamma": "gamma", "loss_dB": "loss_dB",
+        "dP_per_round": "dP", "abs_coupling": "abs_coupling",
+    }
+    rng_key = mapping.get(key, key)
+    if rng_key not in search_ranges:
+        return True
+    lo, hi = search_ranges[rng_key]
+    return lo <= value <= hi
 
 
 def plot_history(studies: dict, out_path: Path, n_optuna_trials: int) -> None:
