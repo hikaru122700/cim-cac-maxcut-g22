@@ -493,7 +493,13 @@ def main() -> None:
                         help="振幅軌跡の記録サンプル数(round 軸)")
     parser.add_argument("--tag", type=str, default="",
                         help="出力ディレクトリ名末尾に付ける任意の説明タグ")
+    parser.add_argument("--dP-min", type=float, default=1e-6, help="dP_per_round 下限")
+    parser.add_argument("--dP-max", type=float, default=5e-4, help="dP_per_round 上限")
     args = parser.parse_args()
+
+    search_ranges = {
+        "dP": (args.dP_min, args.dP_max),
+    }
 
     setup_plot_style()
 
