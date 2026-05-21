@@ -108,14 +108,21 @@ def build_description(args) -> str:
     return "_".join(parts)
 
 
-def make_objective(n, edges, num_rounds, seeds):
-    """num_rounds 別の objective を生成。CIM batch は seeds 並列で実行される。"""
+def make_objective(n, edges, num_rounds, seeds, search_ranges: dict):
+    """num_rounds 別の objective を生成。CIM batch は seeds 並列で実行される。
+
+    search_ranges は探索範囲のオーバーライド(キーは "dP_min", "dP_max" 等)。
+    """
     def objective(trial: optuna.Trial) -> float:
-        L = trial.suggest_float("L", 0.01, 0.20, log=True)
-        gamma = trial.suggest_float("gamma", 5.0, 200.0, log=True)
-        loss_dB = trial.suggest_float("loss_dB", 3.0, 25.0)
-        dP_per_round = trial.suggest_float("dP_per_round", 1e-6, 5e-4, log=True)
-        coupling = -trial.suggest_float("abs_coupling", 1e-3, 0.2, log=True)
+        L = trial.suggest_float("L", *search_ranges.get("L", (0.01, 0.20)), log=True)
+        gamma = trial.suggest_float("gamma", *search_ranges.get("gamma", (5.0, 200.0)), log=True)
+        loss_dB = trial.suggest_float("loss_dB", *search_ranges.get("loss_dB", (3.0, 25.0)))
+        dP_per_round = trial.suggest_float(
+            "dP_per_round", *search_ranges.get("dP", (1e-6, 5e-4)), log=True,
+        )
+        coupling = -trial.suggest_float(
+            "abs_coupling", *search_ranges.get("abs_coupling", (1e-3, 0.2)), log=True,
+        )
 
         eta = 10.0 ** (-loss_dB / 10.0)
         J = build_coupling_matrix(n, edges, coupling)
