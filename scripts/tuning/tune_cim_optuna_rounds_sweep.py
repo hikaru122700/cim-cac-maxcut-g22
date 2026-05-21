@@ -441,7 +441,7 @@ def main() -> None:
             str(nr): summary_per_rounds[nr] for nr in args.rounds
         },
     }
-    json_path = out_dir / f"{prefix}_summary.json"
+    json_path = out_dir / "summary.json"
     json_path.write_text(json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
     print(f"  saved: {json_path}")
 
