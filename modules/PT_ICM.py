@@ -392,9 +392,17 @@ def simulate_pticm_batch(
     if sweep_len is None:
         sweep_len = n
 
+    if sample_interval is None or sample_interval <= 0:
+        sample_interval = int(num_sweeps)
+    sample_interval = int(sample_interval)
+    num_samples = int(num_sweeps) // sample_interval
+    if num_samples < 1:
+        num_samples = 1
+        sample_interval = int(num_sweeps)
+
     indptr, indices, adj_w = _build_csr(n, edges_arr, weights_arr)
 
-    best_cuts, best_signs = _simulate_pticm_batch(
+    best_cuts, best_signs, trajectory = _simulate_pticm_batch(
         n,
         num_trials,
         indptr,
@@ -405,6 +413,8 @@ def simulate_pticm_batch(
         int(sweep_len),
         int(swap_interval),
         int(icm_interval),
+        sample_interval,
+        num_samples,
         seeds,
     )
-    return best_cuts, best_signs
+    return best_cuts, best_signs, trajectory
