@@ -401,7 +401,8 @@ def generate_analysis_md(
                  "(ramp が遅くなる方向 = adiabatic 化)")
     lines.append(f"- **閾値 g₀_th**: {_trend([r['g0_th'] for r in rows])} "
                  "(損失を強めて閾値を持ち上げ = SN 比向上)")
-    lines.append(f"- **過閾値マージン g₀(N) − g₀_th**: {[round(r['g0_end'] - r['g0_th'], 3) for r in rows]}")
+    margins_str = ", ".join(f"{float(r['g0_end'] - r['g0_th']):+.3f}" for r in rows)
+    lines.append(f"- **過閾値マージン g₀(N) − g₀_th**: [{margins_str}]")
     lines.append("")
     lines.append("## 結論")
     lines.append("")
