@@ -230,20 +230,18 @@ def plot_amplitudes(traj_data: dict, out_path: Path, num_show: int = 200) -> Non
                     alpha=0.05, linewidth=0.5)
         mean_abs = np.mean(np.abs(c_hist), axis=1)
         std_c = np.std(c_hist, axis=1)
-        ax.plot(sample_rounds + 1, mean_abs, color="#d62728", linewidth=2.0,
-                label="⟨|c_i|⟩")
+        ax.plot(sample_rounds + 1, mean_abs, color="#d62728", linewidth=2.0)
         ax.plot(sample_rounds + 1, -mean_abs, color="#d62728", linewidth=2.0)
         ax.fill_between(sample_rounds + 1, -std_c, std_c, color="#1f77b4",
-                        alpha=0.15, label="±std(c_i)")
+                        alpha=0.15)
         ax.axhline(0, color="gray", linewidth=0.6)
         ax.set_title(
             f"num_rounds={nr}  best_cut={d['best_cut']:.0f}",
             fontsize=11,
         )
-        ax.set_xlabel("ラウンド k")
-        ax.set_ylabel("振幅 c_i")
+        ax.set_xlabel("round step")
+        ax.set_ylabel("In-phase amplitude (arb.)")
         ax.grid(alpha=0.3)
-        ax.legend(loc="lower right", fontsize=8)
         apply_ticks_inward(ax)
     fig.suptitle(
         f"チューニング後ベストパラでの CIM 振幅推移(全 {num_show} スピンを薄線で表示)",
