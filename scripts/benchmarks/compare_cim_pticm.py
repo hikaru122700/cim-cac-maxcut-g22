@@ -87,6 +87,8 @@ def main() -> None:
     parser.add_argument("--pticm-t-max", type=float, default=3.0, help="最高温度")
     parser.add_argument("--pticm-swap-interval", type=int, default=1, help="PT swap 間隔")
     parser.add_argument("--pticm-icm-interval", type=int, default=5, help="ICM 間隔")
+    parser.add_argument("--pticm-sample-interval", type=int, default=25,
+                        help="trajectory サンプル間隔 (sweeps)。0 で最終値のみ")
     parser.add_argument("--known-best", type=int, default=None, help="既知ベスト(未指定なら自動)")
     args = parser.parse_args()
 
@@ -144,8 +146,9 @@ def main() -> None:
         f"  NT={args.pticm_num_temps}  T:{args.pticm_t_min}→{args.pticm_t_max}  "
         f"swap/{args.pticm_swap_interval}  icm/{args.pticm_icm_interval}"
     )
+    sample_interval = args.pticm_sample_interval if args.pticm_sample_interval > 0 else args.pticm_sweeps
     t0 = time.time()
-    pticm_cuts, _pticm_signs = simulate_pticm_batch(
+    pticm_cuts, _pticm_signs, pticm_traj = simulate_pticm_batch(
         n=n,
         edges=edges,
         weights=(weights if use_weights else None),
@@ -155,9 +158,11 @@ def main() -> None:
         T_ladder=T_ladder,
         swap_interval=args.pticm_swap_interval,
         icm_interval=args.pticm_icm_interval,
+        sample_interval=sample_interval,
         seeds=seeds,
     )
     pticm_time = time.time() - t0
+    sample_sweeps = np.arange(1, pticm_traj.shape[1] + 1) * sample_interval
     print(
         f"  time={pticm_time:.2f}s ({pticm_time / args.num_trials * 1000:.1f} ms/trial)  "
         f"mean={pticm_cuts.mean():.1f}  best={pticm_cuts.max():.0f}"
