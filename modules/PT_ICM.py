@@ -64,18 +64,22 @@ def _simulate_pticm_batch(
     sweep_len: int,              # 1 sweep の単一スピン更新回数(通常 n)
     swap_interval: int,
     icm_interval: int,
+    sample_interval: int,         # この sweep ごとに best-so-far を記録(>=1)
+    num_samples: int,             # = num_sweeps // sample_interval
     seeds: np.ndarray,
 ):
     """PT-ICM を num_trials 並列実行する内部ルーチン。
 
     Returns
     -------
-    best_cuts : (num_trials,) 各 trial の最良カット値
-    best_signs : (num_trials, n) 最良解の ±1 ベクトル
+    best_cuts : (num_trials,) 各 trial の最終最良カット
+    best_signs : (num_trials, n) 最終最良解の ±1 ベクトル
+    trajectory : (num_trials, num_samples) 各サンプル時点での best-so-far
     """
     NT = T_ladder.shape[0]
     best_cuts_out = np.zeros(num_trials, dtype=np.float64)
     best_signs_out = np.zeros((num_trials, n), dtype=np.int8)
+    trajectory = np.zeros((num_trials, num_samples), dtype=np.float64)
 
     for trial_idx in prange(num_trials):
         np.random.seed(seeds[trial_idx])
