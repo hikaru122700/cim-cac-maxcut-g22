@@ -213,27 +213,29 @@ def plot_history(studies: dict, out_path: Path, n_optuna_trials: int) -> None:
     print(f"  saved: {out_path}")
 
 
-def plot_amplitudes(traj_data: dict, out_path: Path, num_show: int = 200) -> None:
-    """4 条件の振幅軌跡 c_i(round) を 2x2 で表示。"""
+def plot_amplitudes(traj_data: dict, out_path: Path, num_show: int = 16) -> None:
+    """4 条件の振幅軌跡を 2x2 で表示。
+
+    描画ルール ([[feedback-amplitude-plot-style]]):
+    - 16 頂点だけを実線(色分け)で描く
+    - 多数の薄い線、std 帯、平均 ⟨|c|⟩ ラインは付けない
+    - 凡例なし
+    """
     rounds_list = sorted(traj_data.keys())
     fig, axes = plt.subplots(2, 2, figsize=(13, 9), dpi=130)
     axes_flat = axes.flatten()
+    # 頂点の選択は全条件で同じ index にする(再現性 + 比較性)
     rng = np.random.default_rng(0)
+    n_spins = next(iter(traj_data.values()))["c_history"].shape[1]
+    sel = rng.choice(n_spins, size=min(num_show, n_spins), replace=False)
+    cmap = plt.get_cmap("tab20")
     for ax, nr in zip(axes_flat, rounds_list):
         d = traj_data[nr]
-        c_hist = d["c_history"]   # (S, N)
-        sample_rounds = d["sample_rounds"]  # (S,)
-        n_spins = c_hist.shape[1]
-        sel = rng.choice(n_spins, size=min(num_show, n_spins), replace=False)
-        for i in sel:
-            ax.plot(sample_rounds + 1, c_hist[:, i], color="black",
-                    alpha=0.05, linewidth=0.5)
-        mean_abs = np.mean(np.abs(c_hist), axis=1)
-        std_c = np.std(c_hist, axis=1)
-        ax.plot(sample_rounds + 1, mean_abs, color="#d62728", linewidth=2.0)
-        ax.plot(sample_rounds + 1, -mean_abs, color="#d62728", linewidth=2.0)
-        ax.fill_between(sample_rounds + 1, -std_c, std_c, color="#1f77b4",
-                        alpha=0.15)
+        c_hist = d["c_history"]
+        sample_rounds = d["sample_rounds"]
+        for j, i in enumerate(sel):
+            ax.plot(sample_rounds + 1, c_hist[:, i],
+                    color=cmap(j % 20), linewidth=1.4)
         ax.axhline(0, color="gray", linewidth=0.6)
         ax.set_title(
             f"num_rounds={nr}  best_cut={d['best_cut']:.0f}",
@@ -243,10 +245,6 @@ def plot_amplitudes(traj_data: dict, out_path: Path, num_show: int = 200) -> Non
         ax.set_ylabel("In-phase amplitude (arb.)")
         ax.grid(alpha=0.3)
         apply_ticks_inward(ax)
-    fig.suptitle(
-        f"チューニング後ベストパラでの CIM 振幅推移(全 {num_show} スピンを薄線で表示)",
-        fontsize=13,
-    )
     fig.tight_layout()
     fig.savefig(out_path)
     plt.close(fig)
