@@ -1,0 +1,80 @@
+{
+  "budget": "medium",
+  "rounds_list": [
+    30,
+    300,
+    3000,
+    10000
+  ],
+  "n_optuna_trials": {
+    "30": 1000,
+    "300": 500,
+    "3000": 200,
+    "10000": 60
+  },
+  "n_cim_trials_per_optuna": 20,
+  "n_heldout_trials": 100,
+  "fixed_params": {
+    "kappa": 130.0,
+    "bandwidth": 1000000000.0,
+    "photon_energy": 1.28e-19
+  },
+  "per_rounds": {
+    "30": {
+      "best_mean_cut": 13037.3,
+      "best_params": {
+        "L": 0.015010751491014907,
+        "gamma": 115.77460920920902,
+        "loss_dB": 3.496038824081022,
+        "dP_per_round": 0.0009939133027885886,
+        "abs_coupling": 0.11417334161463699
+      },
+      "heldout_paper_mean": 10336.78,
+      "heldout_optuna_mean": 12885.95,
+      "heldout_diff": 2549.17,
+      "elapsed_sec_optuna": 75.42405366897583
+    },
+    "300": {
+      "best_mean_cut": 13262.75,
+      "best_params": {
+        "L": 0.17201782966469054,
+        "gamma": 34.05386752887716,
+        "loss_dB": 8.201110186991825,
+        "dP_per_round": 3.26695582273286e-06,
+        "abs_coupling": 0.06177350901588306
+      },
+      "heldout_paper_mean": 13012.02,
+      "heldout_optuna_mean": 13259.22,
+      "heldout_diff": 247.1999999999989,
+      "elapsed_sec_optuna": 75.80803179740906
+    },
+    "3000": {
+      "best_mean_cut": 13302.5,
+      "best_params": {
+        "L": 0.19650921705454516,
+        "gamma": 5.029846653111315,
+        "loss_dB": 21.298487488574015,
+        "dP_per_round": 3.7429256318518234e-06,
+        "abs_coupling": 0.013280137808267221
+      },
+      "heldout_paper_mean": 13276.18,
+      "heldout_optuna_mean": 13294.77,
+      "heldout_diff": 18.590000000000146,
+      "elapsed_sec_optuna": 118.92789053916931
+    },
+    "10000": {
+      "best_mean_cut": 13298.5,
+      "best_params": {
+        "L": 0.038666358496039756,
+        "gamma": 8.725439865724566,
+        "loss_dB": 7.710141417776903,
+        "dP_per_round": 6.0925940024051045e-06,
+        "abs_coupling": 0.038495872449336443
+      },
+      "heldout_paper_mean": 13276.18,
+      "heldout_optuna_mean": 13298.32,
+      "heldout_diff": 22.139999999999418,
+      "elapsed_sec_optuna": 99.59442520141602
+    }
+  }
+}

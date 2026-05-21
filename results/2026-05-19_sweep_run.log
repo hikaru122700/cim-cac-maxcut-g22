@@ -1,0 +1,89 @@
+Output dir: results\2026-05-19
+Budget preset: medium Å® {30: 1000, 300: 500, 3000: 200, 10000: 60}
+Loading G22...
+  N=2000, K=19990
+JIT warmup...
+
+======================================================================
+=== num_rounds = 30  /  Optuna trials = 1000 ===
+======================================================================
+  [  100/1000] best mean_cut = 12785.70  (14.53 trial/s, elapsed 6.9s)
+  [  200/1000] best mean_cut = 13017.85  (14.28 trial/s, elapsed 14.0s)
+  [  300/1000] best mean_cut = 13037.30  (13.98 trial/s, elapsed 21.5s)
+  [  400/1000] best mean_cut = 13037.30  (13.78 trial/s, elapsed 29.0s)
+  [  500/1000] best mean_cut = 13037.30  (13.64 trial/s, elapsed 36.7s)
+  [  600/1000] best mean_cut = 13037.30  (13.55 trial/s, elapsed 44.3s)
+  [  700/1000] best mean_cut = 13037.30  (13.51 trial/s, elapsed 51.8s)
+  [  800/1000] best mean_cut = 13037.30  (13.43 trial/s, elapsed 59.5s)
+  [  900/1000] best mean_cut = 13037.30  (13.37 trial/s, elapsed 67.3s)
+  Optuna done in 75.4s  best mean_cut = 13037.300
+  held-out eval (seeds 100..199)...
+    paper : mean=10336.78 std=34.62 best=10430 worst=10260
+    optuna: mean=12885.95 std=445.46 best=13120 worst=11267
+    diff (optuna - paper) = +2549.17   (held-out 0.1s)
+  trajectory (single trial, seed=42)...
+    trajectory done in 0.0s
+    saved: results\2026-05-19\sweep_nr30_best_params.json
+
+======================================================================
+=== num_rounds = 300  /  Optuna trials = 500 ===
+======================================================================
+  [   50/500] best mean_cut = 13242.70  (6.48 trial/s, elapsed 7.7s)
+  [  100/500] best mean_cut = 13252.15  (6.50 trial/s, elapsed 15.4s)
+  [  150/500] best mean_cut = 13252.15  (6.56 trial/s, elapsed 22.9s)
+  [  200/500] best mean_cut = 13255.35  (6.58 trial/s, elapsed 30.4s)
+  [  250/500] best mean_cut = 13261.50  (6.60 trial/s, elapsed 37.9s)
+  [  300/500] best mean_cut = 13261.50  (6.61 trial/s, elapsed 45.4s)
+  [  350/500] best mean_cut = 13262.75  (6.61 trial/s, elapsed 53.0s)
+  [  400/500] best mean_cut = 13262.75  (6.60 trial/s, elapsed 60.6s)
+  [  450/500] best mean_cut = 13262.75  (6.59 trial/s, elapsed 68.3s)
+  Optuna done in 75.8s  best mean_cut = 13262.750
+  held-out eval (seeds 100..199)...
+    paper : mean=13012.02 std=43.59 best=13092 worst=12903
+    optuna: mean=13259.22 std=19.81 best=13300 worst=13209
+    diff (optuna - paper) = +247.20   (held-out 0.6s)
+  trajectory (single trial, seed=42)...
+    trajectory done in 0.1s
+    saved: results\2026-05-19\sweep_nr300_best_params.json
+
+======================================================================
+=== num_rounds = 3000  /  Optuna trials = 200 ===
+======================================================================
+  [   20/200] best mean_cut = 13291.00  (1.62 trial/s, elapsed 12.4s)
+  [   40/200] best mean_cut = 13291.00  (1.64 trial/s, elapsed 24.4s)
+  [   60/200] best mean_cut = 13292.50  (1.65 trial/s, elapsed 36.4s)
+  [   80/200] best mean_cut = 13292.50  (1.66 trial/s, elapsed 48.2s)
+  [  100/200] best mean_cut = 13293.00  (1.67 trial/s, elapsed 60.1s)
+  [  120/200] best mean_cut = 13295.75  (1.67 trial/s, elapsed 72.0s)
+  [  140/200] best mean_cut = 13297.05  (1.67 trial/s, elapsed 83.9s)
+  [  160/200] best mean_cut = 13300.00  (1.67 trial/s, elapsed 95.7s)
+  [  180/200] best mean_cut = 13300.00  (1.67 trial/s, elapsed 107.5s)
+  Optuna done in 118.9s  best mean_cut = 13302.500
+  held-out eval (seeds 100..199)...
+    paper : mean=13276.18 std=21.98 best=13322 worst=13226
+    optuna: mean=13294.77 std=16.79 best=13339 worst=13235
+    diff (optuna - paper) = +18.59   (held-out 4.6s)
+  trajectory (single trial, seed=42)...
+    trajectory done in 0.3s
+    saved: results\2026-05-19\sweep_nr3000_best_params.json
+
+======================================================================
+=== num_rounds = 10000  /  Optuna trials = 60 ===
+======================================================================
+  [   10/60] best mean_cut = 13291.00  (0.58 trial/s, elapsed 17.3s)
+  [   20/60] best mean_cut = 13291.00  (0.59 trial/s, elapsed 34.0s)
+  [   30/60] best mean_cut = 13298.10  (0.59 trial/s, elapsed 50.4s)
+  [   40/60] best mean_cut = 13298.10  (0.59 trial/s, elapsed 67.5s)
+  [   50/60] best mean_cut = 13298.10  (0.59 trial/s, elapsed 84.6s)
+  Optuna done in 99.6s  best mean_cut = 13298.500
+  held-out eval (seeds 100..199)...
+    paper : mean=13276.18 std=21.98 best=13322 worst=13226
+    optuna: mean=13298.32 std=18.03 best=13332 worst=13259
+    diff (optuna - paper) = +22.14   (held-out 14.0s)
+  trajectory (single trial, seed=42)...
+    trajectory done in 1.0s
+    saved: results\2026-05-19\sweep_nr10000_best_params.json
+
+Saved: results\2026-05-19\sweep_amplitude.png
+Saved: results\2026-05-19\sweep_cut_distribution.png
+Saved: results\2026-05-19\sweep_summary.json
