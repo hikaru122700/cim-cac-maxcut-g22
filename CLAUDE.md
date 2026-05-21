@@ -18,38 +18,73 @@ tools/          # ポータブル外部ツール (gcc, rudy など)
 
 ## results/ 配下の管理ルール
 
-**すべての出力 (PNG / JSON / CSV / DB / HTML / .npz 等) は `results/YYYY-MM-DD/` 配下に保存する**。
+**すべての出力 (PNG / JSON / CSV / DB / HTML / .npz 等) は次の 3 段階構造で保存する**:
+
+```
+results/<YYYY-MM-DD>/<実験種別>/v{N}_<簡潔な説明>/<ファイル>
+```
 
 ### Why
 - ファイル数が増えると平坦な `results/` では履歴が追えなくなる
-- 「いつの実験結果か」を一目で識別できるようにするため
-- 同じファイル名 (`v1_cut_distribution.png` 等) が日をまたぐと衝突する
+- 「いつ・何の実験・どんな設定か」を一目で識別できるようにするため
+- 同じファイル名 (`hist.png` 等) が衝突せず、1 run = 1 ディレクトリで完結する
+- v 採番は日付フォルダ × 実験種別 × バージョン番号の 3 軸でリセットされる
 
-### How to apply
+### 構成要素
 
-1. **新しいスクリプトを書くときは、保存先を `results/<実行日>/` にする**:
+1. **`<YYYY-MM-DD>`**: 実行日(date.today().isoformat())。
+2. **`<実験種別>`**: スクリプトに `EXPERIMENT_KIND` 定数で固定する短い英小文字 snake_case 名。同じスクリプトの全 run はこの直下に並ぶ。例:
+   - `cim_vs_pticm`
+   - `cim_optuna_rounds_sweep`
+   - `cim_optuna_reduced`
+3. **`v{N}_<説明>`**: その実験種別内でのバージョン番号 + run の内容を表す簡潔な説明 (snake_case)。説明は CLI 引数から自動生成すること(例: `v5_sweeps1500_NT16_trajectory`、`v2_4cond_300trial`)。`--tag` で追加サフィックスを付けられるようにする。
 
-   ```python
-   from datetime import date
-   out_dir = Path(f"results/{date.today().isoformat()}")
-   out_dir.mkdir(parents=True, exist_ok=True)
-   fig.savefig(out_dir / "v1_cut_distribution.png")
-   ```
+### How to apply (新規スクリプト)
 
-2. **既存スクリプトを再実行するときは、出力パスを上記形式に書き換えてから走らせる**。
+```python
+EXPERIMENT_KIND = "my_experiment"
 
-3. **バージョン番号 (`v1_, v2_, …`) は日付フォルダ内でリセットする**(別日なら別の v1 を切る)。日付フォルダ内では従来通り上書き禁止・自動採番を継続。
+def get_kind_root() -> Path:
+    out = Path("results") / date.today().isoformat() / EXPERIMENT_KIND
+    out.mkdir(parents=True, exist_ok=True)
+    return out
 
-4. **ファイル名から日付プレフィックスは外す**。日付はフォルダ名で表現する。
+def next_version(kind_root: Path) -> int:
+    max_v = 0
+    for p in kind_root.iterdir():
+        if p.is_dir() and p.name.startswith("v"):
+            head = p.name.split("_", 1)[0]
+            if head[1:].isdigit():
+                max_v = max(max_v, int(head[1:]))
+    return max_v + 1
 
-   悪い例: `results/2026-05-12_v1_optuna_history.png`
-   良い例: `results/2026-05-12/v1_optuna_history.png`
+def build_description(args) -> str:
+    parts = [f"sweeps{args.sweeps}"]            # 主要パラメータ
+    if args.tag: parts.append(args.tag)         # 任意タグ
+    return "_".join(parts)
 
-5. **`results/` 直下に置いてよいのは「日付フォルダ」と「全期間共通の永続資産」(`benchmark_gset.csv` 等の集計マスタ) のみ**。それ以外の単発実験成果物は必ず日付フォルダに入れる。
+kind_root = get_kind_root()
+v = next_version(kind_root)
+out_dir = kind_root / f"v{v}_{build_description(args)}"
+out_dir.mkdir(parents=True, exist_ok=True)
+fig.savefig(out_dir / "hist.png")               # ファイル名から実験名 prefix を外す
+```
+
+### 命名規約
+
+- **ファイル名から実験名・graph 名の prefix を外す**。それらはフォルダ名で表現する。
+  - 悪い例: `cim_vs_pticm/v5_*/v5_compare_cim_pticm_G22_hist.png`
+  - 良い例: `cim_vs_pticm/v5_sweeps1500_NT16_trajectory/hist.png`
+- **`<説明>` は半角英数字 + アンダースコアのみ**。スペース・全角・記号は避ける。日本語ファイル名は使わない。
+- **v 採番は `<実験種別>` 単位**で 1 から始める。日が変われば別の日付フォルダ配下で再度 v1 から始まる。
 
 ### 既存ファイルの扱い
 
-整理前から `results/` 直下に置かれているファイルは、必要に応じて作成日のフォルダに移動する。Git の commit 日や `ls -la` の mtime を参考に作業日を決める。
+整理前から平坦に置かれているファイルは、`git mv` で `<実験種別>/v{N}_<説明>/` 配下へ移行する。`<説明>` は当時の主要パラメータから事後的に決める(例: smoke test の v1 → `v1_smoke`)。
+
+### `results/` 直下に置いてよいもの
+
+「日付フォルダ」と「全期間共通の永続資産」(`benchmark_gset.csv` 等の集計マスタ、`optuna_cim_study.db` 等の永続ストレージ) のみ。それ以外の単発実験成果物は必ず日付フォルダ + 実験種別フォルダの下に入れる。
 
 ## 図のスタイル(再掲)
 
