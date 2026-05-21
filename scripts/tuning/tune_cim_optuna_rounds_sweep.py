@@ -17,12 +17,15 @@
     python scripts/tuning/tune_cim_optuna_rounds_sweep.py --n-optuna-trials 500
     python scripts/tuning/tune_cim_optuna_rounds_sweep.py --rounds 30 300 1500 10000
 
-出力 (`results/<today>/`):
-    v{N}_rounds_sweep_summary.json
-    v{N}_rounds_sweep_history.png        各条件の Optuna 探索履歴 (2x2)
-    v{N}_rounds_sweep_amplitudes.png     各条件の振幅軌跡 (2x2)
-    v{N}_rounds_sweep_cut_curves.png     各条件の cut vs round (1 figure)
-    v{N}_rounds_sweep_best_vs_rounds.png 最終 mean_cut vs num_rounds
+出力 (新規約: `results/<today>/cim_optuna_rounds_sweep/v{N}_<desc>/`):
+    summary.json
+    history.png         各条件の Optuna 探索履歴 (2x2)
+    amplitudes.png      各条件の振幅軌跡 (2x2)
+    cut_curves.png      各条件の cut vs round
+    best_vs_rounds.png  最終 mean_cut vs num_rounds
+    trajectories.npz    軌跡生データ
+
+<desc> は CLI 引数から自動生成 (例: 4cond_300trial)。--tag で追加サフィックス指定可。
 """
 
 from __future__ import annotations
@@ -48,6 +51,9 @@ from modules.CIM import (
     simulate_cim_batch,
     simulate_cim_with_trajectory,
 )
+
+
+EXPERIMENT_KIND = "cim_optuna_rounds_sweep"
 
 
 # ---- 共通定数(reduced 版と整合) ----
