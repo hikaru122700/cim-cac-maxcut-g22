@@ -429,6 +429,148 @@ def simulate_cim_batch(
     return best_cuts, best_signs
 
 
+# ============================================================
+#  振幅軌跡記録版(チューニング後の可視化用)
+# ============================================================
+@njit(cache=True, fastmath=True)
+def _simulate_cim_trajectory(
+    n: int,
+    num_rounds: int,
+    J_data: np.ndarray,
+    J_indices: np.ndarray,
+    J_indptr: np.ndarray,
+    edge_a: np.ndarray,
+    edge_b: np.ndarray,
+    edge_w: np.ndarray,
+    kappa: float,
+    L: float,
+    gamma: float,
+    eta: float,
+    bandwidth: float,
+    photon_energy: float,
+    dP_per_round: float,
+    seed: np.int64,
+    sample_rounds: np.ndarray,   # 昇順、記録対象の round index (0-indexed)
+):
+    """単一 trial の CIM を回し、指定ラウンドで c(k) と cut(k) を記録する。
+
+    Returns
+    -------
+    c_history : (num_samples, n) 各サンプル時点の振幅
+    cut_history : (num_samples,) 各サンプル時点の cut
+    best_cut : float
+    best_signs : (n,) bool
+    """
+    num_edges = edge_a.shape[0]
+    num_samples = sample_rounds.shape[0]
+    c_history = np.zeros((num_samples, n), dtype=np.float64)
+    cut_history = np.zeros(num_samples, dtype=np.float64)
+
+    sqrt_eta = np.sqrt(eta)
+    noise_const = np.sqrt((2.0 - eta) * 0.25 * bandwidth * photon_energy)
+
+    np.random.seed(seed)
+    c = np.zeros(n, dtype=np.float64)
+    Jc = np.zeros(n, dtype=np.float64)
+    best_signs = np.zeros(n, dtype=np.bool_)
+    best_cut = -1.0e18
+    sample_idx = 0
+
+    for k in range(num_rounds):
+        P_p = (k + 1) * dP_per_round
+        g0 = 2.0 * kappa * np.sqrt(P_p) * L
+        half_g0 = 0.5 * g0
+        neg_half_g0_gamma = -0.5 * g0 * gamma
+
+        for i in range(n):
+            acc = 0.0
+            start = J_indptr[i]
+            end = J_indptr[i + 1]
+            for jj in range(start, end):
+                acc += J_data[jj] * c[J_indices[jj]]
+            Jc[i] = acc
+
+        for i in range(n):
+            coupled_in_i = sqrt_eta * c[i] + Jc[i]
+            I_in_i = coupled_in_i * coupled_in_i
+            half_g_i = half_g0 + neg_half_g0_gamma * I_in_i
+            sqrt_G_I_i = np.exp(half_g_i)
+            noise_i = np.random.standard_normal() * (noise_const * sqrt_G_I_i)
+            c[i] = sqrt_G_I_i * coupled_in_i + noise_i
+
+        cut = 0.0
+        for e in range(num_edges):
+            if (c[edge_a[e]] > 0.0) != (c[edge_b[e]] > 0.0):
+                cut += edge_w[e]
+
+        if cut > best_cut:
+            best_cut = cut
+            for i in range(n):
+                best_signs[i] = c[i] > 0.0
+
+        if sample_idx < num_samples and sample_rounds[sample_idx] == k:
+            for i in range(n):
+                c_history[sample_idx, i] = c[i]
+            cut_history[sample_idx] = cut
+            sample_idx += 1
+
+    return c_history, cut_history, best_cut, best_signs
+
+
+def simulate_cim_with_trajectory(
+    n: int,
+    J: csr_matrix,
+    edges: list[tuple[int, int]],
+    num_rounds: int,
+    kappa: float,
+    L: float,
+    gamma: float,
+    eta: float,
+    bandwidth: float,
+    photon_energy: float,
+    dP_per_round: float,
+    seed: int,
+    num_samples: int = 200,
+    weights: list[float] | None = None,
+):
+    """単一 seed で CIM を走らせて振幅軌跡を返す公開 API。
+
+    sample_rounds は 0 から num_rounds-1 まで等間隔に num_samples 点(重複除去)。
+    """
+    edges_np = np.asarray(edges, dtype=np.int64)
+    edge_a = np.ascontiguousarray(edges_np[:, 0])
+    edge_b = np.ascontiguousarray(edges_np[:, 1])
+    if weights is None:
+        edge_w = np.ones(edges_np.shape[0], dtype=np.float64)
+    else:
+        edge_w = np.ascontiguousarray(np.asarray(weights, dtype=np.float64))
+
+    num_samples = min(int(num_samples), int(num_rounds))
+    sample_rounds = np.linspace(0, num_rounds - 1, num_samples, dtype=np.int64)
+    sample_rounds = np.unique(sample_rounds)
+
+    c_hist, cut_hist, best_cut, best_signs = _simulate_cim_trajectory(
+        n,
+        int(num_rounds),
+        J.data,
+        J.indices,
+        J.indptr,
+        edge_a,
+        edge_b,
+        edge_w,
+        float(kappa),
+        float(L),
+        float(gamma),
+        float(eta),
+        float(bandwidth),
+        float(photon_energy),
+        float(dP_per_round),
+        np.int64(seed),
+        sample_rounds,
+    )
+    return c_hist, cut_hist, sample_rounds, float(best_cut), best_signs
+
+
 def main():
     # ==== ハイパーパラメータ設定 ====
     # 論文 Section 3 の値をそのまま使用
