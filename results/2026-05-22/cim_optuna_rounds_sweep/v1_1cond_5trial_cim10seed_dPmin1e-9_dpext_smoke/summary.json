@@ -1,0 +1,36 @@
+{
+  "graph": "input/G22.txt",
+  "n": 2000,
+  "k": 19990,
+  "known_best": 13359,
+  "fixed_params": {
+    "kappa": 130.0,
+    "bandwidth": 1000000000.0,
+    "photon_energy": 1.28e-19
+  },
+  "searched_params": [
+    "L",
+    "gamma",
+    "loss_dB",
+    "dP_per_round",
+    "abs_coupling"
+  ],
+  "n_optuna_trials": 5,
+  "n_cim_trials": 10,
+  "rounds_results": {
+    "300": {
+      "best_mean_cut": 13197.5,
+      "best_params": {
+        "L": 0.069235305860113,
+        "gamma": 25.119498706364823,
+        "loss_dB": 22.619006017205756,
+        "dP_per_round": 0.0003103738807142223,
+        "abs_coupling": 0.0076262394358684185
+      },
+      "best_std": 30.137186331839274,
+      "best_max": 13245,
+      "best_min": 13135,
+      "elapsed_sec": 0.6430926322937012
+    }
+  }
+}
