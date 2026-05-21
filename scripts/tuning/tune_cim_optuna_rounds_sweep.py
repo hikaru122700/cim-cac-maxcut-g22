@@ -291,6 +291,141 @@ def plot_cut_curves(traj_data: dict, out_path: Path) -> None:
     print(f"  saved: {out_path}")
 
 
+def _trend(values: list[float]) -> str:
+    """単調性を自動判定して日本語で返す。"""
+    diffs = [b - a for a, b in zip(values, values[1:])]
+    if all(d > 0 for d in diffs):
+        return "単調増加"
+    if all(d < 0 for d in diffs):
+        return "単調減少"
+    # 概ね単調かどうか(1 か所だけ符号反転)を許容
+    pos = sum(1 for d in diffs if d > 0)
+    neg = sum(1 for d in diffs if d < 0)
+    if pos == len(diffs) - 1:
+        return "概ね単調増加(1 段で反転あり)"
+    if neg == len(diffs) - 1:
+        return "概ね単調減少(1 段で反転あり)"
+    return "非単調"
+
+
+def generate_analysis_md(
+    summary_per_rounds: dict,
+    fixed_params: dict,
+    graph: str,
+    n_optuna: int,
+    n_cim: int,
+) -> str:
+    """summary_per_rounds から物理派生量を計算し、分析を md 文字列で返す。
+
+    計算内容:
+        η         = 10^(-loss_dB/10)
+        g₀_th     = -ln(η)                              (閾値利得)
+        g₀(N)     = 2 κ L √(N · dP)                     (最終ラウンドでの利得)
+        dg₀²/dk   = 4 κ² L² · dP                        (利得増加率)
+        k_th      = (g₀_th / (2 κ L))² / dP             (閾値到達ラウンド予測)
+    """
+    rounds = sorted(summary_per_rounds.keys())
+    kappa = fixed_params["kappa"]
+    bw = fixed_params["bandwidth"]
+    he = fixed_params["photon_energy"]
+
+    rows = []
+    for nr in rounds:
+        s = summary_per_rounds[nr]
+        p = s["best_params"]
+        L = p["L"]; gamma = p["gamma"]; loss_dB = p["loss_dB"]
+        dP = p["dP_per_round"]; absJ = p["abs_coupling"]
+        eta = 10.0 ** (-loss_dB / 10.0)
+        g0_th = -np.log(eta)
+        g0_end = 2.0 * kappa * L * np.sqrt(nr * dP)
+        dg02_dk = 4.0 * (kappa ** 2) * (L ** 2) * dP
+        if g0_th > 0 and L > 0 and dP > 0:
+            k_th = (g0_th / (2.0 * kappa * L)) ** 2 / dP
+        else:
+            k_th = float("inf")
+        rows.append(dict(
+            nr=nr, L=L, gamma=gamma, loss_dB=loss_dB, dP=dP, absJ=absJ,
+            eta=eta, g0_th=g0_th, g0_end=g0_end, dg02_dk=dg02_dk, k_th=k_th,
+            mean=s["best_mean_cut"], std=s["best_std"],
+            best_max=s["best_max"], best_min=s["best_min"],
+        ))
+
+    lines: list[str] = []
+    lines.append("# num_rounds スイープ分析")
+    lines.append("")
+    lines.append(f"- **入力グラフ**: {graph}")
+    lines.append(f"- **Optuna**: {n_optuna} trial × CIM {n_cim} seed (prange 並列)")
+    lines.append(f"- **固定パラ**: κ={kappa}, BW={bw:.3g}, photon_energy={he:.3g}")
+    lines.append(f"- **既知ベスト**: {KNOWN_BEST}")
+    lines.append("")
+    lines.append("## チューニング後のベストパラ")
+    lines.append("")
+    lines.append("| num_rounds | L | γ | loss_dB | dP/round | \\|J\\| | mean | std | max | min |")
+    lines.append("|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|")
+    for r in rows:
+        lines.append(
+            f"| {r['nr']} | {r['L']:.4f} | {r['gamma']:.2f} | {r['loss_dB']:.2f} "
+            f"| {r['dP']:.3e} | {r['absJ']:.4f} | {r['mean']:.2f} | {r['std']:.2f} "
+            f"| {r['best_max']} | {r['best_min']} |"
+        )
+    lines.append("")
+    lines.append("## パラメータ単調性(num_rounds 増加方向)")
+    lines.append("")
+    lines.append(f"- **L**: {_trend([r['L'] for r in rows])}")
+    lines.append(f"- **γ**: {_trend([r['gamma'] for r in rows])}")
+    lines.append(f"- **loss_dB**: {_trend([r['loss_dB'] for r in rows])}")
+    lines.append(f"- **dP/round**: {_trend([r['dP'] for r in rows])}")
+    lines.append(f"- **|J|**: {_trend([r['absJ'] for r in rows])}")
+    lines.append("")
+    lines.append("## 縮退を解いた派生量")
+    lines.append("")
+    lines.append("`g₀(k) = 2κL√(k·dP)` で利得が決まり、閾値は `g₀_th = −ln(η)`。"
+                 "ramp 速度は `dg₀²/dk = 4κ²L²·dP`、閾値到達ラウンド予測は `k_th`。")
+    lines.append("")
+    lines.append("| num_rounds | η | dg₀²/dk [/round] | g₀(N) | g₀_th | 過閾値マージン | k_th |")
+    lines.append("|---:|---:|---:|---:|---:|---:|---:|")
+    for r in rows:
+        margin = r["g0_end"] - r["g0_th"]
+        if r["k_th"] == float("inf") or r["k_th"] > 1e9:
+            kth_str = "∞"
+        else:
+            kth_str = f"{r['k_th']:.0f}"
+        lines.append(
+            f"| {r['nr']} | {r['eta']:.4f} | {r['dg02_dk']:.5f} | "
+            f"{r['g0_end']:.3f} | {r['g0_th']:.3f} | {margin:+.3f} | {kth_str} |"
+        )
+    lines.append("")
+    lines.append("**派生量の単調性:**")
+    lines.append("")
+    lines.append(f"- **利得 ramp 速度 dg₀²/dk**: {_trend([r['dg02_dk'] for r in rows])} "
+                 "(ramp が遅くなる方向 = adiabatic 化)")
+    lines.append(f"- **閾値 g₀_th**: {_trend([r['g0_th'] for r in rows])} "
+                 "(損失を強めて閾値を持ち上げ = SN 比向上)")
+    lines.append(f"- **過閾値マージン g₀(N) − g₀_th**: {[round(r['g0_end'] - r['g0_th'], 3) for r in rows]}")
+    lines.append("")
+    lines.append("## 結論")
+    lines.append("")
+    lines.append("ラウンド数が真に支配しているのは個別パラメータではなく、次の 2 つの設計変数:")
+    lines.append("")
+    lines.append("- **ramp 速度** `dg₀²/dk ∝ L²·dP` ← L と dP が縮退した自由度")
+    lines.append("- **閾値** `g₀_th = −ln(η)` ← loss_dB が単独で決定")
+    lines.append("")
+    lines.append("Optuna は num_rounds ごとに、この 2 つを別々の値に設定する 5 パラの組み合わせを発見:")
+    lines.append("")
+    lines.append("- **短時間条件** (例: num_rounds=30): ramp 速度を上げ、閾値を下げ、強結合 + 強飽和で**強引に解を出す**")
+    lines.append("- **長時間条件** (例: num_rounds=10000): ramp 速度を下げ、閾値を上げ、弱結合 + 緩飽和で**ゆっくり adiabatic に到達**")
+    lines.append("- **中間 (300/1500)**: 総ラウンドが k_th より小さい場合は subthreshold で運用しきって最後だけ閾値付近を掠める戦略")
+    lines.append("")
+    lines.append("> **将来のチューニング設計に向けたメモ**: L と dP は L²·dP の積で縮退しているので、"
+                 "`L_eff = L²·dP` の 1 変数化で探索効率が上がる可能性が高い。"
+                 "fANOVA 重要度で L と dP の個別寄与が小さく出るなら根拠あり。")
+    lines.append("")
+    lines.append("---")
+    lines.append("")
+    lines.append("*このファイルは `tune_cim_optuna_rounds_sweep.py` が `summary.json` から自動生成しています。*")
+    return "\n".join(lines)
+
+
 def plot_best_vs_rounds(summary_per_rounds: dict, out_path: Path) -> None:
     rounds = sorted(summary_per_rounds.keys())
     means = [summary_per_rounds[r]["best_mean_cut"] for r in rounds]
