@@ -106,6 +106,8 @@ def main() -> None:
     parser.add_argument("--pticm-sample-interval", type=int, default=25,
                         help="trajectory サンプル間隔 (sweeps)。0 で最終値のみ")
     parser.add_argument("--known-best", type=int, default=None, help="既知ベスト(未指定なら自動)")
+    parser.add_argument("--tag", type=str, default="",
+                        help="出力ディレクトリ名末尾に付ける任意の説明タグ")
     args = parser.parse_args()
 
     setup_plot_style()
@@ -205,11 +207,12 @@ def main() -> None:
         print(line)
     print("=" * 82)
 
-    out_dir = get_output_dir()
-    stem = f"compare_cim_pticm_{graph_name}"
-    v = next_version(out_dir, stem)
-    prefix = f"v{v}_{stem}"
-    print(f"\n[output] dir={out_dir}  version=v{v}")
+    kind_root = get_kind_root()
+    v = next_version(kind_root)
+    desc = build_description(args, sample_interval)
+    out_dir = kind_root / f"v{v}_{desc}"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    print(f"\n[output] dir={out_dir}")
 
     colors = {"CIM": "#1f77b4", "PT-ICM": "#d62728"}
 
