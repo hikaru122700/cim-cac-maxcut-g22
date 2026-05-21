@@ -248,7 +248,7 @@ def main() -> None:
         fontsize=13,
     )
     fig1.tight_layout()
-    hist_path = out_dir / f"{prefix}_hist.png"
+    hist_path = out_dir / "hist.png"
     fig1.savefig(hist_path, dpi=150)
     plt.close(fig1)
     print(f"  saved: {hist_path}")
@@ -275,7 +275,7 @@ def main() -> None:
     ax2.grid(alpha=0.3)
     apply_ticks_inward(ax2)
     fig2.tight_layout()
-    running_path = out_dir / f"{prefix}_running_best.png"
+    running_path = out_dir / "running_best.png"
     fig2.savefig(running_path, dpi=150)
     plt.close(fig2)
     print(f"  saved: {running_path}")
@@ -310,7 +310,7 @@ def main() -> None:
                  ha="center", fontsize=9)
     apply_ticks_inward(ax3)
     fig3.tight_layout()
-    bar_path = out_dir / f"{prefix}_bar.png"
+    bar_path = out_dir / "bar.png"
     fig3.savefig(bar_path, dpi=150)
     plt.close(fig3)
     print(f"  saved: {bar_path}")
@@ -344,13 +344,13 @@ def main() -> None:
     ax4.grid(alpha=0.3)
     apply_ticks_inward(ax4)
     fig4.tight_layout()
-    traj_path = out_dir / f"{prefix}_pticm_trajectory.png"
+    traj_path = out_dir / "pticm_trajectory.png"
     fig4.savefig(traj_path, dpi=150)
     plt.close(fig4)
     print(f"  saved: {traj_path}")
 
     # --- 生データ ---
-    npz_path = out_dir / f"{prefix}_cuts.npz"
+    npz_path = out_dir / "cuts.npz"
     np.savez(
         npz_path,
         cim_cuts=cim_cuts,
@@ -401,7 +401,7 @@ def main() -> None:
             "time_sec": pticm_time,
         },
     }
-    json_path = out_dir / f"{prefix}_summary.json"
+    json_path = out_dir / "summary.json"
     json_path.write_text(json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
     print(f"  saved: {json_path}")
 
