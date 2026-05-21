@@ -311,11 +311,17 @@ def _simulate_pticm_batch(
                         for i in range(n):
                             best_x[i] = s_B[k, i]
 
+            # === 5. trajectory サンプリング(best-so-far を記録) ===
+            if (sweep + 1) % sample_interval == 0:
+                sample_idx = (sweep + 1) // sample_interval - 1
+                if 0 <= sample_idx < num_samples:
+                    trajectory[trial_idx, sample_idx] = best_cut
+
         best_cuts_out[trial_idx] = best_cut
         for i in range(n):
             best_signs_out[trial_idx, i] = best_x[i]
 
-    return best_cuts_out, best_signs_out
+    return best_cuts_out, best_signs_out, trajectory
 
 
 def make_geometric_ladder(t_min: float, t_max: float, num_temps: int) -> np.ndarray:
