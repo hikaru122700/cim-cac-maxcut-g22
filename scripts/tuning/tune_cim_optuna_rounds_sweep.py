@@ -213,33 +213,49 @@ def plot_history(studies: dict, out_path: Path, n_optuna_trials: int) -> None:
     print(f"  saved: {out_path}")
 
 
-def plot_amplitudes(traj_data: dict, out_path: Path, num_show: int = 16) -> None:
+def plot_amplitudes(
+    traj_data: dict,
+    out_path: Path,
+    num_per_side: int = 16,
+) -> None:
     """4 条件の振幅軌跡を 2x2 で表示。
 
     描画ルール ([[feedback-amplitude-plot-style]]):
-    - 16 頂点だけを実線(色分け)で描く
+    - 各サブプロットで最終振幅の符号を見て、+側 / −側へ収束した頂点を
+      それぞれ `num_per_side` 個ずつランダム抽出して実線で描く(計 32 本)
     - 多数の薄い線、std 帯、平均 ⟨|c|⟩ ラインは付けない
     - 凡例なし
     """
     rounds_list = sorted(traj_data.keys())
     fig, axes = plt.subplots(2, 2, figsize=(13, 9), dpi=130)
     axes_flat = axes.flatten()
-    # 頂点の選択は全条件で同じ index にする(再現性 + 比較性)
-    rng = np.random.default_rng(0)
-    n_spins = next(iter(traj_data.values()))["c_history"].shape[1]
-    sel = rng.choice(n_spins, size=min(num_show, n_spins), replace=False)
-    cmap = plt.get_cmap("tab20")
+    cmap_pos = plt.get_cmap("tab20")    # +側用
+    cmap_neg = plt.get_cmap("tab20b")   # −側用
     for ax, nr in zip(axes_flat, rounds_list):
         d = traj_data[nr]
         c_hist = d["c_history"]
         sample_rounds = d["sample_rounds"]
-        for j, i in enumerate(sel):
+        final_c = c_hist[-1, :]
+        pos_idx = np.where(final_c > 0)[0]
+        neg_idx = np.where(final_c < 0)[0]
+        rng = np.random.default_rng(0)
+        sel_pos = rng.choice(pos_idx,
+                             size=min(num_per_side, len(pos_idx)),
+                             replace=False)
+        sel_neg = rng.choice(neg_idx,
+                             size=min(num_per_side, len(neg_idx)),
+                             replace=False)
+        for j, i in enumerate(sel_pos):
             ax.plot(sample_rounds + 1, c_hist[:, i],
-                    color=cmap(j % 20), linewidth=1.4)
+                    color=cmap_pos(j % 20), linewidth=1.3)
+        for j, i in enumerate(sel_neg):
+            ax.plot(sample_rounds + 1, c_hist[:, i],
+                    color=cmap_neg(j % 20), linewidth=1.3)
         ax.axhline(0, color="gray", linewidth=0.6)
         ax.set_title(
-            f"num_rounds={nr}  best_cut={d['best_cut']:.0f}",
-            fontsize=11,
+            f"num_rounds={nr}  best_cut={d['best_cut']:.0f}  "
+            f"(+:{len(pos_idx)} / −:{len(neg_idx)} of {len(final_c)})",
+            fontsize=10,
         )
         ax.set_xlabel("round step")
         ax.set_ylabel("In-phase amplitude (arb.)")
