@@ -592,6 +592,18 @@ def main() -> None:
     json_path.write_text(json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
     print(f"  saved: {json_path}")
 
+    # --- 物理派生量込みの分析 markdown ---
+    analysis_md = generate_analysis_md(
+        summary_per_rounds,
+        summary["fixed_params"],
+        args.graph,
+        args.n_optuna_trials,
+        args.n_cim_trials,
+    )
+    md_path = out_dir / "analysis.md"
+    md_path.write_text(analysis_md, encoding="utf-8")
+    print(f"  saved: {md_path}")
+
     # --- 表示用サマリ ---
     print("\n" + "=" * 78)
     print(f"{'num_rounds':>10} {'mean':>10} {'std':>8} {'max':>8} {'min':>8} {'time[s]':>10}")
