@@ -648,6 +648,65 @@ def simulate_cim_batch(
     return best_cuts, best_signs
 
 
+def simulate_cim_batch_polished(
+    n: int,
+    J: csr_matrix,
+    edges: list[tuple[int, int]],
+    num_rounds: int,
+    num_trials: int,
+    kappa: float,
+    L: float,
+    gamma: float,
+    eta: float,
+    bandwidth: float,
+    photon_energy: float,
+    dP_per_round: float,
+    seeds: np.ndarray,
+    weights: list[float] | None = None,
+) -> tuple[np.ndarray, np.ndarray]:
+    """CIM + 1-flip 局所最適化の公開ラッパー (2026-05-25 改良版)。
+
+    Returns:
+        best_cuts: shape (num_trials,)     polish 後の cut
+        best_signs: shape (num_trials, n)  polish 後の符号配列
+    """
+    edges_np = np.asarray(edges, dtype=np.int64)
+    edge_a = np.ascontiguousarray(edges_np[:, 0])
+    edge_b = np.ascontiguousarray(edges_np[:, 1])
+    if weights is None:
+        edge_w = np.ones(edges_np.shape[0], dtype=np.float64)
+    else:
+        edge_w = np.ascontiguousarray(np.asarray(weights, dtype=np.float64))
+    seeds_arr = np.ascontiguousarray(np.asarray(seeds, dtype=np.int64))
+
+    # 隣接 CSR を構築 (polish 用)
+    adj_indptr, adj_indices, adj_w = build_adjacency_csr(n, edges, weights)
+
+    best_cuts, best_signs = _simulate_cim_batch_polished(
+        n,
+        num_rounds,
+        num_trials,
+        J.data,
+        J.indices,
+        J.indptr,
+        edge_a,
+        edge_b,
+        edge_w,
+        adj_indptr,
+        adj_indices,
+        adj_w,
+        float(kappa),
+        float(L),
+        float(gamma),
+        float(eta),
+        float(bandwidth),
+        float(photon_energy),
+        float(dP_per_round),
+        seeds_arr,
+    )
+    return best_cuts, best_signs
+
+
 # ============================================================
 #  振幅軌跡記録版(チューニング後の可視化用)
 # ============================================================
