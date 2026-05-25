@@ -516,14 +516,13 @@ def _simulate_cim_batch_polished(
     photon_energy: float,
     dP_per_round: float,
     seeds: np.ndarray,
-    ils_iters: int,
-    ils_perturb: int,
-    kl_passes: int,
+    tabu_iters: int,
+    tabu_tenure: int,
 ):
-    """CIM + ILS-KL (Kernighan-Lin パス escape) を num_trials 並列実行。
+    """CIM + Tabu search を num_trials 並列実行。
 
     本体は _simulate_cim_batch とほぼ同じ。違いは trial 末で
-    best_signs に対し ILS-KL (KL pass + 摂動再 KL のループ) を施し、
+    best_signs に対し Tabu search (aspiration 付き) を施し、
     escape 後の cut と spins を返すこと。
     """
     best_cuts_out = np.zeros(num_trials, dtype=np.float64)
