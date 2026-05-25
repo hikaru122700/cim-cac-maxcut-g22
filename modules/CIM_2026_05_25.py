@@ -986,21 +986,27 @@ def simulate_cim_batch_polished(
     dP_per_round: float,
     seeds: np.ndarray,
     weights: list[float] | None = None,
-    tabu_iters: int = 5000,
-    tabu_tenure: int = 20,
+    tabu_iters: int = 200_000,
+    tabu_tenure: int = 150,
+    ils_outer: int = 10,
+    ils_perturb: int = 200,
 ) -> tuple[np.ndarray, np.ndarray]:
-    """CIM + Tabu search の公開ラッパー (2026-05-25 改良版)。
+    """CIM + ILS-Tabu の公開ラッパー (2026-05-25 改良版)。
 
     Parameters
     ----------
     tabu_iters : int
-        Tabu search の反復数 (1 反復 = 1 flip)
+        各 Tabu chain の反復数 (1 反復 = 1 flip)
     tabu_tenure : int
         flip した頂点を禁止する iteration 数
+    ils_outer : int
+        ILS の外側反復数 (摂動 + Tabu のサイクル数)
+    ils_perturb : int
+        1 回の摂動で反転する頂点数
 
     Returns:
-        best_cuts: shape (num_trials,)     Tabu 後の best cut
-        best_signs: shape (num_trials, n)  Tabu 後の best 解
+        best_cuts: shape (num_trials,)     escape 後の best cut
+        best_signs: shape (num_trials, n)  escape 後の best 解
     """
     edges_np = np.asarray(edges, dtype=np.int64)
     edge_a = np.ascontiguousarray(edges_np[:, 0])
@@ -1037,6 +1043,8 @@ def simulate_cim_batch_polished(
         seeds_arr,
         int(tabu_iters),
         int(tabu_tenure),
+        int(ils_outer),
+        int(ils_perturb),
     )
     return best_cuts, best_signs
 
