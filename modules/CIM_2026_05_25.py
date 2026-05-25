@@ -382,23 +382,26 @@ def _ils_escape(
     edge_w: np.ndarray,
     num_iters: int,
     perturb_size: int,
+    kl_passes: int,
 ) -> float:
-    """ILS で spins を脱出磨きし、最終 cut を返す。"""
-    # 初期 polish (CIM 直後の念押し)
-    _local_search_1flip(spins, n, adj_indptr, adj_indices, adj_w)
+    """ILS-KL で spins を脱出磨きし、最終 cut を返す。
+
+    各 iteration: 摂動 → KL local search → cut 評価 → best 更新。
+    """
+    # 初期 KL pass (CIM 直後の念押し)
+    _local_search_kl(spins, n, adj_indptr, adj_indices, adj_w, kl_passes)
     best_cut = _compute_cut_jit(spins, edge_a, edge_b, edge_w)
     best_spins = spins.copy()
 
     trial_spins = np.zeros(n, dtype=np.bool_)
     for it in range(num_iters):
-        # best_spins から複製してから kick
         for i in range(n):
             trial_spins[i] = best_spins[i]
         for _ in range(perturb_size):
             idx = np.random.randint(0, n)
             trial_spins[idx] = not trial_spins[idx]
 
-        _local_search_1flip(trial_spins, n, adj_indptr, adj_indices, adj_w)
+        _local_search_kl(trial_spins, n, adj_indptr, adj_indices, adj_w, kl_passes)
         trial_cut = _compute_cut_jit(trial_spins, edge_a, edge_b, edge_w)
 
         if trial_cut > best_cut:
@@ -406,7 +409,6 @@ def _ils_escape(
             for i in range(n):
                 best_spins[i] = trial_spins[i]
 
-    # spins を best_spins に上書きして返す
     for i in range(n):
         spins[i] = best_spins[i]
     return best_cut
