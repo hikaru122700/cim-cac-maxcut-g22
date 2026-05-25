@@ -441,12 +441,13 @@ def _simulate_cim_batch_polished(
     seeds: np.ndarray,
     ils_iters: int,
     ils_perturb: int,
+    kl_passes: int,
 ):
-    """CIM + ILS (Iterated Local Search) を num_trials 並列実行。
+    """CIM + ILS-KL (Kernighan-Lin パス escape) を num_trials 並列実行。
 
     本体は _simulate_cim_batch とほぼ同じ。違いは trial 末で
-    best_signs に対し ILS (1-flip polish + 摂動再 polish のループ)
-    を施し、escape 後の cut と spins を返すこと。
+    best_signs に対し ILS-KL (KL pass + 摂動再 KL のループ) を施し、
+    escape 後の cut と spins を返すこと。
     """
     best_cuts_out = np.zeros(num_trials, dtype=np.float64)
     best_signs_out = np.zeros((num_trials, n), dtype=np.bool_)
@@ -495,12 +496,12 @@ def _simulate_cim_batch_polished(
                 for i in range(n):
                     best_signs[i] = c[i] > 0.0
 
-        # ---- trial 末 ILS: 1-flip 局所最適から escape して push up ----
+        # ---- trial 末 ILS-KL: 局所最適から escape して push up ----
         ils_cut = _ils_escape(
             best_signs, n,
             adj_indptr, adj_indices, adj_w,
             edge_a, edge_b, edge_w,
-            ils_iters, ils_perturb,
+            ils_iters, ils_perturb, kl_passes,
         )
 
         best_cuts_out[trial_idx] = ils_cut
