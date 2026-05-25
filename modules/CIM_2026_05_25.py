@@ -228,6 +228,111 @@ def _local_search_1flip(
 
 
 # ============================================================
+#  Kernighan-Lin (KL) スタイル局所探索
+# ============================================================
+# MAX-CUT の古典的強局所探索。1 pass で N 回の forced flip 列を生成し、
+# その途中の running gain が最大になる prefix まで戻す。これにより
+# 「単独では負だが連続させると正」な flip 系列を発見でき、
+# 1-flip 局所最適から脱出できる。
+#
+# 計算量 (per pass):
+#   - argmax: O(n) × n flip = O(n²) ~ 4M ops (n=2000)
+#   - 隣接 delta 更新: O(K)
+#   - revert + delta 再計算: O(n + K)
+#   合計 ~5〜10 ms / pass。max_passes=6 で 30〜60 ms / trial。
+#
+# 多くの場合 max_passes=2〜3 で収束する。
+@njit(cache=True, fastmath=True)
+def _recompute_delta(spins, n, adj_indptr, adj_indices, adj_w, delta_out):
+    for i in range(n):
+        s_i = spins[i]
+        acc = 0.0
+        start = adj_indptr[i]
+        end = adj_indptr[i + 1]
+        for idx in range(start, end):
+            if s_i == spins[adj_indices[idx]]:
+                acc += adj_w[idx]
+            else:
+                acc -= adj_w[idx]
+        delta_out[i] = acc
+
+
+@njit(cache=True, fastmath=True)
+def _local_search_kl(
+    spins: np.ndarray,
+    n: int,
+    adj_indptr: np.ndarray,
+    adj_indices: np.ndarray,
+    adj_w: np.ndarray,
+    max_passes: int,
+) -> float:
+    delta = np.zeros(n, dtype=np.float64)
+    _recompute_delta(spins, n, adj_indptr, adj_indices, adj_w, delta)
+
+    flip_seq = np.zeros(n, dtype=np.int64)
+    locked = np.zeros(n, dtype=np.bool_)
+    total_gain = 0.0
+
+    for pass_idx in range(max_passes):
+        for i in range(n):
+            locked[i] = False
+
+        running_gain = 0.0
+        best_pass_gain = 0.0
+        best_pass_step = -1
+        actual_steps = 0
+
+        for step in range(n):
+            best_i = -1
+            best_d = -1.0e30
+            for i in range(n):
+                if (not locked[i]) and delta[i] > best_d:
+                    best_d = delta[i]
+                    best_i = i
+            if best_i < 0:
+                break
+
+            spins[best_i] = not spins[best_i]
+            running_gain += best_d
+            locked[best_i] = True
+            flip_seq[step] = best_i
+            actual_steps = step + 1
+
+            s_v = spins[best_i]
+            start = adj_indptr[best_i]
+            end = adj_indptr[best_i + 1]
+            for idx in range(start, end):
+                j = adj_indices[idx]
+                w = adj_w[idx]
+                if s_v == spins[j]:
+                    delta[j] += 2.0 * w
+                else:
+                    delta[j] -= 2.0 * w
+            delta[best_i] = -delta[best_i]
+
+            if running_gain > best_pass_gain:
+                best_pass_gain = running_gain
+                best_pass_step = step
+
+        if best_pass_gain <= 1e-12:
+            # revert all flips this pass
+            for step in range(actual_steps - 1, -1, -1):
+                v = flip_seq[step]
+                spins[v] = not spins[v]
+            _recompute_delta(spins, n, adj_indptr, adj_indices, adj_w, delta)
+            break
+
+        # revert flips after best_pass_step
+        for step in range(actual_steps - 1, best_pass_step, -1):
+            v = flip_seq[step]
+            spins[v] = not spins[v]
+        total_gain += best_pass_gain
+        _recompute_delta(spins, n, adj_indptr, adj_indices, adj_w, delta)
+
+    return total_gain
+
+
+# ============================================================
 #  Iterated Local Search (ILS) で 1-flip 局所最適から脱出
 # ============================================================
 # CIM の連続力学は Ising エネルギーの停留点に収束するため、
