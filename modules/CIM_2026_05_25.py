@@ -753,12 +753,21 @@ def simulate_cim_batch_polished(
     dP_per_round: float,
     seeds: np.ndarray,
     weights: list[float] | None = None,
+    ils_iters: int = 40,
+    ils_perturb: int = 45,
 ) -> tuple[np.ndarray, np.ndarray]:
-    """CIM + 1-flip 局所最適化の公開ラッパー (2026-05-25 改良版)。
+    """CIM + ILS (1-flip + 摂動 escape) の公開ラッパー (2026-05-25 改良版)。
+
+    Parameters
+    ----------
+    ils_iters : int
+        ILS の反復回数 (摂動 + 再 polish を何回やるか)
+    ils_perturb : int
+        1 回の摂動で反転する頂点数。経験則: ≈ √N (G22 で 45 前後)
 
     Returns:
-        best_cuts: shape (num_trials,)     polish 後の cut
-        best_signs: shape (num_trials, n)  polish 後の符号配列
+        best_cuts: shape (num_trials,)     ILS 後の cut
+        best_signs: shape (num_trials, n)  ILS 後の符号配列
     """
     edges_np = np.asarray(edges, dtype=np.int64)
     edge_a = np.ascontiguousarray(edges_np[:, 0])
