@@ -572,15 +572,15 @@ def _simulate_cim_batch_polished(
                 for i in range(n):
                     best_signs[i] = c[i] > 0.0
 
-        # ---- trial 末 ILS-KL: 局所最適から escape して push up ----
-        ils_cut = _ils_escape(
+        # ---- trial 末 Tabu search: aspiration 付き脱出探索 ----
+        tabu_cut = _tabu_search(
             best_signs, n,
             adj_indptr, adj_indices, adj_w,
             edge_a, edge_b, edge_w,
-            ils_iters, ils_perturb, kl_passes,
+            tabu_iters, tabu_tenure,
         )
 
-        best_cuts_out[trial_idx] = ils_cut
+        best_cuts_out[trial_idx] = tabu_cut
         for i in range(n):
             best_signs_out[trial_idx, i] = best_signs[i]
 
