@@ -937,24 +937,21 @@ def simulate_cim_batch_polished(
     dP_per_round: float,
     seeds: np.ndarray,
     weights: list[float] | None = None,
-    ils_iters: int = 20,
-    ils_perturb: int = 40,
-    kl_passes: int = 4,
+    tabu_iters: int = 5000,
+    tabu_tenure: int = 20,
 ) -> tuple[np.ndarray, np.ndarray]:
-    """CIM + ILS-KL (Kernighan-Lin escape) の公開ラッパー (2026-05-25 改良版)。
+    """CIM + Tabu search の公開ラッパー (2026-05-25 改良版)。
 
     Parameters
     ----------
-    ils_iters : int
-        ILS の反復回数 (摂動 + 再 KL を何回やるか)
-    ils_perturb : int
-        1 回の摂動で反転する頂点数。経験則: ≈ √N (G22 で 40 前後)
-    kl_passes : int
-        各 polish で実行する KL pass の最大数 (通常 2-4 回で収束)
+    tabu_iters : int
+        Tabu search の反復数 (1 反復 = 1 flip)
+    tabu_tenure : int
+        flip した頂点を禁止する iteration 数
 
     Returns:
-        best_cuts: shape (num_trials,)     escape 後の cut
-        best_signs: shape (num_trials, n)  escape 後の符号配列
+        best_cuts: shape (num_trials,)     Tabu 後の best cut
+        best_signs: shape (num_trials, n)  Tabu 後の best 解
     """
     edges_np = np.asarray(edges, dtype=np.int64)
     edge_a = np.ascontiguousarray(edges_np[:, 0])
@@ -989,9 +986,8 @@ def simulate_cim_batch_polished(
         float(photon_energy),
         float(dP_per_round),
         seeds_arr,
-        int(ils_iters),
-        int(ils_perturb),
-        int(kl_passes),
+        int(tabu_iters),
+        int(tabu_tenure),
     )
     return best_cuts, best_signs
 
