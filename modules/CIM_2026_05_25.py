@@ -228,6 +228,86 @@ def _local_search_1flip(
 
 
 # ============================================================
+#  Iterated Local Search (ILS) で 1-flip 局所最適から脱出
+# ============================================================
+# CIM の連続力学は Ising エネルギーの停留点に収束するため、
+# 出力解はほぼ常に 1-flip 局所最適 (素朴な polish では gain=0)。
+# 真に cut を押し上げるには「強い摂動 → 再 polish」のループが必要。
+#
+# 戦略:
+#   1. CIM 解を 1-flip で念のため磨く (普通 gain=0)
+#   2. K 回反復:
+#       a. best_spins から trial_spins = copy()
+#       b. trial_spins の k 頂点をランダムに反転 (kick / perturbation)
+#       c. trial_spins を 1-flip greedy で local opt まで磨く
+#       d. cut が best を超えたら best_spins ← trial_spins
+#   3. best_spins と best_cut を返す
+#
+# 摂動サイズ k は「強すぎず弱すぎず」が重要:
+#   k 小 → 同じ盆地に戻る (改善しない)
+#   k 大 → 完全ランダム化 (1-flip polish に時間がかかり、性能低下)
+#   経験則: k ≈ √N (N=2000 で k ≈ 45) 周辺が効きやすい
+#
+# 反復数 K: 多いほど精度上がるが時間も増える。CIM 本体 3.3秒に対し
+# K=40, k=40 で 1 trial あたり ~50ms 程度。100 trial 並列なら合計 1秒以下。
+@njit(cache=True, fastmath=True)
+def _compute_cut_jit(
+    spins: np.ndarray,
+    edge_a: np.ndarray,
+    edge_b: np.ndarray,
+    edge_w: np.ndarray,
+) -> float:
+    cut = 0.0
+    num_edges = edge_a.shape[0]
+    for e in range(num_edges):
+        if spins[edge_a[e]] != spins[edge_b[e]]:
+            cut += edge_w[e]
+    return cut
+
+
+@njit(cache=True, fastmath=True)
+def _ils_escape(
+    spins: np.ndarray,           # (n,) bool, in-place: 最終的に best_spins になる
+    n: int,
+    adj_indptr: np.ndarray,
+    adj_indices: np.ndarray,
+    adj_w: np.ndarray,
+    edge_a: np.ndarray,
+    edge_b: np.ndarray,
+    edge_w: np.ndarray,
+    num_iters: int,
+    perturb_size: int,
+) -> float:
+    """ILS で spins を脱出磨きし、最終 cut を返す。"""
+    # 初期 polish (CIM 直後の念押し)
+    _local_search_1flip(spins, n, adj_indptr, adj_indices, adj_w)
+    best_cut = _compute_cut_jit(spins, edge_a, edge_b, edge_w)
+    best_spins = spins.copy()
+
+    trial_spins = np.zeros(n, dtype=np.bool_)
+    for it in range(num_iters):
+        # best_spins から複製してから kick
+        for i in range(n):
+            trial_spins[i] = best_spins[i]
+        for _ in range(perturb_size):
+            idx = np.random.randint(0, n)
+            trial_spins[idx] = not trial_spins[idx]
+
+        _local_search_1flip(trial_spins, n, adj_indptr, adj_indices, adj_w)
+        trial_cut = _compute_cut_jit(trial_spins, edge_a, edge_b, edge_w)
+
+        if trial_cut > best_cut:
+            best_cut = trial_cut
+            for i in range(n):
+                best_spins[i] = trial_spins[i]
+
+    # spins を best_spins に上書きして返す
+    for i in range(n):
+        spins[i] = best_spins[i]
+    return best_cut
+
+
+# ============================================================
 #  Polish 付き batch シミュレーター
 # ============================================================
 @njit(cache=True, fastmath=True, parallel=True)
