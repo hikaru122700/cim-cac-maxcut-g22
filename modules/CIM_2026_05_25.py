@@ -145,6 +145,218 @@ def _simulate_cim_batch(
     return best_cuts_out, best_signs_out
 
 
+# ============================================================
+#  1-flip greedy 局所最適化 (njit ヘルパー)
+# ============================================================
+# CIM の符号配列に対し、Δcut[i] を維持しつつ argmax(Δcut) を貪欲に
+# flip し続け、これ以上正の改善 flip が無い (= 1-flip 局所最適) まで磨く。
+#
+# 計算量:
+#   - 初期 Δ の計算: O(K) (K = 辺数)
+#   - 1 flip あたり: argmax O(n) + 隣接更新 O(deg)
+#   - 典型 flip 回数: G22 で 50〜200 程度 (実測)
+#   - 全体: ~1 trial で 1〜2 ms 程度 (3.3 秒の CIM 本体に比べ無視できる)
+#
+# 数学:
+#   Δcut[i] = Σ_j w_ij · (+1 if spin[i]==spin[j] else -1)
+#   spin[v] を flip すると:
+#     - Δcut[v]      ← -Δcut[v]
+#     - 各隣接 j について Δcut[j] を ±2·w_vj 更新
+#       (after-flip で spin[v]==spin[j] なら +2w、!= なら -2w)
+@njit(cache=True, fastmath=True)
+def _local_search_1flip(
+    spins: np.ndarray,            # (n,) bool, in-place で更新される
+    n: int,
+    adj_indptr: np.ndarray,       # (n+1,)
+    adj_indices: np.ndarray,      # (2K,)
+    adj_w: np.ndarray,             # (2K,)
+) -> float:
+    """spins を 1-flip 局所最適まで磨き、累積 cut 改善量を返す。"""
+    # 初期 Δ を計算
+    delta = np.zeros(n, dtype=np.float64)
+    for i in range(n):
+        s_i = spins[i]
+        start = adj_indptr[i]
+        end = adj_indptr[i + 1]
+        acc = 0.0
+        for idx in range(start, end):
+            j = adj_indices[idx]
+            w = adj_w[idx]
+            if s_i == spins[j]:
+                acc += w
+            else:
+                acc -= w
+        delta[i] = acc
+
+    total_gain = 0.0
+    eps = 1e-12  # 浮動小数比較の閾値 (整数重みでも安全)
+    while True:
+        # 最大 Δ を探す
+        best_i = -1
+        best_d = eps
+        for i in range(n):
+            if delta[i] > best_d:
+                best_d = delta[i]
+                best_i = i
+        if best_i < 0:
+            break
+
+        # flip 実行
+        spins[best_i] = not spins[best_i]
+        total_gain += best_d
+        s_v = spins[best_i]
+
+        # 隣接 j の Δ を更新
+        start = adj_indptr[best_i]
+        end = adj_indptr[best_i + 1]
+        for idx in range(start, end):
+            j = adj_indices[idx]
+            w = adj_w[idx]
+            if s_v == spins[j]:
+                # flip 後同じ側 → 以前は異なる側で -w 寄与 → 今は +w に
+                delta[j] += 2.0 * w
+            else:
+                delta[j] -= 2.0 * w
+        # 自分自身の Δ は符号反転 (もう一度 flip すると -best_d 戻る)
+        delta[best_i] = -delta[best_i]
+
+    return total_gain
+
+
+# ============================================================
+#  Polish 付き batch シミュレーター
+# ============================================================
+@njit(cache=True, fastmath=True, parallel=True)
+def _simulate_cim_batch_polished(
+    n: int,
+    num_rounds: int,
+    num_trials: int,
+    J_data: np.ndarray,
+    J_indices: np.ndarray,
+    J_indptr: np.ndarray,
+    edge_a: np.ndarray,
+    edge_b: np.ndarray,
+    edge_w: np.ndarray,
+    adj_indptr: np.ndarray,
+    adj_indices: np.ndarray,
+    adj_w: np.ndarray,
+    kappa: float,
+    L: float,
+    gamma: float,
+    eta: float,
+    bandwidth: float,
+    photon_energy: float,
+    dP_per_round: float,
+    seeds: np.ndarray,
+):
+    """CIM + 1-flip 局所最適化を num_trials 並列実行。
+
+    本体は _simulate_cim_batch とほぼ同じ。違いは trial 末で
+    best_signs に対し 1-flip greedy 局所最適化を施し、polish 後の
+    cut と spins を返すこと。
+    """
+    best_cuts_out = np.zeros(num_trials, dtype=np.float64)
+    best_signs_out = np.zeros((num_trials, n), dtype=np.bool_)
+
+    sqrt_eta = np.sqrt(eta)
+    noise_const = np.sqrt((2.0 - eta) * 0.25 * bandwidth * photon_energy)
+    num_edges = edge_a.shape[0]
+
+    for trial_idx in prange(num_trials):
+        np.random.seed(seeds[trial_idx])
+
+        c = np.zeros(n, dtype=np.float64)
+        Jc = np.zeros(n, dtype=np.float64)
+        best_signs = np.zeros(n, dtype=np.bool_)
+        best_cut = -1.0e18
+
+        for k in range(num_rounds):
+            P_p = (k + 1) * dP_per_round
+            g0 = 2.0 * kappa * np.sqrt(P_p) * L
+            half_g0 = 0.5 * g0
+            neg_half_g0_gamma = -0.5 * g0 * gamma
+
+            for i in range(n):
+                acc = 0.0
+                start = J_indptr[i]
+                end = J_indptr[i + 1]
+                for jj in range(start, end):
+                    acc += J_data[jj] * c[J_indices[jj]]
+                Jc[i] = acc
+
+            for i in range(n):
+                coupled_in_i = sqrt_eta * c[i] + Jc[i]
+                I_in_i = coupled_in_i * coupled_in_i
+                half_g_i = half_g0 + neg_half_g0_gamma * I_in_i
+                sqrt_G_I_i = np.exp(half_g_i)
+                noise_i = np.random.standard_normal() * (noise_const * sqrt_G_I_i)
+                c[i] = sqrt_G_I_i * coupled_in_i + noise_i
+
+            cut = 0.0
+            for e in range(num_edges):
+                if (c[edge_a[e]] > 0.0) != (c[edge_b[e]] > 0.0):
+                    cut += edge_w[e]
+
+            if cut > best_cut:
+                best_cut = cut
+                for i in range(n):
+                    best_signs[i] = c[i] > 0.0
+
+        # ---- trial 末 polish: best_signs を 1-flip 局所最適まで磨く ----
+        gain = _local_search_1flip(best_signs, n, adj_indptr, adj_indices, adj_w)
+        polished_cut = best_cut + gain
+
+        best_cuts_out[trial_idx] = polished_cut
+        for i in range(n):
+            best_signs_out[trial_idx, i] = best_signs[i]
+
+    return best_cuts_out, best_signs_out
+
+
+def build_adjacency_csr(
+    n: int,
+    edges: list,
+    weights: list | None = None,
+):
+    """隣接 CSR (adj_indptr, adj_indices, adj_w) を辺リストから構築する。
+
+    無向グラフなので各辺 (a,b) は両方向に展開する。
+    重み未指定なら全辺 w=1.0。
+    """
+    deg = np.zeros(n, dtype=np.int64)
+    for a, b in edges:
+        deg[a] += 1
+        deg[b] += 1
+
+    indptr = np.zeros(n + 1, dtype=np.int64)
+    for i in range(n):
+        indptr[i + 1] = indptr[i] + deg[i]
+    total = int(indptr[n])
+
+    indices = np.zeros(total, dtype=np.int64)
+    adj_w = np.zeros(total, dtype=np.float64)
+    cursor = indptr[:n].copy()
+    if weights is None:
+        for a, b in edges:
+            indices[cursor[a]] = b
+            adj_w[cursor[a]] = 1.0
+            cursor[a] += 1
+            indices[cursor[b]] = a
+            adj_w[cursor[b]] = 1.0
+            cursor[b] += 1
+    else:
+        for (a, b), w in zip(edges, weights):
+            wf = float(w)
+            indices[cursor[a]] = b
+            adj_w[cursor[a]] = wf
+            cursor[a] += 1
+            indices[cursor[b]] = a
+            adj_w[cursor[b]] = wf
+            cursor[b] += 1
+
+    return indptr, indices, adj_w
+
+
 def load_graph(filepath: str, return_weights: bool = False):
     """Gset 形式のグラフを読み込み、隣接リストと辺リストを返す。
 
