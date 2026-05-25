@@ -332,12 +332,14 @@ def _simulate_cim_batch_polished(
     photon_energy: float,
     dP_per_round: float,
     seeds: np.ndarray,
+    ils_iters: int,
+    ils_perturb: int,
 ):
-    """CIM + 1-flip 局所最適化を num_trials 並列実行。
+    """CIM + ILS (Iterated Local Search) を num_trials 並列実行。
 
     本体は _simulate_cim_batch とほぼ同じ。違いは trial 末で
-    best_signs に対し 1-flip greedy 局所最適化を施し、polish 後の
-    cut と spins を返すこと。
+    best_signs に対し ILS (1-flip polish + 摂動再 polish のループ)
+    を施し、escape 後の cut と spins を返すこと。
     """
     best_cuts_out = np.zeros(num_trials, dtype=np.float64)
     best_signs_out = np.zeros((num_trials, n), dtype=np.bool_)
@@ -386,11 +388,15 @@ def _simulate_cim_batch_polished(
                 for i in range(n):
                     best_signs[i] = c[i] > 0.0
 
-        # ---- trial 末 polish: best_signs を 1-flip 局所最適まで磨く ----
-        gain = _local_search_1flip(best_signs, n, adj_indptr, adj_indices, adj_w)
-        polished_cut = best_cut + gain
+        # ---- trial 末 ILS: 1-flip 局所最適から escape して push up ----
+        ils_cut = _ils_escape(
+            best_signs, n,
+            adj_indptr, adj_indices, adj_w,
+            edge_a, edge_b, edge_w,
+            ils_iters, ils_perturb,
+        )
 
-        best_cuts_out[trial_idx] = polished_cut
+        best_cuts_out[trial_idx] = ils_cut
         for i in range(n):
             best_signs_out[trial_idx, i] = best_signs[i]
 
