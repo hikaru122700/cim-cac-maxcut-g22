@@ -424,8 +424,16 @@ def _ils_tabu(
     tabu_tenure: int,
     perturb_size: int,
 ) -> float:
-    """ILS-Tabu: 摂動 + Tabu の反復で diversification を強化。"""
-    # 初回 Tabu
+    """ILS-Tabu: CIM 初期解 + 摂動から複数 Tabu chain を独立実行し best を採用。
+
+    diversification 戦略: 「best 周辺のみ深掘る」(intensification 偏重) より
+    「CIM start を毎回新規摂動」(diversification 偏重) のほうが、
+    1 trial 内で多様な basin をサンプルできるため stuck trial を救える。
+    """
+    # CIM 初期解を保存 (毎 ILS iter の出発点に使う)
+    cim_init = spins.copy()
+
+    # 初回 Tabu (摂動なし、CIM 解から直接)
     best_cut = _tabu_search(
         spins, n, adj_indptr, adj_indices, adj_w,
         edge_a, edge_b, edge_w, inner_tabu_iters, tabu_tenure,
@@ -434,9 +442,9 @@ def _ils_tabu(
 
     trial_spins = np.zeros(n, dtype=np.bool_)
     for _ in range(outer_iters):
-        # perturb best
+        # CIM 初期解から摂動 (best ではなく cim_init を起点)
         for i in range(n):
-            trial_spins[i] = best_spins[i]
+            trial_spins[i] = cim_init[i]
         for _ in range(perturb_size):
             idx = np.random.randint(0, n)
             trial_spins[idx] = not trial_spins[idx]
