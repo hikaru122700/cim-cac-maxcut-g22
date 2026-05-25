@@ -1,5 +1,12 @@
 """
-Coherent Ising Machine (CIM) シミュレータ - 進行波モデル
+Coherent Ising Machine (CIM) シミュレータ - 進行波モデル (2026-05-25 改良版)
+
+baseline (modules/CIM.py) との差分:
+  - trial 末で best_signs に対し 1-flip greedy 局所最適化を JIT 内で実行
+  - random sparse な G22 では CIM 出力が常に 1-flip 改善余地を残しているため、
+    cut の底上げが安定して得られる(目標: 100 trial 平均 ≥ 13340)
+  - 既存 API (`_simulate_cim_batch`, `simulate_cim_batch`) は温存し、
+    新規に `_simulate_cim_batch_polished`, `simulate_cim_batch_polished` を追加
 
 論文: Inoue & Yoshida,
   "Traveling-wave model of coherent Ising machine based on fiber loop with
