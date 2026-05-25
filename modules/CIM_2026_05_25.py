@@ -850,81 +850,97 @@ def simulate_cim_with_trajectory(
 
 
 def main():
-    # ==== ハイパーパラメータ設定 ====
-    # 論文 Section 3 の値をそのまま使用
-    config = {
-        # 物理パラメータ
-        "kappa": 130.0,             # W^(-1/2) m^(-1)  非線形定数
-        "L": 0.05,                  # m                PSA長 (5 cm)
-        "gamma": 42.09,             # W^(-1)           飽和係数
-        "loss_dB": 11.0,            # dB               ループ損失
-        "bandwidth": 1.0e9,         # Hz               システム帯域 (1 GHz)
-        "photon_energy_J": 1.28e-19, # J               一光子エネルギー ℏω (1550nm)
-                                     #                  ノイズ式の単位変換因子
-        "dP_per_round": 0.05e-3,    # W/round          ポンプ増加量 (0.05 mW)
-        "coupling": -0.03,          #                  G22 辺の結合係数
+    """100 seed 並列ベンチマーク (G22)。
 
-        # シミュレーション設定
-        "num_rounds": 1500,         # 総ラウンド数
-        "seed": 42,                 # 乱数シード
-        "log_interval": 10,         # wandb ログ間隔
+    目標: polish 後の 100 seed 平均 cut ≥ 13340。
+    """
+    import time
+
+    config = {
+        "kappa": 130.0,
+        "L": 0.05,
+        "gamma": 42.09,
+        "loss_dB": 11.0,
+        "bandwidth": 1.0e9,
+        "photon_energy_J": 1.28e-19,
+        "dP_per_round": 0.05e-3,
+        "coupling": -0.03,
+        "num_rounds": 1500,
+        "num_trials": 100,
+        "seed_base": 0,
     }
 
-    # ==== wandb 初期化 ====
-    wandb.init(project="cim-max-cut", config=config)
-    cfg = wandb.config
+    eta = 10.0 ** (-config["loss_dB"] / 10.0)
 
-    # 損失(dB) → 透過率 η に変換
-    #   loss_dB = 11 → η = 10^(-11/10) ≈ 0.0794
-    #   ループを1周するたびに信号パワーは η 倍になる
-    eta = 10.0 ** (-cfg.loss_dB / 10.0)
-    wandb.config.update({"eta": eta}, allow_val_change=True)
-
-    # 乱数生成器(seed 固定で再現性を確保)
-    rng = np.random.default_rng(cfg.seed)
-
-    # ==== グラフ読み込み ====
     filepath = "input/G22.txt"
     n, k_edges, adj, edges = load_graph(filepath)
     print(f"N={n}, K={k_edges}, eta={eta:.4f}")
+    print(f"num_trials={config['num_trials']}, num_rounds={config['num_rounds']}")
 
-    # ==== 結合行列の構築 ====
-    # G22 の辺に対して J_ij = -0.03 を設定
-    J = build_coupling_matrix(n, edges, cfg.coupling)
+    J = build_coupling_matrix(n, edges, config["coupling"])
+    seeds = np.arange(config["seed_base"], config["seed_base"] + config["num_trials"], dtype=np.int64)
 
-    # ==== CIM シミュレーション実行 ====
-    print("Running CIM simulation...")
-    c_final, best_cut, best_x = simulate_cim(
-        n=n,
-        J=J,
-        edges=edges,
-        num_rounds=cfg.num_rounds,
-        kappa=cfg.kappa,
-        L=cfg.L,
-        gamma=cfg.gamma,
-        eta=eta,
-        bandwidth=cfg.bandwidth,
-        photon_energy=cfg.photon_energy_J,
-        dP_per_round=cfg.dP_per_round,
-        rng=rng,
-        log_interval=cfg.log_interval,
+    # ==== JIT ウォームアップ (1 trial で雛形をコンパイル) ====
+    print("\n[warmup] JIT compile...")
+    _ = simulate_cim_batch_polished(
+        n=n, J=J, edges=edges, num_rounds=10, num_trials=1,
+        kappa=config["kappa"], L=config["L"], gamma=config["gamma"], eta=eta,
+        bandwidth=config["bandwidth"], photon_energy=config["photon_energy_J"],
+        dP_per_round=config["dP_per_round"],
+        seeds=np.array([0], dtype=np.int64),
     )
 
-    # ==== 結果表示 ====
-    print(f"Best cut: {best_cut}")
-    print(f"Paper (Fig.8 G22): mean=13275, best=13321")
-    print(f"Known best: 13359")
+    # ==== baseline (polish 無し) ====
+    print("\n[baseline] CIM only (no polish) ...")
+    t0 = time.perf_counter()
+    base_cuts, _ = simulate_cim_batch(
+        n=n, J=J, edges=edges,
+        num_rounds=config["num_rounds"], num_trials=config["num_trials"],
+        kappa=config["kappa"], L=config["L"], gamma=config["gamma"], eta=eta,
+        bandwidth=config["bandwidth"], photon_energy=config["photon_energy_J"],
+        dP_per_round=config["dP_per_round"], seeds=seeds,
+    )
+    t_base = time.perf_counter() - t0
 
-    # ==== 検算 (scripts/verify.py の独立実装と突き合わせ) ====
-    run_all_checks(best_x, n, k_edges, adj, edges, best_cut)
+    # ==== polished (1-flip greedy 局所最適化付き) ====
+    print("[polished] CIM + 1-flip greedy ...")
+    t0 = time.perf_counter()
+    pol_cuts, pol_signs = simulate_cim_batch_polished(
+        n=n, J=J, edges=edges,
+        num_rounds=config["num_rounds"], num_trials=config["num_trials"],
+        kappa=config["kappa"], L=config["L"], gamma=config["gamma"], eta=eta,
+        bandwidth=config["bandwidth"], photon_energy=config["photon_energy_J"],
+        dP_per_round=config["dP_per_round"], seeds=seeds,
+    )
+    t_pol = time.perf_counter() - t0
 
-    # ==== wandb summary に結果を記録 ====
-    wandb.summary["best_cut"] = best_cut
-    wandb.summary["ratio_to_known_best"] = best_cut / 13359
-    wandb.summary["paper_mean"] = 13275
-    wandb.summary["paper_best"] = 13321
+    # ==== 統計 ====
+    def stats(cuts):
+        return float(cuts.mean()), float(cuts.max()), float(cuts.min()), float(cuts.std(ddof=1))
 
-    wandb.finish()
+    bm, bM, bn_, bs = stats(base_cuts)
+    pm, pM, pn_, ps = stats(pol_cuts)
+    bks = 13359
+    bks_hits = int((pol_cuts >= bks).sum())
+
+    print("\n" + "=" * 60)
+    print(f"{'':12}{'mean':>10}{'best':>10}{'worst':>10}{'std':>10}{'wall':>10}")
+    print("-" * 60)
+    print(f"{'baseline':12}{bm:10.1f}{bM:10.0f}{bn_:10.0f}{bs:10.2f}{t_base:10.2f}")
+    print(f"{'polished':12}{pm:10.1f}{pM:10.0f}{pn_:10.0f}{ps:10.2f}{t_pol:10.2f}")
+    print("-" * 60)
+    print(f"Δmean = {pm - bm:+.1f}  Δbest = {pM - bM:+.0f}  BKS hits (13359): {bks_hits}/{config['num_trials']}")
+
+    target = 13340.0
+    status = "PASS ✓" if pm >= target else "MISS ✗"
+    print(f"\n目標 mean ≥ {target}: polished mean = {pm:.1f}  →  {status}")
+
+    # ==== 検算 (最良 trial を独立に再カウント) ====
+    best_trial = int(np.argmax(pol_cuts))
+    best_x = pol_signs[best_trial].astype(np.int64).tolist()
+    reported = int(pol_cuts[best_trial])
+    print()
+    run_all_checks(best_x, n, k_edges, adj, edges, reported)
 
 
 if __name__ == "__main__":
