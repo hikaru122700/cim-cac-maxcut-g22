@@ -802,6 +802,8 @@ def simulate_cim_batch_polished(
         float(photon_energy),
         float(dP_per_round),
         seeds_arr,
+        int(ils_iters),
+        int(ils_perturb),
     )
     return best_cuts, best_signs
 
