@@ -333,6 +333,83 @@ def _local_search_kl(
 
 
 # ============================================================
+#  Tabu search (MAX-CUT 用、aspiration 付き)
+# ============================================================
+# CIM 解は 1-flip 局所最適なだけでなく KL local opt にも近い「深い谷」
+# のため、ILS-KL では脱出が弱い (実測 +5〜+15 cuts)。
+# Tabu search は「最近 flip した頂点」を一定期間 (tenure) 禁止することで
+# 同じ箇所での振動を防ぎ、非改善 flip も貪欲に受容して長い軌道を描く。
+# aspiration: best_cut を更新する flip は tabu を無視して常に許可。
+#
+# パラメータ:
+#   tabu_tenure (T)  : 禁止期間。N=2000 で 20〜30 が経験則 (Glover 1990)
+#   max_iters       : 反復数。多いほど精度上がるが時間も増える
+@njit(cache=True, fastmath=True)
+def _tabu_search(
+    spins: np.ndarray,
+    n: int,
+    adj_indptr: np.ndarray,
+    adj_indices: np.ndarray,
+    adj_w: np.ndarray,
+    edge_a: np.ndarray,
+    edge_b: np.ndarray,
+    edge_w: np.ndarray,
+    max_iters: int,
+    tabu_tenure: int,
+) -> float:
+    """Tabu search で spins を磨き、最終 best cut を返す (spins は best 解で上書き)。"""
+    delta = np.zeros(n, dtype=np.float64)
+    _recompute_delta(spins, n, adj_indptr, adj_indices, adj_w, delta)
+
+    current_cut = _compute_cut_jit(spins, edge_a, edge_b, edge_w)
+    best_cut = current_cut
+    best_spins = spins.copy()
+
+    # tabu_until[i] = この iter まで禁止。負なら最初から自由
+    tabu_until = np.full(n, -1, dtype=np.int64)
+
+    for it in range(max_iters):
+        best_i = -1
+        best_d = -1.0e30
+        for i in range(n):
+            d = delta[i]
+            new_cut = current_cut + d
+            aspiration = new_cut > best_cut
+            non_tabu = tabu_until[i] <= it
+            if (aspiration or non_tabu) and d > best_d:
+                best_d = d
+                best_i = i
+
+        if best_i < 0:
+            break  # 全て tabu かつ非改善
+
+        spins[best_i] = not spins[best_i]
+        current_cut += best_d
+        s_v = spins[best_i]
+        start = adj_indptr[best_i]
+        end = adj_indptr[best_i + 1]
+        for idx in range(start, end):
+            j = adj_indices[idx]
+            w = adj_w[idx]
+            if s_v == spins[j]:
+                delta[j] += 2.0 * w
+            else:
+                delta[j] -= 2.0 * w
+        delta[best_i] = -delta[best_i]
+
+        tabu_until[best_i] = it + tabu_tenure
+
+        if current_cut > best_cut:
+            best_cut = current_cut
+            for i in range(n):
+                best_spins[i] = spins[i]
+
+    for i in range(n):
+        spins[i] = best_spins[i]
+    return best_cut
+
+
+# ============================================================
 #  Iterated Local Search (ILS) で 1-flip 局所最適から脱出
 # ============================================================
 # CIM の連続力学は Ising エネルギーの停留点に収束するため、
