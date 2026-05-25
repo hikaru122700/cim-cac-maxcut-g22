@@ -996,8 +996,8 @@ def simulate_cim_batch_polished(
     weights: list[float] | None = None,
     tabu_iters: int = 200_000,
     tabu_tenure: int = 150,
-    ils_outer: int = 10,
-    ils_perturb: int = 200,
+    ils_outer: int = 30,
+    ils_perturb: int = 1500,
 ) -> tuple[np.ndarray, np.ndarray]:
     """CIM + ILS-Tabu の公開ラッパー (2026-05-25 改良版)。
 
