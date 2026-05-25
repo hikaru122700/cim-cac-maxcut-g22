@@ -915,6 +915,7 @@ def simulate_cim_batch_polished(
         seeds_arr,
         int(ils_iters),
         int(ils_perturb),
+        int(kl_passes),
     )
     return best_cuts, best_signs
 
