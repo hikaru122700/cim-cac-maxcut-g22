@@ -409,6 +409,53 @@ def _tabu_search(
     return best_cut
 
 
+@njit(cache=True, fastmath=True)
+def _ils_tabu(
+    spins: np.ndarray,
+    n: int,
+    adj_indptr: np.ndarray,
+    adj_indices: np.ndarray,
+    adj_w: np.ndarray,
+    edge_a: np.ndarray,
+    edge_b: np.ndarray,
+    edge_w: np.ndarray,
+    outer_iters: int,
+    inner_tabu_iters: int,
+    tabu_tenure: int,
+    perturb_size: int,
+) -> float:
+    """ILS-Tabu: 摂動 + Tabu の反復で diversification を強化。"""
+    # 初回 Tabu
+    best_cut = _tabu_search(
+        spins, n, adj_indptr, adj_indices, adj_w,
+        edge_a, edge_b, edge_w, inner_tabu_iters, tabu_tenure,
+    )
+    best_spins = spins.copy()
+
+    trial_spins = np.zeros(n, dtype=np.bool_)
+    for _ in range(outer_iters):
+        # perturb best
+        for i in range(n):
+            trial_spins[i] = best_spins[i]
+        for _ in range(perturb_size):
+            idx = np.random.randint(0, n)
+            trial_spins[idx] = not trial_spins[idx]
+
+        trial_cut = _tabu_search(
+            trial_spins, n, adj_indptr, adj_indices, adj_w,
+            edge_a, edge_b, edge_w, inner_tabu_iters, tabu_tenure,
+        )
+
+        if trial_cut > best_cut:
+            best_cut = trial_cut
+            for i in range(n):
+                best_spins[i] = trial_spins[i]
+
+    for i in range(n):
+        spins[i] = best_spins[i]
+    return best_cut
+
+
 # ============================================================
 #  Iterated Local Search (ILS) で 1-flip 局所最適から脱出
 # ============================================================
