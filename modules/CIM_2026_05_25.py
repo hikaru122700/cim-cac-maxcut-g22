@@ -1030,11 +1030,11 @@ def main():
     print(f"{'baseline':12}{bm:10.1f}{bM:10.0f}{bn_:10.0f}{bs:10.2f}{t_base:10.2f}")
     print(f"{'polished':12}{pm:10.1f}{pM:10.0f}{pn_:10.0f}{ps:10.2f}{t_pol:10.2f}")
     print("-" * 60)
-    print(f"Δmean = {pm - bm:+.1f}  Δbest = {pM - bM:+.0f}  BKS hits (13359): {bks_hits}/{config['num_trials']}")
+    print(f"d_mean = {pm - bm:+.1f}  d_best = {pM - bM:+.0f}  BKS hits (13359): {bks_hits}/{config['num_trials']}")
 
     target = 13340.0
-    status = "PASS ✓" if pm >= target else "MISS ✗"
-    print(f"\n目標 mean ≥ {target}: polished mean = {pm:.1f}  →  {status}")
+    status = "PASS" if pm >= target else "MISS"
+    print(f"\n[Goal] mean >= {target}: polished mean = {pm:.1f}  --> {status}")
 
     # ==== 検算 (最良 trial を独立に再カウント) ====
     best_trial = int(np.argmax(pol_cuts))
