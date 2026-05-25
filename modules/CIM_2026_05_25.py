@@ -565,8 +565,10 @@ def _simulate_cim_batch_polished(
     seeds: np.ndarray,
     tabu_iters: int,
     tabu_tenure: int,
+    ils_outer: int,
+    ils_perturb: int,
 ):
-    """CIM + Tabu search を num_trials 並列実行。
+    """CIM + ILS-Tabu を num_trials 並列実行。
 
     本体は _simulate_cim_batch とほぼ同じ。違いは trial 末で
     best_signs に対し Tabu search (aspiration 付き) を施し、
@@ -619,12 +621,12 @@ def _simulate_cim_batch_polished(
                 for i in range(n):
                     best_signs[i] = c[i] > 0.0
 
-        # ---- trial 末 Tabu search: aspiration 付き脱出探索 ----
-        tabu_cut = _tabu_search(
+        # ---- trial 末 ILS-Tabu: 摂動 + Tabu の反復で diversification ----
+        tabu_cut = _ils_tabu(
             best_signs, n,
             adj_indptr, adj_indices, adj_w,
             edge_a, edge_b, edge_w,
-            tabu_iters, tabu_tenure,
+            ils_outer, tabu_iters, tabu_tenure, ils_perturb,
         )
 
         best_cuts_out[trial_idx] = tabu_cut
