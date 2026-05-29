@@ -339,6 +339,21 @@ def main() -> None:
     sample_rounds = res["sample_rounds"]
     print(f"  time={pt_time:.2f}s  mean={pt_cuts.mean():.1f}  best={pt_cuts.max():.0f}")
 
+    # ==== 領域characterization (swap無効) ====
+    # スワップを入れると各スロットに様々な config が流入し、スロット別の
+    # mean|c| 時間平均が均されて 3 領域が見えなくなる。固定ポンプが作る
+    # 3 領域(ノイズ支配/臨界/飽和)は swap を切った素の発展で最も明瞭に
+    # 現れるので、領域の同定と可視化はこの参照 runで行う。最適化比較は
+    # 上の swap 有効 run(res)で行う。
+    reg_trials = min(args.num_trials, 8)
+    print(f"\n[regime] {reg_trials} trials  swap無効  (3領域の同定用)")
+    res_reg = simulate_cim_pt_batch(
+        n=n, J=J, edges=edges, num_rounds=args.cim_rounds,
+        num_trials=reg_trials, seeds=seeds[:reg_trials], weights=w_arg,
+        pump_levels=pump_levels, swap_interval=args.swap_interval,
+        p_swap=0.0, sample_interval=args.sample_interval, **pt_phys,
+    )
+
     # ==== 検証1: 最良解の符号からカットを独立再計算 ====
     best_trial = int(np.argmax(pt_cuts))
     x_best = res["best_signs"][best_trial].astype(np.int64).tolist()
