@@ -1,0 +1,26 @@
+{
+  "graph": "G22",
+  "n": 2000,
+  "k_edges": 19990,
+  "num_trials": 4,
+  "cim_rounds": 300,
+  "icm_interval": 20,
+  "icm_start_frac": 0.3,
+  "num_clusters": 1,
+  "known_best": 13359,
+  "CIM": {
+    "mean": 12981.0,
+    "best": 13060.0,
+    "worst": 12884.0,
+    "std": 62.93647591023825,
+    "time_s": 4.051770210266113
+  },
+  "CIM+ICM": {
+    "mean": 13019.5,
+    "best": 13033.0,
+    "worst": 13004.0,
+    "std": 11.280514172678478,
+    "time_s": 4.444811582565308
+  },
+  "verify_ok": true
+}
