@@ -494,9 +494,9 @@ def main() -> None:
     plt.close(fig3)
     print(f"  saved: {out_dir / 'trajectory.png'}")
 
-    # --- Fig4: 3レプリカの振幅領域 + カット (検証2 の可視化) ---
-    amp_mean = res["traj_amp"].mean(axis=0)  # (num_samples, NR)
-    cut_mean = res["traj_cut"].mean(axis=0)  # (num_samples, NR)
+    # --- Fig4: 3レプリカの振幅領域 + カット (検証2 の可視化, swap無効 run) ---
+    amp_mean = res_reg["traj_amp"].mean(axis=0)  # (num_samples, NR)
+    cut_mean = res_reg["traj_cut"].mean(axis=0)  # (num_samples, NR)
     fig4, (axL, axR) = plt.subplots(1, 2, figsize=(13, 5.0))
     for r in range(NR):
         axL.plot(sample_rounds, amp_mean[:, r], color=rep_colors[r], linewidth=2.0,
