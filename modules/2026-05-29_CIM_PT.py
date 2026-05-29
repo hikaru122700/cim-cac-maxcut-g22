@@ -525,9 +525,11 @@ def main() -> None:
     print(f"  saved: {out_dir / 'amplitude_regimes.png'}")
 
     # --- Fig5: swap有効時の振幅推移 (混合の様子) ---
-    # res = swap有効 run。trial平均(左)は各スロットへ様々なconfigが流入し
-    # 均されて 3 本が重なる。代表 1 trial の生トレース(右)では swap_interval
-    # ごとにスロット間で振幅が飛び移る(= 隣接ペア交換)様子が見える。
+    # res = swap有効 run。trial平均(左)は swap 直後にスロット間が混合し、
+    # 次の swap までの数ラウンドで各ポンプの引力により再分離する → ノコギリ波。
+    # 各スロットは平均的には自分のポンプ領域(高温<臨界<低温)を保つ。
+    # 代表 1 trial の生トレース(右)では swap_interval ごとにスロット間で
+    # 振幅が飛び移る(= 隣接ペア交換)様子が直接見える。
     amp_on_mean = res["traj_amp"].mean(axis=0)  # (num_samples, NR)
     rep_trial = int(np.argmax(pt_cuts))         # 最良 trial を代表に
     amp_on_one = res["traj_amp"][rep_trial]      # (num_samples, NR)
