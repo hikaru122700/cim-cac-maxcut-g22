@@ -368,10 +368,10 @@ def main() -> None:
         raise SystemExit("検証失敗: カーネルのカット値が独立計算と一致しません")
 
     # ==== 検証2: 3レプリカが 3 領域(mean|c|)に分離しているか ====
-    # 後半(定常)での各レプリカの mean|c| の trial 平均。
+    # 領域同定 run(swap無効)の後半(定常)での mean|c| の trial 平均。
     tail = max(1, sample_rounds.size // 3)
-    amp_tail = res["traj_amp"][:, -tail:, :].mean(axis=(0, 1))  # (NR,)
-    cut_tail = res["traj_cut"][:, -tail:, :].mean(axis=(0, 1))  # (NR,)
+    amp_tail = res_reg["traj_amp"][:, -tail:, :].mean(axis=(0, 1))  # (NR,)
+    cut_tail = res_reg["traj_cut"][:, -tail:, :].mean(axis=(0, 1))  # (NR,)
     print(f"[verify-2] 定常 mean|c| (replica 0→2) = "
           f"[{amp_tail[0]:.4f}, {amp_tail[1]:.4f}, {amp_tail[2]:.4f}]")
     print(f"           定常 cut    (replica 0→2) = "
