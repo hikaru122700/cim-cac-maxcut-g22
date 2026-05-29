@@ -536,6 +536,7 @@ def main() -> None:
                 "worst": float(cim_cuts.min()), "std": float(cim_cuts.std()), "time_s": cim_time},
         "CIM+PT": {"mean": float(pt_cuts.mean()), "best": float(pt_cuts.max()),
                    "worst": float(pt_cuts.min()), "std": float(pt_cuts.std()), "time_s": pt_time},
+        "regime_trials_noswap": reg_trials,
         "tail_mean_abs_c": amp_tail.tolist(),
         "tail_cut": cut_tail.tolist(),
         "amp_monotone": bool(amp_monotone),
