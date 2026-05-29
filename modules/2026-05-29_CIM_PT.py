@@ -537,7 +537,7 @@ def main() -> None:
                   label=f"{rep_labels[r]}  P={pump_levels[r] * 1e3:.2f}mW")
     axL5.set_xlabel("ラウンド数", fontsize=LABEL_FS)
     axL5.set_ylabel("mean|c| (trial平均)", fontsize=LABEL_FS)
-    axL5.set_title(f"swap有効 — 全{args.num_trials}trial平均(均されて重なる)")
+    axL5.set_title(f"swap有効 — 全{args.num_trials}trial平均(swapで混合→再分離のノコギリ波)")
     axL5.legend(loc="upper left", fontsize=9)
     axL5.grid(alpha=0.3)
     ticks_in(axL5)
