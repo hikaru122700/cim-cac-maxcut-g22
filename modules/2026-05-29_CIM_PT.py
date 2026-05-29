@@ -524,6 +524,39 @@ def main() -> None:
     plt.close(fig4)
     print(f"  saved: {out_dir / 'amplitude_regimes.png'}")
 
+    # --- Fig5: swap有効時の振幅推移 (混合の様子) ---
+    # res = swap有効 run。trial平均(左)は各スロットへ様々なconfigが流入し
+    # 均されて 3 本が重なる。代表 1 trial の生トレース(右)では swap_interval
+    # ごとにスロット間で振幅が飛び移る(= 隣接ペア交換)様子が見える。
+    amp_on_mean = res["traj_amp"].mean(axis=0)  # (num_samples, NR)
+    rep_trial = int(np.argmax(pt_cuts))         # 最良 trial を代表に
+    amp_on_one = res["traj_amp"][rep_trial]      # (num_samples, NR)
+    fig5, (axL5, axR5) = plt.subplots(1, 2, figsize=(13, 5.0))
+    for r in range(NR):
+        axL5.plot(sample_rounds, amp_on_mean[:, r], color=rep_colors[r], linewidth=2.0,
+                  label=f"{rep_labels[r]}  P={pump_levels[r] * 1e3:.2f}mW")
+    axL5.set_xlabel("ラウンド数", fontsize=LABEL_FS)
+    axL5.set_ylabel("mean|c| (trial平均)", fontsize=LABEL_FS)
+    axL5.set_title(f"swap有効 — 全{args.num_trials}trial平均(均されて重なる)")
+    axL5.legend(loc="upper left", fontsize=9)
+    axL5.grid(alpha=0.3)
+    ticks_in(axL5)
+    for r in range(NR):
+        axR5.plot(sample_rounds, amp_on_one[:, r], color=rep_colors[r], linewidth=1.4,
+                  label=f"{rep_labels[r]}")
+    axR5.set_xlabel("ラウンド数", fontsize=LABEL_FS)
+    axR5.set_ylabel("mean|c|", fontsize=LABEL_FS)
+    axR5.set_title(f"swap有効 — 代表1trial(#{rep_trial})の生トレース")
+    axR5.legend(loc="upper left", fontsize=9)
+    axR5.grid(alpha=0.3)
+    ticks_in(axR5)
+    fig5.suptitle(f"PT スワップ有効時の振幅推移 ({graph_name}, swap/{args.swap_interval} "
+                  f"p={args.p_swap})", fontsize=13)
+    fig5.tight_layout()
+    fig5.savefig(out_dir / "amplitude_swapon.png", dpi=150)
+    plt.close(fig5)
+    print(f"  saved: {out_dir / 'amplitude_swapon.png'}")
+
     # ==== サマリ JSON + 生データ ====
     summary = {
         "graph": graph_name, "n": n, "k_edges": k_edges,
