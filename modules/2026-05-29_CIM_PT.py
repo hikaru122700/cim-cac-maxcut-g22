@@ -7,10 +7,31 @@ baseline (modules/CIM.py) との差分:
       replica 0 (ノイズ支配 = 高温) : P < P_th  → 信号は減衰し符号が揺らぐ
       replica 1 (急増 = 臨界)       : P ≈ P_th  → 符号形成の途中
       replica 2 (高止まり = 低温)   : P > P_th  → 振幅が飽和してロック
-  - 一定ラウンドごとに **PT スワップ**: 隣接レプリカ (0-1, 1-2) の振幅ベクトル
-    c を確率 p_swap で**無条件交換**する(確率固定スワップ)。
+  - 一定ラウンドごとに **PT スワップ**: 隣接レプリカ (0-1, 1-2) の振幅ベクトル c を
+    **Metropolis 受理判定**で交換する。
   - annealing(温度を下げて凍結)に相当する役割は PT スワップが担う:
     高温レプリカが探索した配置を低温レプリカへ流して凍結・評価する。
+
+=====================  受理判定 (2026-05-29 改修)  =====================
+旧実装は「確率 p_swap の無条件交換」だった。これは詳細釣り合いを満たさず、
+良い(低エネルギー)配置が低温側へ優先的に溜まるという PT の核心を失っていた。
+本実装では隣接レプリカ r, r+1 の構成交換を、標準 PT の Metropolis 確率
+
+    A = min( 1, exp[ (β_r − β_{r+1}) · (E_r − E_{r+1}) ] )
+
+で受理する。最適化対象は MAX-CUT なので エネルギー E ≡ −cut とする
+(カット最大化 ⇔ エネルギー最小化)。cut は既に各ラウンドで評価済みなので
+追加コストはほぼゼロ。
+
+β ラダーの決め方:
+  CIM は非平衡力学系で、各ポンプ準位に対応する固有の逆温度 β は存在しない。
+  そこで β は「スワップ受理に用いる実効逆温度ラダー」と割り切り、
+  **swap 無効の参照 run の定常カット差 ΔE から自動キャリブレーション**する:
+    隣接ペアの定常カット差を |ΔE_r| とし、Δβ_r = κ_target / max(|ΔE_r|, eps)。
+    こうすると典型スワップの指数 |Δβ·ΔE| ≈ κ_target(既定 1.0)になり、
+    「不利な向きの交換」が e^{-κ_target} ≈ 0.37 程度の率で受理される
+    (= 適度な混合)。β は r とともに単調増加(低温ほど大)。
+  受理率は計測して報告する(目安 20–40%。極端なら κ_target / β を調整)。
 
 発振しきい値の物理:
   ループ 1 周の正味利得が損失を上回ると発振する。非飽和では η·exp(g0) = 1、
@@ -49,27 +70,32 @@ def _simulate_cim_pt_batch(
     bandwidth: float,
     photon_energy: float,
     pump_levels: np.ndarray,    # (NR,) 各レプリカの固定ポンプパワー [W] 昇順
+    betas: np.ndarray,          # (NR,) スワップ受理用の実効逆温度(昇順、低温ほど大)
     swap_interval: int,         # この round 間隔ごとにスワップ試行 (>=1)
-    p_swap: float,              # 隣接ペアの交換確率 (0..1)
+    do_swap: int,               # 1: PT スワップ有効 / 0: 無効(独立 3 レプリカ)
     sample_interval: int,       # 記録の round 間隔 (>=1)
     num_samples: int,           # = num_rounds // sample_interval
     seeds: np.ndarray,
 ):
-    """固定ポンプ 3 レプリカ CIM + 確率固定 PT を num_trials 並列実行。
+    """固定ポンプ 3 レプリカ CIM + Metropolis 受理 PT を num_trials 並列実行。
 
     Returns
     -------
-    best_cuts  : (num_trials,)                  各 trial の最終最良カット
-    best_signs : (num_trials, n) bool           最良解の符号 (c>0)
-    traj_best  : (num_trials, num_samples)       best-so-far 軌跡
-    traj_amp   : (num_trials, num_samples, NR)   レプリカ別 mean|c| 軌跡
-    traj_cut   : (num_trials, num_samples, NR)   レプリカ別 現在カット 軌跡
+    best_cuts   : (num_trials,)                  各 trial の最終最良カット
+    best_signs  : (num_trials, n) bool           最良解の符号 (c>0)
+    traj_best   : (num_trials, num_samples)       best-so-far 軌跡
+    traj_amp    : (num_trials, num_samples, NR)   レプリカ別 mean|c| 軌跡
+    traj_cut    : (num_trials, num_samples, NR)   レプリカ別 現在カット 軌跡
+    swap_acc    : (num_trials, NR-1)              隣接ペア別 受理回数
+    swap_att    : (num_trials, NR-1)              隣接ペア別 試行回数
     """
     best_cuts_out = np.zeros(num_trials, dtype=np.float64)
     best_signs_out = np.zeros((num_trials, n), dtype=np.bool_)
     traj_best = np.zeros((num_trials, num_samples), dtype=np.float64)
     traj_amp = np.zeros((num_trials, num_samples, NR), dtype=np.float64)
     traj_cut = np.zeros((num_trials, num_samples, NR), dtype=np.float64)
+    swap_acc_out = np.zeros((num_trials, NR - 1), dtype=np.float64)
+    swap_att_out = np.zeros((num_trials, NR - 1), dtype=np.float64)
 
     sqrt_eta = np.sqrt(eta)
     noise_const = np.sqrt((2.0 - eta) * 0.25 * bandwidth * photon_energy)
@@ -92,6 +118,9 @@ def _simulate_cim_pt_batch(
 
         best_signs = np.zeros(n, dtype=np.bool_)
         best_cut = -1.0e18
+
+        swap_acc = np.zeros(NR - 1, dtype=np.float64)
+        swap_att = np.zeros(NR - 1, dtype=np.float64)
 
         for k in range(num_rounds):
             # ---- 各レプリカを 1 ラウンド発展(固定ポンプ) ----
@@ -125,10 +154,26 @@ def _simulate_cim_pt_batch(
                     for i in range(n):
                         best_signs[i] = c[r, i] > 0.0
 
-            # ---- PT スワップ(隣接ペアを確率 p_swap で無条件交換) ----
-            if (k + 1) % swap_interval == 0:
+            # ---- PT スワップ(隣接ペアを Metropolis 受理で交換) ----
+            #   E ≡ −cut。隣接 r(高温, β小) と r+1(低温, β大) について
+            #     arg = (β_r − β_{r+1})·(E_r − E_{r+1})
+            #         = (β_r − β_{r+1})·(cut_{r+1} − cut_r)
+            #   arg >= 0 なら必ず受理、そうでなければ確率 exp(arg) で受理。
+            #   スワップは構成のラベル付け替えに過ぎず配置自体は変えないので、
+            #   交換後に best を再評価する必要はない(取りこぼしは起きない)。
+            if do_swap == 1 and (k + 1) % swap_interval == 0:
                 for r in range(NR - 1):
-                    if np.random.random() < p_swap:
+                    swap_att[r] += 1.0
+                    dbeta = betas[r] - betas[r + 1]          # <= 0
+                    dE = cut_r[r + 1] - cut_r[r]             # = E_r − E_{r+1}
+                    arg = dbeta * dE
+                    accept = False
+                    if arg >= 0.0:
+                        accept = True
+                    elif np.random.random() < np.exp(arg):
+                        accept = True
+                    if accept:
+                        swap_acc[r] += 1.0
                         for i in range(n):
                             tmp = c[r, i]
                             c[r, i] = c[r + 1, i]
@@ -152,13 +197,46 @@ def _simulate_cim_pt_batch(
         best_cuts_out[trial_idx] = best_cut
         for i in range(n):
             best_signs_out[trial_idx, i] = best_signs[i]
+        for r in range(NR - 1):
+            swap_acc_out[trial_idx, r] = swap_acc[r]
+            swap_att_out[trial_idx, r] = swap_att[r]
 
-    return best_cuts_out, best_signs_out, traj_best, traj_amp, traj_cut
+    return (best_cuts_out, best_signs_out, traj_best, traj_amp, traj_cut,
+            swap_acc_out, swap_att_out)
 
 
 def compute_threshold_pump(kappa: float, L: float, eta: float) -> float:
     """CIM 発振しきい値ポンプ P_th = (ln(1/η) / (2κL))^2 [W]。"""
     return (np.log(1.0 / eta) / (2.0 * kappa * L)) ** 2
+
+
+def default_betas(num_edges: int, kappa_target: float = 1.0,
+                  base_gap_frac: float = 0.02) -> np.ndarray:
+    """キャリブレーション情報が無いときの β ラダーの素朴な既定値。
+
+    隣接レプリカの定常カット差を base_gap_frac·K 程度と仮定し、
+    Δβ = κ_target / gap の等間隔ラダー(β は r で単調増加)を返す。
+    実運用では calibrate_betas(定常カット差ベース)で上書きすること。
+    """
+    gap = max(base_gap_frac * float(num_edges), 1.0)
+    dbeta = kappa_target / gap
+    return np.array([r * dbeta for r in range(NR)], dtype=np.float64)
+
+
+def calibrate_betas(cut_tail: np.ndarray, kappa_target: float = 1.0,
+                    eps: float = 1.0) -> np.ndarray:
+    """swap 無効 run の定常カット (replica 0→NR-1) から β ラダーを構成する。
+
+    隣接ペアの定常カット差 |ΔE_r| に対し Δβ_r = κ_target / max(|ΔE_r|, eps)。
+    β[0]=0 (最も高温=実効的に無限温度) から累積し、低温ほど大きい昇順ラダーにする。
+    こうすると典型スワップの指数 |Δβ·ΔE| ≈ κ_target になり受理率が制御される。
+    """
+    betas = np.zeros(NR, dtype=np.float64)
+    for r in range(NR - 1):
+        gap = abs(float(cut_tail[r + 1]) - float(cut_tail[r]))
+        dbeta = kappa_target / max(gap, eps)
+        betas[r + 1] = betas[r] + dbeta
+    return betas
 
 
 def simulate_cim_pt_batch(
@@ -177,22 +255,29 @@ def simulate_cim_pt_batch(
     *,
     pump_levels: np.ndarray | None = None,
     pump_mults: tuple[float, float, float] = (0.5, 1.0, 2.5),
+    betas: np.ndarray | None = None,
     swap_interval: int = 10,
-    p_swap: float = 0.5,
+    do_swap: bool = True,
     sample_interval: int | None = None,
     weights: list[float] | None = None,
 ) -> dict:
-    """固定ポンプ 3 段 CIM + 確率固定 PT を num_trials 並列実行する公開 API。
+    """固定ポンプ 3 段 CIM + Metropolis 受理 PT を num_trials 並列実行する公開 API。
 
     pump_levels を直接渡すか、未指定なら P_th × pump_mults で 3 段を生成。
+    betas(スワップ受理用の実効逆温度ラダー、昇順)を渡す。未指定なら edge 数から
+    default_betas で素朴な既定を作る(キャリブレーション推奨)。
+    do_swap=False なら独立 3 レプリカ(スワップ無効)の対照 run になる。
+
     返り値は dict(best_cuts, best_signs, traj_best, traj_amp, traj_cut,
-    pump_levels, p_th, sample_rounds)。
+    pump_levels, betas, p_th, sample_rounds, swap_accepts, swap_attempts,
+    swap_rate)。
     """
     edges_np = np.asarray(edges, dtype=np.int64)
     edge_a = np.ascontiguousarray(edges_np[:, 0])
     edge_b = np.ascontiguousarray(edges_np[:, 1])
+    num_edges = edges_np.shape[0]
     if weights is None:
-        edge_w = np.ones(edges_np.shape[0], dtype=np.float64)
+        edge_w = np.ones(num_edges, dtype=np.float64)
     else:
         edge_w = np.ascontiguousarray(np.asarray(weights, dtype=np.float64))
     seeds_arr = np.ascontiguousarray(np.asarray(seeds, dtype=np.int64))
@@ -202,6 +287,10 @@ def simulate_cim_pt_batch(
         pump_levels = np.array([m * p_th for m in pump_mults], dtype=np.float64)
     pump_levels = np.ascontiguousarray(np.sort(np.asarray(pump_levels, dtype=np.float64)))
 
+    if betas is None:
+        betas = default_betas(num_edges)
+    betas = np.ascontiguousarray(np.asarray(betas, dtype=np.float64))
+
     if sample_interval is None or sample_interval <= 0:
         sample_interval = int(num_rounds)
     sample_interval = int(sample_interval)
@@ -210,7 +299,8 @@ def simulate_cim_pt_batch(
         num_samples = 1
         sample_interval = int(num_rounds)
 
-    best_cuts, best_signs, traj_best, traj_amp, traj_cut = _simulate_cim_pt_batch(
+    (best_cuts, best_signs, traj_best, traj_amp, traj_cut,
+     swap_acc, swap_att) = _simulate_cim_pt_batch(
         n,
         int(num_rounds),
         int(num_trials),
@@ -227,13 +317,18 @@ def simulate_cim_pt_batch(
         float(bandwidth),
         float(photon_energy),
         pump_levels,
+        betas,
         int(swap_interval),
-        float(p_swap),
+        int(1 if do_swap else 0),
         sample_interval,
         num_samples,
         seeds_arr,
     )
     sample_rounds = np.arange(1, num_samples + 1) * sample_interval
+    att_tot = swap_att.sum(axis=0)
+    acc_tot = swap_acc.sum(axis=0)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        swap_rate = np.where(att_tot > 0, acc_tot / att_tot, 0.0)
     return {
         "best_cuts": best_cuts,
         "best_signs": best_signs,
@@ -241,8 +336,12 @@ def simulate_cim_pt_batch(
         "traj_amp": traj_amp,
         "traj_cut": traj_cut,
         "pump_levels": pump_levels,
+        "betas": betas,
         "p_th": p_th,
         "sample_rounds": sample_rounds,
+        "swap_accepts": acc_tot,
+        "swap_attempts": att_tot,
+        "swap_rate": swap_rate,
     }
 
 
@@ -268,16 +367,21 @@ def main() -> None:
     EXPERIMENT_KIND = "cim_pt"
     KNOWN_BEST: dict[str, int] = {"G15": 3050, "G22": 13359, "G55": 10299, "G70": 9591}
 
-    parser = argparse.ArgumentParser(description="CIM vs CIM+PT(固定ポンプ3段) 比較ベンチ")
+    parser = argparse.ArgumentParser(
+        description="CIM(ランプ) vs CIM-3固定(swap無) vs CIM+PT(Metropolis) 等計算量比較ベンチ")
     parser.add_argument("--graph", default="input/G22.txt")
-    parser.add_argument("--num-trials", type=int, default=100)
+    parser.add_argument("--num-trials", type=int, default=100,
+                        help="PT/対照の trial 数。baseline CIM は等計算量のため NR 倍の trial を回す")
     parser.add_argument("--seed-base", type=int, default=0)
     parser.add_argument("--cim-rounds", type=int, default=1500)
     parser.add_argument("--cim-coupling", type=float, default=-0.03)
     parser.add_argument("--pump-mults", type=float, nargs=3, default=[0.5, 1.0, 2.5],
                         help="P_th に対する 3 レプリカのポンプ倍率 (高温→低温)")
     parser.add_argument("--swap-interval", type=int, default=10)
-    parser.add_argument("--p-swap", type=float, default=0.5)
+    parser.add_argument("--kappa-target", type=float, default=1.0,
+                        help="β キャリブレーションの目標指数 |Δβ·ΔE| (大きいほど受理率↓)")
+    parser.add_argument("--betas", type=float, nargs=NR, default=None,
+                        help="スワップ受理用の β ラダーを手動指定 (昇順)。未指定なら自動キャリブレーション")
     parser.add_argument("--sample-interval", type=int, default=25)
     parser.add_argument("--known-best", type=int, default=None)
     parser.add_argument("--tag", type=str, default="")
@@ -301,7 +405,12 @@ def main() -> None:
     if known_best is not None:
         print(f"Known best: {known_best}")
 
-    seeds = np.arange(args.seed_base, args.seed_base + args.num_trials, dtype=np.int64)
+    NT = args.num_trials
+    pt_seeds = np.arange(args.seed_base, args.seed_base + NT, dtype=np.int64)
+    # 等計算量: PT は 1 trial で NR レプリカ × rounds の力学を回す。
+    # baseline CIM は 1 レプリカなので NR·NT trial 回せば総レプリカ実行数が一致する。
+    cim_seeds = np.arange(args.seed_base, args.seed_base + NR * NT, dtype=np.int64)
+
     J = build_coupling_matrix(n, edges, args.cim_coupling, weights=w_arg)
     cim_params = dict(
         kappa=130.0, L=0.05, gamma=42.09, eta=10.0 ** (-1.1),
@@ -314,45 +423,64 @@ def main() -> None:
     print(f"P_th = {p_th * 1e3:.3f} mW  → pump_levels (mW) = "
           f"{[round(p * 1e3, 3) for p in pump_levels]}  (mults={sorted(args.pump_mults)})")
 
-    # ==== baseline CIM (ランプあり) ====
-    print(f"\n[CIM] {args.num_trials} trials  rounds={args.cim_rounds}")
+    # ==== baseline CIM (ランプあり, 等計算量のため NR·NT trial) ====
+    print(f"\n[CIM] {NR * NT} trials (= {NR}×{NT}, 等計算量)  rounds={args.cim_rounds}")
     t0 = time.time()
     cim_cuts, _ = simulate_cim_batch(
         n=n, J=J, edges=edges, num_rounds=args.cim_rounds,
-        num_trials=args.num_trials, seeds=seeds, weights=w_arg, **cim_params,
+        num_trials=NR * NT, seeds=cim_seeds, weights=w_arg, **cim_params,
     )
     cim_time = time.time() - t0
     print(f"  time={cim_time:.2f}s  mean={cim_cuts.mean():.1f}  best={cim_cuts.max():.0f}")
 
-    # ==== CIM + PT (固定ポンプ3段) ====
-    print(f"\n[CIM+PT] {args.num_trials} trials  rounds={args.cim_rounds}  "
-          f"swap/{args.swap_interval}  p_swap={args.p_swap}")
+    # ==== 対照: CIM-3固定ポンプ swap無効 (NT trial) ====
+    #   PT と同一 seed・同一ポンプで swap だけを切った独立 3 レプリカ。
+    #   (1) 3 領域の同定/可視化、(2) β キャリブレーションの定常カット差、
+    #   (3) 「スワップの効果」を分離する対照、の 3 役を兼ねる。
+    print(f"\n[CIM-3固定/swap無] {NT} trials  rounds={args.cim_rounds}  (対照 & 領域同定 & βキャリブ)")
+    t0 = time.time()
+    res_noswap = simulate_cim_pt_batch(
+        n=n, J=J, edges=edges, num_rounds=args.cim_rounds,
+        num_trials=NT, seeds=pt_seeds, weights=w_arg,
+        pump_levels=pump_levels, do_swap=False,
+        swap_interval=args.swap_interval, sample_interval=args.sample_interval, **pt_phys,
+    )
+    noswap_time = time.time() - t0
+    noswap_cuts = res_noswap["best_cuts"]
+    sample_rounds = res_noswap["sample_rounds"]
+    print(f"  time={noswap_time:.2f}s  mean={noswap_cuts.mean():.1f}  best={noswap_cuts.max():.0f}")
+
+    # ---- 定常カット/振幅(後半 1/3 の trial 平均)→ 領域同定 & βキャリブレーション ----
+    tail = max(1, sample_rounds.size // 3)
+    amp_tail = res_noswap["traj_amp"][:, -tail:, :].mean(axis=(0, 1))  # (NR,)
+    cut_tail = res_noswap["traj_cut"][:, -tail:, :].mean(axis=(0, 1))  # (NR,)
+
+    if args.betas is not None:
+        betas = np.sort(np.asarray(args.betas, dtype=np.float64))
+        beta_src = "手動指定"
+    else:
+        betas = calibrate_betas(cut_tail, kappa_target=args.kappa_target)
+        beta_src = f"自動キャリブレーション (κ_target={args.kappa_target})"
+    print(f"  定常カット (replica 0→2) = [{cut_tail[0]:.1f}, {cut_tail[1]:.1f}, {cut_tail[2]:.1f}]")
+    print(f"  β ラダー [{betas[0]:.3e}, {betas[1]:.3e}, {betas[2]:.3e}]  ({beta_src})")
+
+    # ==== CIM + PT (Metropolis 受理, NT trial) ====
+    print(f"\n[CIM+PT] {NT} trials  rounds={args.cim_rounds}  swap/{args.swap_interval}  Metropolis受理")
     t0 = time.time()
     res = simulate_cim_pt_batch(
         n=n, J=J, edges=edges, num_rounds=args.cim_rounds,
-        num_trials=args.num_trials, seeds=seeds, weights=w_arg,
-        pump_levels=pump_levels, swap_interval=args.swap_interval,
-        p_swap=args.p_swap, sample_interval=args.sample_interval, **pt_phys,
+        num_trials=NT, seeds=pt_seeds, weights=w_arg,
+        pump_levels=pump_levels, betas=betas, do_swap=True,
+        swap_interval=args.swap_interval, sample_interval=args.sample_interval, **pt_phys,
     )
     pt_time = time.time() - t0
     pt_cuts = res["best_cuts"]
-    sample_rounds = res["sample_rounds"]
+    swap_rate = res["swap_rate"]
     print(f"  time={pt_time:.2f}s  mean={pt_cuts.mean():.1f}  best={pt_cuts.max():.0f}")
-
-    # ==== 領域characterization (swap無効) ====
-    # スワップを入れると各スロットに様々な config が流入し、スロット別の
-    # mean|c| 時間平均が均されて 3 領域が見えなくなる。固定ポンプが作る
-    # 3 領域(ノイズ支配/臨界/飽和)は swap を切った素の発展で最も明瞭に
-    # 現れるので、領域の同定と可視化はこの参照 runで行う。最適化比較は
-    # 上の swap 有効 run(res)で行う。
-    reg_trials = min(args.num_trials, 8)
-    print(f"\n[regime] {reg_trials} trials  swap無効  (3領域の同定用)")
-    res_reg = simulate_cim_pt_batch(
-        n=n, J=J, edges=edges, num_rounds=args.cim_rounds,
-        num_trials=reg_trials, seeds=seeds[:reg_trials], weights=w_arg,
-        pump_levels=pump_levels, swap_interval=args.swap_interval,
-        p_swap=0.0, sample_interval=args.sample_interval, **pt_phys,
-    )
+    print(f"  スワップ受理率  ペア(0-1)={swap_rate[0]:.3f}  ペア(1-2)={swap_rate[1]:.3f}  "
+          f"(試行 {int(res['swap_attempts'][0])}/{int(res['swap_attempts'][1])} 回/trial-pair)")
+    if np.any(swap_rate > 0.95) or np.any((swap_rate < 0.05) & (res["swap_attempts"] > 0)):
+        print("  [warn] 受理率が極端です。--kappa-target か --betas で β スケールを調整してください")
 
     # ==== 検証1: 最良解の符号からカットを独立再計算 ====
     best_trial = int(np.argmax(pt_cuts))
@@ -367,32 +495,29 @@ def main() -> None:
     if not ok:
         raise SystemExit("検証失敗: カーネルのカット値が独立計算と一致しません")
 
-    # ==== 検証2: 3レプリカが 3 領域(mean|c|)に分離しているか ====
-    # 領域同定 run(swap無効)の後半(定常)での mean|c| の trial 平均。
-    tail = max(1, sample_rounds.size // 3)
-    amp_tail = res_reg["traj_amp"][:, -tail:, :].mean(axis=(0, 1))  # (NR,)
-    cut_tail = res_reg["traj_cut"][:, -tail:, :].mean(axis=(0, 1))  # (NR,)
+    # ==== 検証2: 3レプリカが 3 領域(mean|c|)に分離しているか(swap無効 run) ====
     print(f"[verify-2] 定常 mean|c| (replica 0→2) = "
           f"[{amp_tail[0]:.4f}, {amp_tail[1]:.4f}, {amp_tail[2]:.4f}]")
-    print(f"           定常 cut    (replica 0→2) = "
-          f"[{cut_tail[0]:.1f}, {cut_tail[1]:.1f}, {cut_tail[2]:.1f}]")
     amp_monotone = amp_tail[0] < amp_tail[1] < amp_tail[2]
     print(f"           振幅が高温<臨界<低温の順に増加: {amp_monotone}")
 
     # ==== サマリ ====
-    results = {"CIM": cim_cuts, "CIM+PT": pt_cuts}
-    times = {"CIM": cim_time, "CIM+PT": pt_time}
-    print("\n" + "=" * 78)
-    print(f"{'Method':<10} {'Mean':>10} {'Best':>10} {'Worst':>10} {'Std':>8} {'Time[s]':>10}")
-    print("-" * 78)
-    for name in ["CIM", "CIM+PT"]:
+    results = {"CIM": cim_cuts, "CIM-3固定(swap無)": noswap_cuts, "CIM+PT": pt_cuts}
+    times = {"CIM": cim_time, "CIM-3固定(swap無)": noswap_time, "CIM+PT": pt_time}
+    order = ["CIM", "CIM-3固定(swap無)", "CIM+PT"]
+    print("\n" + "=" * 86)
+    print(f"{'Method':<18} {'Ntrial':>7} {'Mean':>10} {'Best':>10} {'Worst':>10} {'Std':>8} {'Time[s]':>9}")
+    print("-" * 86)
+    for name in order:
         c = results[name]
-        line = (f"{name:<10} {c.mean():>10.1f} {c.max():>10.1f} {c.min():>10.1f} "
-                f"{c.std():>8.1f} {times[name]:>10.2f}")
+        line = (f"{name:<18} {c.size:>7d} {c.mean():>10.1f} {c.max():>10.1f} {c.min():>10.1f} "
+                f"{c.std():>8.1f} {times[name]:>9.2f}")
         if known_best is not None:
             line += f"  ratio={c.max() / known_best:.4f}"
         print(line)
-    print("=" * 78)
+    print("=" * 86)
+    print("注: 等計算量 - CIM は NR*NT trial、CIM-3固定/CIM+PT は NT trial x NR レプリカ。")
+    print("    swap の正味効果は CIM-3固定(swap無) vs CIM+PT (同一seed/同一ポンプ)で評価する。")
 
     # ==== 出力ディレクトリ (results 規約) ====
     kind_root = Path("results") / date.today().isoformat() / EXPERIMENT_KIND
@@ -403,59 +528,65 @@ def main() -> None:
             head = p.name.split("_", 1)[0]
             if head[1:].isdigit():
                 max_v = max(max_v, int(head[1:]))
-    desc_parts = [f"rounds{args.cim_rounds}", f"swap{args.swap_interval}"]
-    if args.num_trials != 100:
-        desc_parts.append(f"trials{args.num_trials}")
+    desc_parts = [f"rounds{args.cim_rounds}", f"swap{args.swap_interval}", "metro"]
+    if NT != 100:
+        desc_parts.append(f"trials{NT}")
     if args.tag:
         desc_parts.append(args.tag)
     out_dir = kind_root / f"v{max_v + 1}_{'_'.join(desc_parts)}"
     out_dir.mkdir(parents=True, exist_ok=True)
     print(f"\n[output] dir={out_dir}")
 
-    colors = {"CIM": "#1f77b4", "CIM+PT": "#9467bd"}
+    colors = {"CIM": "#1f77b4", "CIM-3固定(swap無)": "#8c564b", "CIM+PT": "#9467bd"}
     rep_colors = ["#d62728", "#ff7f0e", "#1f77b4"]  # 高温→臨界→低温
     rep_labels = ["replica0 ノイズ支配(高温)", "replica1 臨界(中温)", "replica2 飽和(低温)"]
 
-    # --- Fig1: ヒストグラム ---
-    fig1, axes = plt.subplots(1, 2, figsize=(12, 4.8))
-    all_cuts = np.concatenate([cim_cuts, pt_cuts])
+    # --- Fig1: ヒストグラム (3 手法) ---
+    fig1, axes = plt.subplots(1, 3, figsize=(16, 4.6))
+    all_cuts = np.concatenate([cim_cuts, noswap_cuts, pt_cuts])
     x_min = float(all_cuts.min()) - max(20, abs(all_cuts.min()) * 0.005)
     x_max = float(all_cuts.max()) + max(20, abs(all_cuts.max()) * 0.005)
     if known_best is not None:
         x_max = max(x_max, known_best + 10)
     bins = np.linspace(x_min, x_max, 30)
-    for ax, name in zip(axes, ["CIM", "CIM+PT"]):
+    for ax, name in zip(axes, order):
         c = results[name]
         ax.hist(c, bins=bins, color=colors[name], alpha=0.75, edgecolor="black", linewidth=0.5)
         ax.axvline(c.mean(), color="black", linestyle=":", linewidth=1.2, label=f"平均 {c.mean():.0f}")
         if known_best is not None:
             ax.axvline(known_best, color="red", linestyle="--", linewidth=1.2,
                        label=f"既知ベスト {known_best}")
-        ax.set_title(f"{name}  時間:{times[name]:.1f}s  平均:{c.mean():.0f}  最良:{c.max():.0f}", fontsize=11)
+        ax.set_title(f"{name}  {c.size}trial\n時間:{times[name]:.1f}s 平均:{c.mean():.0f} 最良:{c.max():.0f}",
+                     fontsize=10)
         ax.set_xlabel("カット値", fontsize=LABEL_FS)
         ax.set_ylabel("頻度", fontsize=LABEL_FS)
         ax.set_xlim(x_min, x_max)
         ax.grid(axis="y", alpha=0.25)
-        ax.legend(fontsize=9, loc="upper left")
+        ax.legend(fontsize=8, loc="upper left")
         ticks_in(ax)
-    fig1.suptitle(f"CIM vs CIM+PT — {graph_name} (各 {args.num_trials} trial)", fontsize=13)
+    fig1.suptitle(f"CIM vs CIM-3固定(swap無) vs CIM+PT — {graph_name} (等計算量)", fontsize=13)
     fig1.tight_layout()
     fig1.savefig(out_dir / "hist.png", dpi=150)
     plt.close(fig1)
     print(f"  saved: {out_dir / 'hist.png'}")
 
-    # --- Fig2: running best ---
+    # --- Fig2: running best (等計算量の横軸 = レプリカ実行数換算) ---
     fig2, ax2 = plt.subplots(figsize=(10, 5.4))
-    for name in ["CIM", "CIM+PT"]:
-        running = np.maximum.accumulate(results[name])
-        ax2.plot(np.arange(1, args.num_trials + 1), running, color=colors[name],
-                 linewidth=2.0, label=f"{name} ({times[name]:.1f}s)")
+    # CIM: 1レプリカ/trial → x = 1..NR·NT。PT/対照: NRレプリカ/trial → x = NR, 2NR, ...
+    x_cim = np.arange(1, cim_cuts.size + 1)
+    x_pt = np.arange(1, NT + 1) * NR
+    ax2.plot(x_cim, np.maximum.accumulate(cim_cuts), color=colors["CIM"],
+             linewidth=2.0, label=f"CIM ({cim_time:.1f}s)")
+    ax2.plot(x_pt, np.maximum.accumulate(noswap_cuts), color=colors["CIM-3固定(swap無)"],
+             linewidth=2.0, label=f"CIM-3固定(swap無) ({noswap_time:.1f}s)")
+    ax2.plot(x_pt, np.maximum.accumulate(pt_cuts), color=colors["CIM+PT"],
+             linewidth=2.0, label=f"CIM+PT ({pt_time:.1f}s)")
     if known_best is not None:
         ax2.axhline(known_best, color="red", linestyle="--", linewidth=1.2,
                     label=f"既知ベスト {known_best}")
-    ax2.set_xlabel("trial 数", fontsize=LABEL_FS)
+    ax2.set_xlabel("計算量(レプリカ実行数 換算)", fontsize=LABEL_FS)
     ax2.set_ylabel("これまでの最良カット", fontsize=LABEL_FS)
-    ax2.set_title(f"trial 数に対する累積最良カット ({graph_name})")
+    ax2.set_title(f"等計算量での累積最良カット ({graph_name})")
     ax2.legend(loc="lower right")
     ax2.grid(alpha=0.3)
     ticks_in(ax2)
@@ -464,28 +595,24 @@ def main() -> None:
     plt.close(fig2)
     print(f"  saved: {out_dir / 'running_best.png'}")
 
-    # --- Fig3: best-so-far 収束軌跡 ---
+    # --- Fig3: best-so-far 収束軌跡 (PT vs swap無 対照) ---
     fig3, ax3 = plt.subplots(figsize=(10, 5.4))
-    tb_mean = res["traj_best"].mean(axis=0)
-    tb_best = res["traj_best"].max(axis=0)
-    tb_p10 = np.percentile(res["traj_best"], 10, axis=0)
-    tb_p90 = np.percentile(res["traj_best"], 90, axis=0)
-    ax3.fill_between(sample_rounds, tb_p10, tb_p90, color=colors["CIM+PT"], alpha=0.18,
-                     label="CIM+PT 10–90%ile")
-    ax3.plot(sample_rounds, tb_mean, color=colors["CIM+PT"], linewidth=2.2,
-             label=f"CIM+PT 平均 (最終 {tb_mean[-1]:.0f})")
-    ax3.plot(sample_rounds, tb_best, color=colors["CIM+PT"], linewidth=1.5, linestyle="--",
-             label=f"CIM+PT 最良 (最終 {tb_best[-1]:.0f})")
+    for key, name in [("res", "CIM+PT"), ("noswap", "CIM-3固定(swap無)")]:
+        rr = res if key == "res" else res_noswap
+        tb_mean = rr["traj_best"].mean(axis=0)
+        tb_p10 = np.percentile(rr["traj_best"], 10, axis=0)
+        tb_p90 = np.percentile(rr["traj_best"], 90, axis=0)
+        ax3.fill_between(sample_rounds, tb_p10, tb_p90, color=colors[name], alpha=0.15)
+        ax3.plot(sample_rounds, tb_mean, color=colors[name], linewidth=2.2,
+                 label=f"{name} 平均 (最終 {tb_mean[-1]:.0f})")
     ax3.axhline(cim_cuts.mean(), color=colors["CIM"], linestyle=":", linewidth=1.6,
                 label=f"CIM 平均 {cim_cuts.mean():.0f}")
-    ax3.axhline(cim_cuts.max(), color=colors["CIM"], linestyle="-.", linewidth=1.4,
-                label=f"CIM 最良 {cim_cuts.max():.0f}")
     if known_best is not None:
         ax3.axhline(known_best, color="red", linestyle="--", linewidth=1.2,
                     label=f"既知ベスト {known_best}")
     ax3.set_xlabel("ラウンド数", fontsize=LABEL_FS)
     ax3.set_ylabel("これまでの最良カット", fontsize=LABEL_FS)
-    ax3.set_title(f"CIM+PT の収束軌跡 ({graph_name}, {args.num_trials} trial)")
+    ax3.set_title(f"収束軌跡 — swap有(PT) vs swap無 ({graph_name}, {NT} trial)")
     ax3.legend(loc="lower right", fontsize=9)
     ax3.grid(alpha=0.3)
     ticks_in(ax3)
@@ -494,9 +621,9 @@ def main() -> None:
     plt.close(fig3)
     print(f"  saved: {out_dir / 'trajectory.png'}")
 
-    # --- Fig4: 3レプリカの振幅領域 + カット (検証2 の可視化, swap無効 run) ---
-    amp_mean = res_reg["traj_amp"].mean(axis=0)  # (num_samples, NR)
-    cut_mean = res_reg["traj_cut"].mean(axis=0)  # (num_samples, NR)
+    # --- Fig4: 3レプリカの振幅領域 + カット (swap無効 run) ---
+    amp_mean = res_noswap["traj_amp"].mean(axis=0)  # (num_samples, NR)
+    cut_mean = res_noswap["traj_cut"].mean(axis=0)  # (num_samples, NR)
     fig4, (axL, axR) = plt.subplots(1, 2, figsize=(13, 5.0))
     for r in range(NR):
         axL.plot(sample_rounds, amp_mean[:, r], color=rep_colors[r], linewidth=2.0,
@@ -518,18 +645,13 @@ def main() -> None:
     axR.legend(loc="lower right", fontsize=9)
     axR.grid(alpha=0.3)
     ticks_in(axR)
-    fig4.suptitle(f"PT 3 レプリカの動作領域 ({graph_name}, swap無効 {reg_trials}trial)", fontsize=13)
+    fig4.suptitle(f"PT 3 レプリカの動作領域 ({graph_name}, swap無効 {NT}trial)", fontsize=13)
     fig4.tight_layout()
     fig4.savefig(out_dir / "amplitude_regimes.png", dpi=150)
     plt.close(fig4)
     print(f"  saved: {out_dir / 'amplitude_regimes.png'}")
 
-    # --- Fig5: swap有効時の振幅推移 (混合の様子) ---
-    # res = swap有効 run。trial平均(左)は swap 直後にスロット間が混合し、
-    # 次の swap までの数ラウンドで各ポンプの引力により再分離する → ノコギリ波。
-    # 各スロットは平均的には自分のポンプ領域(高温<臨界<低温)を保つ。
-    # 代表 1 trial の生トレース(右)では swap_interval ごとにスロット間で
-    # 振幅が飛び移る(= 隣接ペア交換)様子が直接見える。
+    # --- Fig5: swap有効時の振幅推移 (Metropolis 混合の様子) ---
     amp_on_mean = res["traj_amp"].mean(axis=0)  # (num_samples, NR)
     rep_trial = int(np.argmax(pt_cuts))         # 最良 trial を代表に
     amp_on_one = res["traj_amp"][rep_trial]      # (num_samples, NR)
@@ -539,7 +661,7 @@ def main() -> None:
                   label=f"{rep_labels[r]}  P={pump_levels[r] * 1e3:.2f}mW")
     axL5.set_xlabel("ラウンド数", fontsize=LABEL_FS)
     axL5.set_ylabel("mean|c| (trial平均)", fontsize=LABEL_FS)
-    axL5.set_title(f"swap有効 — 全{args.num_trials}trial平均(swapで混合→再分離のノコギリ波)")
+    axL5.set_title(f"swap有(Metropolis) — 全{NT}trial平均")
     axL5.legend(loc="upper left", fontsize=9)
     axL5.grid(alpha=0.3)
     ticks_in(axL5)
@@ -548,12 +670,12 @@ def main() -> None:
                   label=f"{rep_labels[r]}")
     axR5.set_xlabel("ラウンド数", fontsize=LABEL_FS)
     axR5.set_ylabel("mean|c|", fontsize=LABEL_FS)
-    axR5.set_title(f"swap有効 — 代表1trial(#{rep_trial})の生トレース")
+    axR5.set_title(f"swap有 — 代表1trial(#{rep_trial})の生トレース")
     axR5.legend(loc="upper left", fontsize=9)
     axR5.grid(alpha=0.3)
     ticks_in(axR5)
     fig5.suptitle(f"PT スワップ有効時の振幅推移 ({graph_name}, swap/{args.swap_interval} "
-                  f"p={args.p_swap})", fontsize=13)
+                  f"受理率[{swap_rate[0]:.2f},{swap_rate[1]:.2f}])", fontsize=13)
     fig5.tight_layout()
     fig5.savefig(out_dir / "amplitude_swapon.png", dpi=150)
     plt.close(fig5)
@@ -562,16 +684,26 @@ def main() -> None:
     # ==== サマリ JSON + 生データ ====
     summary = {
         "graph": graph_name, "n": n, "k_edges": k_edges,
-        "num_trials": args.num_trials, "cim_rounds": args.cim_rounds,
+        "num_trials_pt": NT, "num_trials_cim": int(NR * NT),
+        "equal_compute": True, "n_replicas": NR,
+        "cim_rounds": args.cim_rounds,
         "pump_mults": sorted(args.pump_mults), "p_th_mW": p_th * 1e3,
         "pump_levels_mW": [p * 1e3 for p in pump_levels.tolist()],
-        "swap_interval": args.swap_interval, "p_swap": args.p_swap,
+        "swap_interval": args.swap_interval,
+        "swap_acceptance": "metropolis",
+        "kappa_target": args.kappa_target,
+        "betas": betas.tolist(),
+        "beta_source": beta_src,
+        "swap_rate": swap_rate.tolist(),
+        "swap_attempts_per_trial": res["swap_attempts"].tolist(),
         "known_best": known_best,
-        "CIM": {"mean": float(cim_cuts.mean()), "best": float(cim_cuts.max()),
+        "CIM": {"n_trial": int(cim_cuts.size), "mean": float(cim_cuts.mean()), "best": float(cim_cuts.max()),
                 "worst": float(cim_cuts.min()), "std": float(cim_cuts.std()), "time_s": cim_time},
-        "CIM+PT": {"mean": float(pt_cuts.mean()), "best": float(pt_cuts.max()),
+        "CIM_3fixed_noswap": {"n_trial": int(noswap_cuts.size), "mean": float(noswap_cuts.mean()),
+                              "best": float(noswap_cuts.max()), "worst": float(noswap_cuts.min()),
+                              "std": float(noswap_cuts.std()), "time_s": noswap_time},
+        "CIM_PT": {"n_trial": int(pt_cuts.size), "mean": float(pt_cuts.mean()), "best": float(pt_cuts.max()),
                    "worst": float(pt_cuts.min()), "std": float(pt_cuts.std()), "time_s": pt_time},
-        "regime_trials_noswap": reg_trials,
         "tail_mean_abs_c": amp_tail.tolist(),
         "tail_cut": cut_tail.tolist(),
         "amp_monotone": bool(amp_monotone),
@@ -579,9 +711,10 @@ def main() -> None:
     }
     with open(out_dir / "summary.json", "w", encoding="utf-8") as f:
         json.dump(summary, f, ensure_ascii=False, indent=2)
-    np.savez(out_dir / "data.npz", cim=cim_cuts, pt=pt_cuts,
+    np.savez(out_dir / "data.npz", cim=cim_cuts, noswap=noswap_cuts, pt=pt_cuts,
              traj_best=res["traj_best"], traj_amp=res["traj_amp"], traj_cut=res["traj_cut"],
-             sample_rounds=sample_rounds, pump_levels=pump_levels)
+             noswap_traj_best=res_noswap["traj_best"],
+             sample_rounds=sample_rounds, pump_levels=pump_levels, betas=betas)
     print(f"  saved: {out_dir / 'summary.json'}")
 
 
