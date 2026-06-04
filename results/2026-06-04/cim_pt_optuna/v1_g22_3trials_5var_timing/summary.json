@@ -1,0 +1,48 @@
+{
+  "graph": "G22",
+  "n": 2000,
+  "k_edges": 19990,
+  "n_optuna_trials": 3,
+  "n_cim_trials": 20,
+  "num_rounds": 1500,
+  "known_best": 13359,
+  "elapsed_sec_total": 3384.172903060913,
+  "methods": {
+    "ramp": {
+      "best_mean_cut": 13275.0565,
+      "prev_mean": 13276.0,
+      "gain": -0.9434999999994034,
+      "best_params": {
+        "L": 0.05,
+        "gamma": 42.09,
+        "loss_dB": 11.0,
+        "abs_coupling": 0.03,
+        "dP_per_round": 5e-05
+      }
+    },
+    "noswap": {
+      "best_mean_cut": 13253.527,
+      "prev_mean": 13193.0,
+      "gain": 60.527000000000044,
+      "best_params": {
+        "L": 0.05,
+        "gamma": 42.09,
+        "loss_dB": 11.0,
+        "abs_coupling": 0.03,
+        "pump_spread": 0.5
+      }
+    },
+    "cimpt": {
+      "best_mean_cut": 13266.0205,
+      "prev_mean": 13156.0,
+      "gain": 110.02050000000054,
+      "best_params": {
+        "L": 0.05176340429875833,
+        "gamma": 69.94332504138298,
+        "loss_dB": 16.260794273576167,
+        "abs_coupling": 0.01793876531448651,
+        "pump_spread": 0.4389238394711238
+      }
+    }
+  }
+}
