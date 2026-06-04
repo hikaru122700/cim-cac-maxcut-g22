@@ -126,9 +126,15 @@ def make_objective(method: str, N: int, EDGES, NUM_ROUNDS: int, SEEDS: np.ndarra
                                             sample_interval=NUM_ROUNDS, **pt_kwargs)
                 return _record(trial, res["best_cuts"])
 
-            # cimpt: swap 無 run で β を較正 → swap 有を評価
+            # cimpt: swap 無 run で β を較正 → swap 有を評価。
+            # β 較正は定常カット差(平均)だけ要るので、較正 run は CIM 試行数を
+            # 減らして高速化する(最適値そのものは不要なので統計が粗くても可)。
+            calib_kwargs = dict(pt_kwargs)
+            n_calib = min(pt_kwargs["num_trials"], N_CALIB_TRIALS)
+            calib_kwargs["num_trials"] = n_calib
+            calib_kwargs["seeds"] = pt_kwargs["seeds"][:n_calib]
             res0 = simulate_cim_pt_batch(do_swap=False,
-                                         sample_interval=SAMPLE_INTERVAL, **pt_kwargs)
+                                         sample_interval=SAMPLE_INTERVAL, **calib_kwargs)
             sr = res0["sample_rounds"]
             tail = max(1, sr.size // 3)
             cut_tail = res0["traj_cut"][:, -tail:, :].mean(axis=(0, 1))
