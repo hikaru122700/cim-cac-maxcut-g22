@@ -71,6 +71,7 @@ FIXED_PHOTON_ENERGY = 1.28e-19
 SWAP_INTERVAL = 10
 KAPPA_TARGET = 1.0
 SAMPLE_INTERVAL = 25  # cimpt の β 較正用に軌跡を記録する間隔
+N_CALIB_TRIALS = 8    # cimpt の β 較正 run の CIM 試行数(目的評価より粗くてよい)
 
 # 共通 4 変数 + 手法固有 1 変数の warm start (論文ベース)
 WARM_COMMON = {"L": 0.05, "gamma": 42.09, "loss_dB": 11.0, "abs_coupling": 0.03}
