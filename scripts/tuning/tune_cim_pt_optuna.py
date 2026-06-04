@@ -165,7 +165,15 @@ def run_study(method: str, N: int, EDGES, NUM_ROUNDS: int, N_CIM: int,
         study_name=f"{method}_g22_nr{NUM_ROUNDS}",
         storage=f"sqlite:///{(out_dir / 'optuna.db').as_posix()}",
         load_if_exists=True)
-    study.enqueue_trial({**WARM_COMMON, **WARM_EXTRA[method]})
+
+    done = len(study.trials)
+    if done == 0:
+        study.enqueue_trial({**WARM_COMMON, **WARM_EXTRA[method]})  # 論文値を最初に
+    remaining = max(0, N_OPTUNA - done)
+    if remaining == 0:
+        print(f"  [{method}] 既に {done} trials 完了済み。スキップ。")
+    elif done:
+        print(f"  [{method}] 再開: 済み {done} → 残り {remaining} trials")
 
     t0 = time.time()
 
@@ -178,7 +186,8 @@ def run_study(method: str, N: int, EDGES, NUM_ROUNDS: int, N_CIM: int,
 
     print(f"\n=== [{method}] {METHOD_LABEL[method]} : Optuna {N_OPTUNA} trials "
           f"(CIM {N_CIM} trial × rounds {NUM_ROUNDS}) ===")
-    study.optimize(objective, n_trials=N_OPTUNA, callbacks=[cb])
+    if remaining:
+        study.optimize(objective, n_trials=remaining, callbacks=[cb])
     elapsed = time.time() - t0
 
     best = study.best_trial
