@@ -270,6 +270,9 @@ def main() -> None:
     ap.add_argument("--n-cim", type=int, default=20)
     ap.add_argument("--num-rounds", type=int, default=1500)
     ap.add_argument("--tag", default="")
+    ap.add_argument("--run-dir", default=None,
+                    help="既存の出力ディレクトリを指定して再開(optuna.db から resume)。"
+                         "未指定なら results 規約で v{N} を自動採番。")
     args = ap.parse_args()
 
     print(f"Loading {args.graph} ...")
