@@ -279,12 +279,16 @@ def main() -> None:
     N, K_EDGES, _, EDGES = load_graph(args.graph)
     print(f"  N={N} K={K_EDGES}")
 
-    kind_root = ROOT / "results" / date.today().isoformat() / EXPERIMENT_KIND
-    v = next_version(kind_root)
-    desc = [Path(args.graph).stem.lower(), f"{args.n_optuna}trials", "5var"]
-    if args.tag:
-        desc.append(args.tag)
-    run_dir = kind_root / f"v{v}_{'_'.join(desc)}"
+    if args.run_dir:
+        run_dir = Path(args.run_dir)
+        print("[resume] 既存ディレクトリから再開します")
+    else:
+        kind_root = ROOT / "results" / date.today().isoformat() / EXPERIMENT_KIND
+        v = next_version(kind_root)
+        desc = [Path(args.graph).stem.lower(), f"{args.n_optuna}trials", "5var"]
+        if args.tag:
+            desc.append(args.tag)
+        run_dir = kind_root / f"v{v}_{'_'.join(desc)}"
     run_dir.mkdir(parents=True, exist_ok=True)
     print(f"[output] {run_dir}")
 
