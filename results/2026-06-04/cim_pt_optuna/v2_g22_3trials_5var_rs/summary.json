@@ -2,11 +2,11 @@
   "graph": "G22",
   "n": 2000,
   "k_edges": 19990,
-  "n_optuna_trials": 3,
+  "n_optuna_trials": 5,
   "n_cim_trials": 6,
   "num_rounds": 80,
   "known_best": 13359,
-  "elapsed_sec_total": 82.37107682228088,
+  "elapsed_sec_total": 52.19122385978699,
   "methods": {
     "cimpt": {
       "best_mean_cut": 13130.411,
