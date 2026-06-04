@@ -30,8 +30,8 @@
   ],
   "prev_mean_untuned": 13156.0,
   "known_best": 13359,
-  "n_optuna_trials": 3,
+  "n_optuna_trials": 5,
   "n_cim_trials": 6,
   "num_rounds": 80,
-  "elapsed_sec": 78.18838405609131
+  "elapsed_sec": 49.68370175361633
 }
