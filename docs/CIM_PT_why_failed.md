@@ -12,8 +12,9 @@ CIM は次の式を毎ラウンド回す。
 
 ![CIM の更新式](cim_equations.png)
 
-$$\mathbf{F}(n)=a\,\mathbf{E}(n-1)+b\,\mathbf{J}\mathbf{E}(n-1)+c\,\mathbf{n}_0,\qquad
-\mathbf{E}(n)=\mathbf{F}(n)\exp\!\big[\alpha\,p(n)\,(1-\beta|\mathbf{F}(n)|^2)\big]$$
+$$\mathbf{F}(n) = a\,\mathbf{E}(n-1) + b\,\mathbf{J}\mathbf{E}(n-1) + c\,\mathbf{n}_0$$
+
+$$\mathbf{E}(n) = \mathbf{F}(n)\,\exp\!\left[\alpha\,p(n)\left(1 - \beta\,|\mathbf{F}(n)|^2\right)\right]$$
 
 - `F`: 結合後の場(自己項 `a·E` + 相互作用 `b·JE` + ノイズ `c·n₀`)
 - `E`: ポンプ利得 `exp[α·p(n)(1−β|F|²)]` をかけた振幅。`β|F|²` が飽和(振幅が大きいほど利得が減る)。
