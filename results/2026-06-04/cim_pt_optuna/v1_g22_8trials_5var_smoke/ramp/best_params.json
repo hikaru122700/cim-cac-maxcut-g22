@@ -1,0 +1,30 @@
+{
+  "method": "ramp",
+  "label": "ランプCIM",
+  "best_value_mean_cut": 10578.1125,
+  "best_params": {
+    "L": 0.10716624725460688,
+    "gamma": 35.17964032104081,
+    "loss_dB": 15.496980344066511,
+    "abs_coupling": 0.1348421375975231,
+    "dP_per_round": 1.554977789977581e-06
+  },
+  "fixed_params": {
+    "kappa": 130.0,
+    "bandwidth": 1000000000.0,
+    "photon_energy": 1.28e-19,
+    "swap_interval": 10,
+    "kappa_target": 1.0
+  },
+  "best_std": 369.8398597281667,
+  "best_max": 12411,
+  "best_min": 9957,
+  "best_swap_rate": null,
+  "best_betas": null,
+  "prev_mean_untuned": 13276.0,
+  "known_best": 13359,
+  "n_optuna_trials": 8,
+  "n_cim_trials": 4,
+  "num_rounds": 80,
+  "elapsed_sec": 22.064947366714478
+}
