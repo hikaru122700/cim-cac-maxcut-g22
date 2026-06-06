@@ -381,19 +381,11 @@ def simulate_cim_pt_ramp_batch(
     }
 
 
-def _load_v1():
-    spec = importlib.util.spec_from_file_location("cim_pt_v1", HERE / "2026-05-29_CIM_PT.py")
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
-
-
 def main() -> None:
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
-    v1 = _load_v1()
     from modules.CIM import build_coupling_matrix, load_graph, simulate_cim_batch
     from modules.verify import compute_cut_from_edges
 
@@ -462,7 +454,7 @@ def main() -> None:
 
     # ==== v2 参考: 固定ポンプ反転 PT (同一 seed) ====
     pump_levels_fixed = np.sort(np.array([m * p_th for m in pump_mults]))
-    res_v2_noswap = v1.simulate_cim_pt_batch(
+    res_v2_noswap = simulate_cim_pt_fixed(
         n=n, J=J, edges=edges, num_rounds=args.cim_rounds, num_trials=NT,
         seeds=pt_seeds, weights=w_arg, pump_levels=pump_levels_fixed, do_swap=False,
         swap_interval=args.swap_interval, sample_interval=args.sample_interval, **pt_phys)
@@ -471,7 +463,7 @@ def main() -> None:
     betas_fixed_rev = betas_fixed_norm.max() - betas_fixed_norm   # v2: 低ポンプ=cold
     print(f"\n[CIM+PT v2(固定ポンプ反転)] {NT} trials")
     t0 = time.time()
-    res_v2 = v1.simulate_cim_pt_batch(
+    res_v2 = simulate_cim_pt_fixed(
         n=n, J=J, edges=edges, num_rounds=args.cim_rounds, num_trials=NT,
         seeds=pt_seeds, weights=w_arg, pump_levels=pump_levels_fixed,
         betas=betas_fixed_rev, do_swap=True,
