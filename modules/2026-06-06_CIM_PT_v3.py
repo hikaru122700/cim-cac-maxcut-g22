@@ -29,7 +29,6 @@ v3 の変更点:
 from __future__ import annotations
 
 import argparse
-import importlib.util
 import json
 import sys
 import time
@@ -436,7 +435,7 @@ def main() -> None:
         bandwidth=1.0e9, photon_energy=1.28e-19, dP_per_round=0.05e-3)
     pt_phys = {k: v for k, v in cim_params.items() if k != "dP_per_round"}
     dP = cim_params["dP_per_round"]
-    p_th = v1.compute_threshold_pump(cim_params["kappa"], cim_params["L"], cim_params["eta"])
+    p_th = compute_threshold_pump(cim_params["kappa"], cim_params["L"], cim_params["eta"])
 
     # 各レプリカが P_th を横切るラウンド(参考表示)
     cross = [int(np.ceil(p_th / (m * dP))) for m in pump_mults]
@@ -459,7 +458,7 @@ def main() -> None:
         seeds=pt_seeds, weights=w_arg, pump_levels=pump_levels_fixed, do_swap=False,
         swap_interval=args.swap_interval, sample_interval=args.sample_interval, **pt_phys)
     cut_tail_fixed = res_v2_noswap["traj_cut"][:, -max(1, res_v2_noswap["sample_rounds"].size // 3):, :].mean(axis=(0, 1))
-    betas_fixed_norm = v1.calibrate_betas(cut_tail_fixed, kappa_target=args.kappa_target)
+    betas_fixed_norm = calibrate_betas(cut_tail_fixed, kappa_target=args.kappa_target)
     betas_fixed_rev = betas_fixed_norm.max() - betas_fixed_norm   # v2: 低ポンプ=cold
     print(f"\n[CIM+PT v2(固定ポンプ反転)] {NT} trials")
     t0 = time.time()
@@ -489,7 +488,7 @@ def main() -> None:
     print(f"  time={noswap_time:.2f}s  定常カット (mult低→高) = "
           f"[{cut_tail[0]:.1f}, {cut_tail[1]:.1f}, {cut_tail[2]:.1f}]")
 
-    betas_norm = v1.calibrate_betas(cut_tail, kappa_target=args.kappa_target)
+    betas_norm = calibrate_betas(cut_tail, kappa_target=args.kappa_target)
     # v2 の教訓: 最良カットのレプリカを cold(β最大) に。
     if cut_tail[0] >= cut_tail[-1]:
         betas_v3 = betas_norm.max() - betas_norm     # 低 mult 側を cold
