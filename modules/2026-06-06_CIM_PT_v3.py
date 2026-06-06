@@ -480,7 +480,7 @@ def main() -> None:
     res_noswap = simulate_cim_pt_ramp_batch(
         n=n, J=J, edges=edges, num_rounds=args.cim_rounds, num_trials=NT,
         seeds=pt_seeds, weights=w_arg, pump_mults=pump_mults,
-        betas=np.zeros(NR), do_swap=False,
+        betas=np.zeros(NR), do_swap=False, dP_per_round=dP,
         swap_interval=args.swap_interval, sample_interval=args.sample_interval, **pt_phys)
     noswap_time = time.time() - t0
     sample_rounds = res_noswap["sample_rounds"]
@@ -508,7 +508,7 @@ def main() -> None:
     res_v3 = simulate_cim_pt_ramp_batch(
         n=n, J=J, edges=edges, num_rounds=args.cim_rounds, num_trials=NT,
         seeds=pt_seeds, weights=w_arg, pump_mults=pump_mults,
-        betas=betas_v3, do_swap=True,
+        betas=betas_v3, do_swap=True, dP_per_round=dP,
         swap_interval=args.swap_interval, sample_interval=args.sample_interval, **pt_phys)
     v3_time = time.time() - t0
     v3_cuts = res_v3["best_cuts"]
