@@ -177,7 +177,7 @@ def _simulate_cim_pt_fixed_batch(
 def simulate_cim_pt_fixed(
     n, J, edges, num_rounds, num_trials,
     kappa, L, gamma, eta, bandwidth, photon_energy, seeds,
-    *, pump_levels, betas, swap_interval=10, do_swap=True,
+    *, pump_levels, betas=None, swap_interval=10, do_swap=True,
     sample_interval=None, weights=None,
 ):
     """固定ポンプ 3 レプリカ + Metropolis PT (v1 相当) の公開 API。"""
@@ -189,6 +189,8 @@ def simulate_cim_pt_fixed(
               else np.ascontiguousarray(np.asarray(weights, dtype=np.float64)))
     seeds_arr = np.ascontiguousarray(np.asarray(seeds, dtype=np.int64))
     pump_levels = np.ascontiguousarray(np.sort(np.asarray(pump_levels, dtype=np.float64)))
+    if betas is None:
+        betas = np.zeros(NR, dtype=np.float64)
     betas = np.ascontiguousarray(np.asarray(betas, dtype=np.float64))
 
     if sample_interval is None or sample_interval <= 0:
