@@ -47,8 +47,179 @@ NR = 3
 
 
 # ============================================================
+#  純粋ヘルパー (v1 と同一; importlib の numba キャッシュ衝突を避け自己完結化)
+# ============================================================
+def compute_threshold_pump(kappa: float, L: float, eta: float) -> float:
+    """CIM 発振しきい値ポンプ P_th = (ln(1/η) / (2κL))^2 [W]。"""
+    return (np.log(1.0 / eta) / (2.0 * kappa * L)) ** 2
+
+
+def calibrate_betas(cut_tail, kappa_target: float = 1.0, eps: float = 1.0):
+    """swap 無効ランの定常カットから β ラダー(昇順, 低温ほど大)を構成する。"""
+    betas = np.zeros(NR, dtype=np.float64)
+    for r in range(NR - 1):
+        gap = abs(float(cut_tail[r + 1]) - float(cut_tail[r]))
+        betas[r + 1] = betas[r] + kappa_target / max(gap, eps)
+    return betas
+
+
+# ============================================================
+#  固定ポンプ 3 レプリカ PT カーネル (v1 と同一; v2 比較用に自己完結で保持)
+# ============================================================
+@njit(cache=True, fastmath=True, parallel=True)
+def _simulate_cim_pt_fixed_batch(
+    n, num_rounds, num_trials,
+    J_data, J_indices, J_indptr, edge_a, edge_b, edge_w,
+    kappa, L, gamma, eta, bandwidth, photon_energy,
+    pump_levels, betas, swap_interval, do_swap, sample_interval, num_samples, seeds,
+):
+    best_cuts_out = np.zeros(num_trials, dtype=np.float64)
+    best_signs_out = np.zeros((num_trials, n), dtype=np.bool_)
+    traj_best = np.zeros((num_trials, num_samples), dtype=np.float64)
+    traj_amp = np.zeros((num_trials, num_samples, NR), dtype=np.float64)
+    traj_cut = np.zeros((num_trials, num_samples, NR), dtype=np.float64)
+    swap_acc_out = np.zeros((num_trials, NR - 1), dtype=np.float64)
+    swap_att_out = np.zeros((num_trials, NR - 1), dtype=np.float64)
+
+    sqrt_eta = np.sqrt(eta)
+    noise_const = np.sqrt((2.0 - eta) * 0.25 * bandwidth * photon_energy)
+    num_edges = edge_a.shape[0]
+
+    half_g0 = np.empty(NR, dtype=np.float64)
+    neg_half_g0_gamma = np.empty(NR, dtype=np.float64)
+    for r in range(NR):
+        g0_r = 2.0 * kappa * np.sqrt(pump_levels[r]) * L
+        half_g0[r] = 0.5 * g0_r
+        neg_half_g0_gamma[r] = -0.5 * g0_r * gamma
+
+    for trial_idx in prange(num_trials):
+        np.random.seed(seeds[trial_idx])
+        c = np.zeros((NR, n), dtype=np.float64)
+        Jc = np.zeros(n, dtype=np.float64)
+        cut_r = np.zeros(NR, dtype=np.float64)
+        best_signs = np.zeros(n, dtype=np.bool_)
+        best_cut = -1.0e18
+        swap_acc = np.zeros(NR - 1, dtype=np.float64)
+        swap_att = np.zeros(NR - 1, dtype=np.float64)
+
+        for k in range(num_rounds):
+            for r in range(NR):
+                for i in range(n):
+                    acc = 0.0
+                    start = J_indptr[i]
+                    end = J_indptr[i + 1]
+                    for jj in range(start, end):
+                        acc += J_data[jj] * c[r, J_indices[jj]]
+                    Jc[i] = acc
+                hg0 = half_g0[r]
+                nhg = neg_half_g0_gamma[r]
+                for i in range(n):
+                    coupled_in_i = sqrt_eta * c[r, i] + Jc[i]
+                    I_in_i = coupled_in_i * coupled_in_i
+                    half_g_i = hg0 + nhg * I_in_i
+                    sqrt_G_I_i = np.exp(half_g_i)
+                    noise_i = np.random.standard_normal() * (noise_const * sqrt_G_I_i)
+                    c[r, i] = sqrt_G_I_i * coupled_in_i + noise_i
+
+            for r in range(NR):
+                cr = 0.0
+                for e in range(num_edges):
+                    if (c[r, edge_a[e]] > 0.0) != (c[r, edge_b[e]] > 0.0):
+                        cr += edge_w[e]
+                cut_r[r] = cr
+                if cr > best_cut:
+                    best_cut = cr
+                    for i in range(n):
+                        best_signs[i] = c[r, i] > 0.0
+
+            if do_swap == 1 and (k + 1) % swap_interval == 0:
+                for r in range(NR - 1):
+                    swap_att[r] += 1.0
+                    dbeta = betas[r] - betas[r + 1]
+                    dE = cut_r[r + 1] - cut_r[r]
+                    arg = dbeta * dE
+                    accept = False
+                    if arg >= 0.0:
+                        accept = True
+                    elif np.random.random() < np.exp(arg):
+                        accept = True
+                    if accept:
+                        swap_acc[r] += 1.0
+                        for i in range(n):
+                            tmp = c[r, i]
+                            c[r, i] = c[r + 1, i]
+                            c[r + 1, i] = tmp
+                        tc = cut_r[r]
+                        cut_r[r] = cut_r[r + 1]
+                        cut_r[r + 1] = tc
+
+            if (k + 1) % sample_interval == 0:
+                s_idx = (k + 1) // sample_interval - 1
+                if 0 <= s_idx < num_samples:
+                    traj_best[trial_idx, s_idx] = best_cut
+                    for r in range(NR):
+                        acc = 0.0
+                        for i in range(n):
+                            acc += abs(c[r, i])
+                        traj_amp[trial_idx, s_idx, r] = acc / n
+                        traj_cut[trial_idx, s_idx, r] = cut_r[r]
+
+        best_cuts_out[trial_idx] = best_cut
+        for i in range(n):
+            best_signs_out[trial_idx, i] = best_signs[i]
+        for r in range(NR - 1):
+            swap_acc_out[trial_idx, r] = swap_acc[r]
+            swap_att_out[trial_idx, r] = swap_att[r]
+
+    return (best_cuts_out, best_signs_out, traj_best, traj_amp, traj_cut,
+            swap_acc_out, swap_att_out)
+
+
+def simulate_cim_pt_fixed(
+    n, J, edges, num_rounds, num_trials,
+    kappa, L, gamma, eta, bandwidth, photon_energy, seeds,
+    *, pump_levels, betas, swap_interval=10, do_swap=True,
+    sample_interval=None, weights=None,
+):
+    """固定ポンプ 3 レプリカ + Metropolis PT (v1 相当) の公開 API。"""
+    edges_np = np.asarray(edges, dtype=np.int64)
+    edge_a = np.ascontiguousarray(edges_np[:, 0])
+    edge_b = np.ascontiguousarray(edges_np[:, 1])
+    num_edges = edges_np.shape[0]
+    edge_w = (np.ones(num_edges, dtype=np.float64) if weights is None
+              else np.ascontiguousarray(np.asarray(weights, dtype=np.float64)))
+    seeds_arr = np.ascontiguousarray(np.asarray(seeds, dtype=np.int64))
+    pump_levels = np.ascontiguousarray(np.sort(np.asarray(pump_levels, dtype=np.float64)))
+    betas = np.ascontiguousarray(np.asarray(betas, dtype=np.float64))
+
+    if sample_interval is None or sample_interval <= 0:
+        sample_interval = int(num_rounds)
+    sample_interval = int(sample_interval)
+    num_samples = max(1, int(num_rounds) // sample_interval)
+
+    (best_cuts, best_signs, traj_best, traj_amp, traj_cut,
+     swap_acc, swap_att) = _simulate_cim_pt_fixed_batch(
+        n, int(num_rounds), int(num_trials),
+        J.data, J.indices, J.indptr, edge_a, edge_b, edge_w,
+        float(kappa), float(L), float(gamma), float(eta),
+        float(bandwidth), float(photon_energy),
+        pump_levels, betas, int(swap_interval), int(1 if do_swap else 0),
+        sample_interval, num_samples, seeds_arr)
+    att_tot = swap_att.sum(axis=0)
+    acc_tot = swap_acc.sum(axis=0)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        swap_rate = np.where(att_tot > 0, acc_tot / att_tot, 0.0)
+    return {
+        "best_cuts": best_cuts, "best_signs": best_signs,
+        "traj_best": traj_best, "traj_amp": traj_amp, "traj_cut": traj_cut,
+        "sample_rounds": np.arange(1, num_samples + 1) * sample_interval,
+        "swap_rate": swap_rate, "swap_accepts": acc_tot, "swap_attempts": att_tot,
+    }
+
+
+# ============================================================
 #  ランプ付き 3 レプリカ CIM + Metropolis 受理 PT カーネル
-#  (v1 の _simulate_cim_pt_batch を「ポンプを毎ラウンド更新」に拡張)
+#  (上の固定ポンプ版を「ポンプを毎ラウンド更新」に拡張)
 # ============================================================
 @njit(cache=True, fastmath=True, parallel=True)
 def _simulate_cim_pt_ramp_batch(
