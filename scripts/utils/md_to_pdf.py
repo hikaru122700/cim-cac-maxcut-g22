@@ -86,10 +86,29 @@ def md_to_html(md_path: Path) -> str:
 
     text = re.sub(r"!\[([^\]]*)\]\(([^)]+)\)", fix_img, text)
 
+    # --- 数式を Markdown 処理から保護する ---
+    # Markdown は数式内の `_`(P_r 等)を <em> に誤変換するため、
+    # $$...$$ / $...$ をプレースホルダに退避し、変換後に復元する。
+    math_store: list[str] = []
+
+    def stash(m: re.Match) -> str:
+        math_store.append(m.group(0))
+        return f"\x00MATH{len(math_store) - 1}\x00"
+
+    # display ($$...$$) を先に、次に inline ($...$) を退避
+    text = re.sub(r"\$\$.*?\$\$", stash, text, flags=re.S)
+    text = re.sub(r"(?<!\$)\$(?!\$).+?(?<!\$)\$(?!\$)", stash, text)
+
     body = markdown.markdown(
         text,
         extensions=["tables", "fenced_code", "sane_lists", "attr_list"],
     )
+
+    # 数式を復元(プレースホルダが <p> で囲まれていても元の式に戻す)
+    def restore(m: re.Match) -> str:
+        return math_store[int(m.group(1))]
+
+    body = re.sub(r"\x00MATH(\d+)\x00", restore, body)
     return HTML_TEMPLATE.format(body=body)
 
 
