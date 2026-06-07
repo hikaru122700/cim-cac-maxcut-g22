@@ -25,6 +25,40 @@ $$P_r(k) = \text{mult}_r \times P_{\rm ramp}(k), \qquad P_{\rm ramp}(k) = (k+1)\
 
 ---
 
+## 1.5. ポンプ倍率の式
+
+ポンプ倍率は「発振しきい値からどれだけ上/下にいるか」を表す**無次元量**である。基準となるしきい値 `P_th`:
+
+$$P_{\rm th} = \left(\frac{\ln(1/\eta)}{2\kappa L}\right)^2 = 37.96\ \text{mW}$$
+
+| 記号 | 意味 | 値 |
+|---|---|---|
+| `η` | ループ損失(透過率) | `10^(-1.1)` |
+| `κ` | 結合係数 | 130 |
+| `L` | 相互作用長 | 0.05 |
+
+ポンプ倍率の定義:
+
+$$\text{ポンプ倍率} = \frac{P}{P_{\rm th}} \quad\begin{cases} <1 & \text{しきい値未満(発振せず=高温・探索)}\\ \approx 1 & \text{臨界(中温)}\\ >1 & \text{しきい値超(飽和=低温・凍結)} \end{cases}$$
+
+v3 の各レプリカは固定ではなく、ランプ倍率 `mult_r` を掛けて時間的に上げる:
+
+$$P_r(k) = \text{mult}_r \times P_{\rm ramp}(k), \qquad P_{\rm ramp}(k) = (k+1)\,dP \quad (dP = 0.05\ \text{mW/round})$$
+
+したがって **round `k` での実効ポンプ倍率**は:
+
+$$\frac{P_r(k)}{P_{\rm th}} = \frac{\text{mult}_r \cdot (k+1)\,dP}{P_{\rm th}}$$
+
+各レプリカがしきい値(倍率1)を横切るラウンド:
+
+$$k_{\rm cross} = \left\lceil \frac{P_{\rm th}}{\text{mult}_r \cdot dP} \right\rceil = [950,\ 760,\ 585]\quad(\text{mult 低→高})$$
+
+ポンプ `P` は利得係数 `g0` を通じて更新式に入る(倍率が高い=`P` が大きい=強く増幅して早く凍結):
+
+$$g_0 = 2\kappa\sqrt{P}\,L$$
+
+---
+
 ## 2. 実験条件
 
 | 項目 | 値 |
