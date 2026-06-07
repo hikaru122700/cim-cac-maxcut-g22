@@ -66,6 +66,30 @@ $$k_{\rm cross} = \left\lceil \frac{P_{\rm th}}{\text{mult}_r \cdot dP} \right\r
 
 $$g_0 = 2\kappa\sqrt{P}\,L$$
 
+### 1.5.1. コード上で mult を設定したのは「1行」だけ
+
+`mult_r = [0.8, 1.0, 1.3]` が数式に入るのは **`P_r` を作る1か所のみ**(`modules/2026-06-06_CIM_PT_v3.py` L261–266)。結合 `J`・飽和 `γ`・損失 `η`・`κ`・`L`・`dP`・ノイズは **3レプリカ完全共通**で、レプリカ間で変えたのは「ランプの傾き(昇温速度)」だけである。
+
+```python
+P_ramp = (k + 1) * dP_per_round      # 全レプリカ共通のランプ
+P_r    = pump_mults[r] * P_ramp      # ← ここだけ mult_r を掛ける
+g0_r   = 2.0 * kappa * L * np.sqrt(P_r)
+```
+
+### 1.5.2. mult は利得に **√mult** で効く(緩やか)
+
+`mult_r` は `P_r` に線形で入るが、利得係数は `g0 = 2κL√P` なので **実効的には平方根で効く**:
+
+$$g_{0,r}(k) = 2\kappa L\sqrt{P_r(k)} = 2\kappa L\sqrt{\text{mult}_r}\,\sqrt{(k+1)\,dP}$$
+
+→ replica2(mult=1.3)の利得は replica1 比で $\sqrt{1.3}\approx1.14$ 倍、replica0(mult=0.8)は $\sqrt{0.8}\approx0.89$ 倍。**ポンプ電力の比 1.3/0.8 ほど大きな差にはならず、緩やかな差**になる。
+
+更新式(縮退パラメトリック増幅 + 飽和)の中での位置:
+
+$$c_i(n) = \exp\!\Big[\tfrac{1}{2}g_{0,r}\big(1-\gamma\,I_{\rm in}\big)\Big]\cdot(\sqrt{\eta}\,c_i + (Jc)_i) + \text{noise}_i,\qquad I_{\rm in}=(\sqrt{\eta}\,c_i+(Jc)_i)^2$$
+
+§ の更新式 `E(n)=F(n)\exp[\alpha p(n)(1-\beta|F|^2)]` と対応させると、**`α·p(n) ↔ g0_r = 2κL√(mult_r·P_ramp)` の部分に mult が入る**(`β ↔ γ`、`F ↔ √η·c + Jc`)。
+
 ---
 
 ## 2. 実験条件
