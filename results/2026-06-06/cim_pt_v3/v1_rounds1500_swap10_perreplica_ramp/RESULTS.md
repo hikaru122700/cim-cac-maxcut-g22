@@ -88,7 +88,28 @@ $$g_{0,r}(k) = 2\kappa L\sqrt{P_r(k)} = 2\kappa L\sqrt{\text{mult}_r}\,\sqrt{(k+
 
 $$c_i(n) = \exp\!\Big[\tfrac{1}{2}g_{0,r}\big(1-\gamma\,I_{\rm in}\big)\Big]\cdot(\sqrt{\eta}\,c_i + (Jc)_i) + \text{noise}_i,\qquad I_{\rm in}=(\sqrt{\eta}\,c_i+(Jc)_i)^2$$
 
-§ の更新式 `E(n)=F(n)\exp[\alpha p(n)(1-\beta|F|^2)]` と対応させると、**`α·p(n) ↔ g0_r = 2κL√(mult_r·P_ramp)` の部分に mult が入る**(`β ↔ γ`、`F ↔ √η·c + Jc`)。
+### 1.5.3. 正準式 `E(n)=F(n)exp[α·p(n)(1−β|F|²)]` との対応
+
+CIM の正準更新式:
+
+$$\mathbf{F}(n) = a\,\mathbf{E}(n-1) + b\,\mathbf{J}\mathbf{E}(n-1) + c\,\mathbf{n}_0,\qquad \mathbf{E}(n) = \mathbf{F}(n)\exp\!\big[\,\alpha\,p(n)\,(1-\beta|\mathbf{F}(n)|^2)\,\big]$$
+
+| 正準式 | 意味 | コード対応 |
+|---|---|---|
+| `E(n)` | round n の振幅 | `c[r,i]` |
+| `F(n)` | 結合後の場 | `coupled_in` |
+| `a` | 自己結合(損失後の残存) | `√η` |
+| `b·J` | 相互作用結合 | `Jc`(反強磁性 J) |
+| `c·n₀` | ノイズ | `noise_i` |
+| **`α·p(n)`** | **ポンプ項(利得)** | **`½·g0 = κL√P`** |
+| `β` | 飽和係数 | `γ` |
+| `\|F(n)\|²` | 強度 | `coupled_in²` |
+
+→ **ポンプ項は** $\alpha\,p(n) = \tfrac{1}{2}g_0 = \kappa L\sqrt{P}$。`α` を定数とみなすと**正味ポンプ `p(n)` は `√P` に比例**する。
+
+**物理的役割**:指数の中 `α·p(n)(1−β|F|²)` の符号で挙動が切り替わる。`|F|²` が小さいうちは `exp[+]` で**増幅**、`|F|²>1/β` で負に反転し `exp[−]` で**飽和**。この増幅→飽和で位相が 0/π(符号 ±)にロックしてスピンが確定する。`α·p(n)=κL√P` が `½ln(1/η)` を超えた点が発振しきい値で、$P_{\rm th}=(\ln(1/\eta)/(2\kappa L))^2$ に一致する。
+
+**v3 はこの `p(n)` を時間発展させた版**:`P=mult_r·(k+1)·dP` なので `p(n) ∝ √(mult_r·(k+1))` と round とともに増える(v1/v2 の固定ポンプは `p(n)=const`)。
 
 ---
 
