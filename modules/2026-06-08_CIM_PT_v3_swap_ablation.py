@@ -692,9 +692,15 @@ def main() -> None:
         "CIM_PT_v2_fixed_reversed": {"mean": float(v2_cuts.mean()), "best": float(v2_cuts.max()),
                                      "worst": float(v2_cuts.min()), "std": float(v2_cuts.std()),
                                      "n_trial": int(v2_cuts.size), "time_s": v2_time},
-        "CIM_PT_v3_perreplica_ramp": {"mean": float(v3_cuts.mean()), "best": float(v3_cuts.max()),
-                                      "worst": float(v3_cuts.min()), "std": float(v3_cuts.std()),
-                                      "n_trial": int(v3_cuts.size), "time_s": v3_time},
+        "CIM_PT_v3_swap_OFF": {"mean": float(v3_noswap_cuts.mean()), "best": float(v3_noswap_cuts.max()),
+                               "worst": float(v3_noswap_cuts.min()), "std": float(v3_noswap_cuts.std()),
+                               "n_trial": int(v3_noswap_cuts.size), "time_s": noswap_time},
+        "CIM_PT_v3_swap_ON": {"mean": float(v3_cuts.mean()), "best": float(v3_cuts.max()),
+                              "worst": float(v3_cuts.min()), "std": float(v3_cuts.std()),
+                              "n_trial": int(v3_cuts.size), "time_s": v3_time},
+        "swap_effect_v3": {"mean_delta": float(v3_cuts.mean() - v3_noswap_cuts.mean()),
+                           "best_delta": float(v3_cuts.max() - v3_noswap_cuts.max()),
+                           "std_delta": float(v3_cuts.std() - v3_noswap_cuts.std())},
         "verify_ok": bool(ok),
     }
     with open(out_dir / "summary.json", "w", encoding="utf-8") as f:
