@@ -405,7 +405,7 @@ def main() -> None:
     from modules.CIM import build_coupling_matrix, load_graph, simulate_cim_batch
     from modules.verify import compute_cut_from_edges
 
-    EXPERIMENT_KIND = "cim_pt_v3"
+    EXPERIMENT_KIND = "cim_pt_v3_swap_ablation"
     KNOWN_BEST = {"G15": 3050, "G22": 13359, "G55": 10299, "G70": 9591}
 
     parser = argparse.ArgumentParser(
