@@ -57,7 +57,7 @@ $$\mathbf{E}(n) = \mathbf{F}(n)\,\exp\!\left[\alpha\,p(n)\left(1 - \beta\,|\math
 | `c·n₀` | ノイズ | `noise_i` |
 | **`α·p(n)`** | **ポンプ項(利得)** | **`½·g0 = κL√P`** |
 | `β` | 飽和係数 | `γ` |
-| `\|F(n)\|²` | 強度 | `coupled_in²` |
+| $|F(n)|^2$ | 強度 | `coupled_in²` |
 
 すなわち**ポンプ項は** $\alpha\,p(n) = \tfrac{1}{2}g_0 = \kappa L\sqrt{P}$。`α` を定数とみなすと**正味のポンプ `p(n)` は `√P` に比例**する(`g0=2κL√P` のため)。
 
