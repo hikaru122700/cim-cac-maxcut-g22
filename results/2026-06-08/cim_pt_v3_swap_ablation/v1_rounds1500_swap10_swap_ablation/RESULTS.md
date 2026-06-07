@@ -99,4 +99,21 @@ swap の純粋効果は **平均 +2.4・最良 ±0**。100 trial の標準偏差
 
 ---
 
+---
+
+## 付録: pump_mults = [0.8, 1.0, 1.3] は数式のどこに入るか
+
+レプリカ間で変えたのは **ランプの傾き(昇温速度)だけ**。コード上は `P_r` を作る1行のみで、`J`・`γ`・`η`・`κ`・`L`・`dP`・ノイズは3レプリカ共通。
+
+$$P_r(k) = \text{mult}_r \times P_{\rm ramp}(k), \qquad P_{\rm ramp}(k) = (k+1)\,dP \quad (dP=0.05\ \text{mW})$$
+
+利得係数は `g0 = 2κL√P` なので、**mult は平方根で効く(緩やか)**:
+
+$$g_{0,r}(k) = 2\kappa L\sqrt{\text{mult}_r}\,\sqrt{(k+1)\,dP}$$
+
+→ replica2(mult=1.3)の利得は replica1 比 $\sqrt{1.3}\approx1.14$ 倍、replica0(mult=0.8)は $\sqrt{0.8}\approx0.89$ 倍。
+発振しきい値 `P_th` を横切るラウンドは $k_{\rm cross}=\lceil P_{\rm th}/(\text{mult}_r\,dP)\rceil = [950,760,585]$(低→高 mult)。
+
+---
+
 (関連: 旧 v3 結果 `results/2026-06-06/cim_pt_v3/`、背景 `docs/CIM_PT_why_failed.md`)
