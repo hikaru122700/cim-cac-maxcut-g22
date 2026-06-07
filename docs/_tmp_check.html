@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+  svg: { fontCache: 'global' }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+<style>
+  body { font-family: "Yu Gothic", "Meiryo", sans-serif; font-size: 11pt;
+         line-height: 1.7; color: #1a1a1a; max-width: 920px; margin: 0 auto;
+         padding: 24px; }
+  h1 { font-size: 20pt; border-bottom: 3px solid #2c5f8a; padding-bottom: 6px; }
+  h2 { font-size: 15pt; border-bottom: 1px solid #ccc; padding-bottom: 4px;
+        margin-top: 28px; color: #2c5f8a; }
+  h3 { font-size: 12.5pt; margin-top: 20px; }
+  table { border-collapse: collapse; margin: 12px 0; font-size: 10pt; }
+  th, td { border: 1px solid #bbb; padding: 5px 10px; text-align: left; }
+  th { background: #eef3f8; }
+  img { max-width: 100%; height: auto; display: block; margin: 10px 0; }
+  code { background: #f3f3f3; padding: 1px 5px; border-radius: 3px;
+          font-family: "Consolas", monospace; font-size: 9.5pt; }
+  blockquote { border-left: 4px solid #2c5f8a; margin: 12px 0; padding: 4px 16px;
+                background: #f7fafc; color: #333; }
+  hr { border: none; border-top: 1px solid #ddd; margin: 20px 0; }
+  mjx-container { overflow-x: auto; overflow-y: hidden; }
+</style>
+</head>
+<body>
+<h1>CIM に PT を入れてもうまくいかなかった理由</h1>
+<h2>定義</h2>
+<ul>
+<li><strong>CIM(Coherent Ising Machine)</strong>: 光パラメトリック発振器のネットワークでイジング問題(ここでは MAX-CUT)を解く装置。ポンプ光の利得を上げると各スピンの振幅 <code>c</code> が発振し、その符号(±)が解になる。通常はポンプを徐々に上げる(<strong>ランプ</strong>)ことで良い解へ凍結させる。</li>
+<li><strong>PT(Parallel Tempering, 並列焼きなまし)</strong>: 温度の違う複数の <strong>レプリカ</strong> を同時に走らせ、隣り合うレプリカの状態を <strong>Metropolis 判定</strong> で交換する手法。高温レプリカが広く探索し、見つけた良い配置を低温レプリカへ流して固める、というのが狙い。</li>
+<li>今回の実装: ポンプをランプさせず、しきい値 <code>P_th</code> の前後 3 段(高温=ノイズ支配 / 中温=臨界 / 低温=飽和)で固定した 3 レプリカを回し、定常カット差から逆温度 β を較正してスワップした。</li>
+</ul>
+<h2>CIM の物理イメージ — ポンプ倍率とは何を変えるパラメータか</h2>
+<p>CIM の中身は <strong>光ファイバーのループを周回する N 個の光パルス</strong>である。ループの途中に <strong>PSA(位相感応増幅器)</strong> があり、パルスが通過するたびに次のことが起きる。</p>
+<ul>
+<li><strong>ポンプ光</strong>(強い励起レーザー)のエネルギーを使って、パルスの <strong>in-phase 成分 $c_i$ を増幅</strong>し、quadrature 成分を減衰させる(縮退パラメトリック増幅)。</li>
+<li>同時に <strong>測定フィードバック(MFB)</strong> が結合 $J_{ij}$ を通じて他パルスからの入力 $\sum_j J_{ij}c_j$ を足し込む。</li>
+</ul>
+<p>縮退パラメトリック発振では、発振したパルスの位相は <strong>0 か π の 2 値</strong>(= 振幅 $c_i$ の符号 ±)しか取れない。この <strong>± がそのまま Ising スピン</strong>になり、$J_{ij}<0$(反強磁性)に設定することで MAX-CUT の「異なる集合に分けるほど得」という構造を埋め込む。</p>
+<p><strong>ポンプ倍率 = 「発振のしきい値からどれだけ上/下にいるか」を決めるノブである。</strong>
+1 周の正味利得は「PSA 増幅 × ループ損失」 $=\sqrt{\eta}\,e^{g_0/2}$ で、利得係数は $g_0 = 2\kappa\sqrt{P}\,L$(ポンプ電力 $P$ が大きいほど増幅が強い)。正味利得がちょうど 1 になる点が <strong>発振しきい値</strong>で、</p>
+<p>$$\sqrt{\eta}\,e^{g_0/2}=1 \;\Rightarrow\; g_0=\ln(1/\eta) \;\Rightarrow\; P_{\rm th}=\left(\frac{\ln(1/\eta)}{2\kappa L}\right)^2 = 38.0\ \text{mW}.$$</p>
+<p>ここでポンプ倍率 $P/P_{\rm th}$ が効いてくる。</p>
+<table>
+<thead>
+<tr>
+<th>ポンプ倍率 $P/P_{\rm th}$</th>
+<th>物理状態</th>
+<th>振幅 $c$ の振る舞い</th>
+<th>温度の比喩</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$<1$(しきい値未満)</td>
+<td>正味利得 &lt; 1</td>
+<td>発振せず、ノイズフロアで符号がランダムに揺らぐ</td>
+<td>高温(探索)</td>
+</tr>
+<tr>
+<td>$\approx 1$(臨界)</td>
+<td>正味利得 ≈ 1</td>
+<td>対称性が破れ、±符号が決まりかける分岐点</td>
+<td>中温</td>
+</tr>
+<tr>
+<td>$>1$(しきい値超)</td>
+<td>正味利得 &gt; 1</td>
+<td>指数増幅 → 飽和項 $\gamma I_{\rm in}$ で頭打ち、符号がロック</td>
+<td>低温(凍結)</td>
+</tr>
+</tbody>
+</table>
+<p>つまり <strong>ポンプ倍率は「光パルスをどれだけ強く発振させるか」= 実効的な温度(焼きなましの進み具合)を調整するパラメータ</strong>である。ただしこれは熱力学的な温度そのものではなく、発振が立ち上がるかどうかを決める「利得ノブ」にすぎない——この違いが、後述する PT 失敗の根本原因になる。</p>
+<h2>CIM の更新式と、3 帯域でいじったパラメータ</h2>
+<p>CIM は次の式を毎ラウンド回す。</p>
+<p><img alt="CIM の更新式" src="file:///C:/Users/owner/igarashi/cim-cac-maxcut-g22/docs/cim_equations.png" /></p>
+<p>$$\mathbf{F}(n) = a\,\mathbf{E}(n-1) + b\,\mathbf{J}\mathbf{E}(n-1) + c\,\mathbf{n}_0$$</p>
+<p>$$\mathbf{E}(n) = \mathbf{F}(n)\,\exp\!\left[\alpha\,p(n)\left(1 - \beta\,|\mathbf{F}(n)|^2\right)\right]$$</p>
+<ul>
+<li><code>F</code>: 結合後の場(自己項 <code>a·E</code> + 相互作用 <code>b·JE</code> + ノイズ <code>c·n₀</code>)</li>
+<li><code>E</code>: ポンプ利得 <code>exp[α·p(n)(1−β|F|²)]</code> をかけた振幅。<code>β|F|²</code> が飽和(振幅が大きいほど利得が減る)。</li>
+<li><strong><code>p(n)</code> がポンプ項</strong>。通常 CIM はこれを徐々に上げる(ランプ=焼きなまし)。</li>
+</ul>
+<h4>正準式とコードの対応(ポンプ項はどこか)</h4>
+<p>更新式の各記号は、実装(<code>coupled_in = √η·c + Jc</code>、<code>c = exp[½g0(1−γ|F|²)]·coupled_in + noise</code>)と次のように対応する。</p>
+<table>
+<thead>
+<tr>
+<th>正準式</th>
+<th>意味</th>
+<th>コード対応</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>E(n)</code></td>
+<td>round n の振幅</td>
+<td><code>c[r,i]</code></td>
+</tr>
+<tr>
+<td><code>F(n)</code></td>
+<td>結合後の場</td>
+<td><code>coupled_in</code></td>
+</tr>
+<tr>
+<td><code>a</code></td>
+<td>自己結合(損失後の残存)</td>
+<td><code>√η</code></td>
+</tr>
+<tr>
+<td><code>b·J</code></td>
+<td>相互作用結合</td>
+<td><code>Jc</code>(反強磁性 J)</td>
+</tr>
+<tr>
+<td><code>c·n₀</code></td>
+<td>ノイズ</td>
+<td><code>noise_i</code></td>
+</tr>
+<tr>
+<td><strong><code>α·p(n)</code></strong></td>
+<td><strong>ポンプ項(利得)</strong></td>
+<td><strong><code>½·g0 = κL√P</code></strong></td>
+</tr>
+<tr>
+<td><code>β</code></td>
+<td>飽和係数</td>
+<td><code>γ</code></td>
+</tr>
+<tr>
+<td><code>\|F(n)\|²</code></td>
+<td>強度</td>
+<td><code>coupled_in²</code></td>
+</tr>
+</tbody>
+</table>
+<p>すなわち<strong>ポンプ項は</strong> $\alpha\,p(n) = \tfrac{1}{2}g_0 = \kappa L\sqrt{P}$。<code>α</code> を定数とみなすと<strong>正味のポンプ <code>p(n)</code> は <code>√P</code> に比例</strong>する(<code>g0=2κL√P</code> のため)。</p>
+<p><strong>ポンプ項の物理的役割</strong>:指数の中 <code>α·p(n)(1−β|F|²)</code> の符号で振る舞いが切り替わる。
+- <code>|F|²</code> が小さい(初期):中身 ≈ <code>+α·p</code> → <code>exp[+]</code> で<strong>増幅</strong>
+- <code>|F|² &gt; 1/β</code>:中身が負へ反転 → <code>exp[−]</code> で<strong>減衰=飽和</strong></p>
+<p>この「増幅 → 飽和」で振幅が頭打ちになり、位相が 0/π(符号 ±)にロックしてスピンが確定する。
+小信号 1 周利得 <code>√η·exp[κL√P]=1</code> の点が発振しきい値で、$P_{\rm th}=(\ln(1/\eta)/(2\kappa L))^2$ に一致する。</p>
+<p><strong><code>p(n)</code> を定数にしたか時間発展させたか</strong>が v1/v2 と v3 の本質的な差:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><code>P(k)</code></th>
+<th>ポンプ項 <code>α·p(n)=κL√(mult_r·P(k))</code></th>
+<th><code>p(n)</code> の n 依存</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>v1/v2(固定)</td>
+<td><code>P_th</code>(定数)</td>
+<td><code>κL√(mult_r·P_th)</code> = 定数</td>
+<td><strong>なし</strong></td>
+</tr>
+<tr>
+<td>v3(ランプ)</td>
+<td><code>(k+1)·dP</code></td>
+<td><code>κL√(mult_r·(k+1)·dP)</code></td>
+<td><strong>あり</strong>(<code>p(n)∝√(n+1)</code>)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>3 帯域(レプリカ)を作るときに変えたのは、この <code>p(n)</code>(ポンプ電力 <code>P</code>)だけ</strong>である。<code>a, b, c, α, β</code> と結合 <code>J</code> は 3 レプリカで完全に共通にし、<code>P</code> を発振しきい値 <code>P_th</code> に対する倍率 <code>pump_mults</code> で 3 段に固定した:</p>
+<table>
+<thead>
+<tr>
+<th>レプリカ</th>
+<th>役割(温度)</th>
+<th>ポンプ倍率 <code>P/P_th</code></th>
+<th>ポンプ電力 <code>P</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>ノイズ支配(高温)</td>
+<td>0.8(&lt;1, しきい値未満)</td>
+<td>30.4 mW</td>
+</tr>
+<tr>
+<td>1</td>
+<td>臨界(中温)</td>
+<td>1.0(≈しきい値)</td>
+<td>38.0 mW</td>
+</tr>
+<tr>
+<td>2</td>
+<td>飽和(低温)</td>
+<td>1.3(&gt;1, しきい値超)</td>
+<td>49.3 mW</td>
+</tr>
+</tbody>
+</table>
+<p>コード上は <code>g0 = 2·κ·√P·L</code>(= 式の <code>α·p(n)</code> に相当)を通じて <code>P</code> が利得に入る。<code>P</code> が大きいほど早く・強く発振して振幅が飽和=「低温(凍結)」、小さいほど発振せずノイズで揺らぐ=「高温」になる、という対応で温度ラダーを表現している。</p>
+<h3>通常(ランプ)CIM のポンプ倍率はどうだったか</h3>
+<p>比較対象の通常 CIM は <strong>ポンプ倍率を固定せず、毎ラウンド少しずつ上げていく(ランプ)</strong>。実装では 1 ラウンドあたり <code>dP = 0.05 mW</code> ずつ増やし、$P(k) = (k+1)\times 0.05$ mW とする。全 1500 ラウンドでは次のように動く($P_{\rm th}=38.0$ mW)。</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>ポンプ電力 $P$</th>
+<th>ポンプ倍率 $P/P_{\rm th}$</th>
+<th>状態</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>round 1(開始)</td>
+<td>0.05 mW</td>
+<td>0.0013</td>
+<td>しきい値のはるか下(ほぼ無発振)</td>
+</tr>
+<tr>
+<td>round 1500(終了)</td>
+<td>75 mW</td>
+<td>約 1.97</td>
+<td>しきい値の約 2 倍(飽和)</td>
+</tr>
+</tbody>
+</table>
+<p>すなわち通常 CIM は <strong>「しきい値のはるか下(ほぼ無発振)」から「しきい値の約 2 倍(飽和)」まで、ポンプ倍率を 0 → 約 2 へ連続的にスイープ</strong>する。最初はノイズで広く探索し、ポンプが上がるにつれて徐々に発振・凍結していく——これが焼きなまし(annealing)に相当する。</p>
+<p>今回の PT 実装は、この <strong>連続ランプを廃止</strong>し、ポンプ倍率を $[0.8, 1.0, 1.3]\times P_{\rm th}$ の <strong>3 点に固定</strong>した 3 レプリカに置き換えたものである(上表)。「ランプで時間をかけて倍率を 0→2 と動かす」代わりに、「しきい値近傍の 3 点を固定で並べ、スワップで配置を移す」ことで焼きなましを代替しようとした、という関係になっている。</p>
+<h2>結果(PT 有効での比較)</h2>
+<p>下図は <strong>PT 有効(紫)</strong>・swap 無(茶)・ランプ CIM(青)を等計算量で比べたもの。<strong>CIM+PT が 3 手法で最下位</strong>(平均 13156 &lt; swap 無 13193 &lt; ランプ CIM 13276)で、PT を足すほど悪化した。</p>
+<p><img alt="累積最良カット" src="file:///C:/Users/owner/igarashi/cim-cac-maxcut-g22/results/2026-06-02/cim_pt/v2_rounds1500_swap10_metro_tuned/running_best.png" /></p>
+<h2>うまくいかなかった理由</h2>
+<p>なぜ悪化するのかを診断するには、<strong>スワップで配置が混ざる前</strong>の各レプリカ本来の性質を見る必要がある(混ぜた後では各温度本来のカット質が見えない)。そこで下図は <strong>swap 無効</strong> run の図で、決定的なのは右パネルの <strong>温度と解質の逆転</strong> である。</p>
+<p><img alt="3 レプリカの動作領域(swap 無効で各温度本来の質を診断)" src="file:///C:/Users/owner/igarashi/cim-cac-maxcut-g22/results/2026-06-02/cim_pt/v2_rounds1500_swap10_metro_tuned/amplitude_regimes.png" /></p>
+<p>PT が成り立つ前提は「低温レプリカほど良い解(高カット)を持つ」こと。ところが CIM では逆で、<strong>高温(ノイズ支配)レプリカが最高カット、低温(飽和)レプリカが最低カット</strong>になっている。低温側は振幅が早く飽和して悪い配置に凍結してしまうためだ。実際このとおり前提が崩れているので、上の比較図で PT 有効が最下位になる。</p>
+<p>つまり CIM は熱平衡をサンプルする系ではなく非平衡力学系で、ポンプ準位に対応する真の温度・エネルギーが存在しない。β は人工的に較正した代用物にすぎず詳細釣り合いを満たさない。その結果スワップは良い配置を悪い低温側へ流して汚し、ランプ CIM が本来持つ「徐々に凍結する」利点も壊してしまった。これが PT を入れて性能が下がった理由である。</p>
+<h2>追試: β ラダーを反転したら(v2)</h2>
+<p>上の診断で「<strong>温度と解質が逆転している</strong>」(高温=低ポンプが最良、低温=高ポンプが最悪)とわかった。ならば <strong>β ラダーの向きを逆にして、実測で最良の低ポンプ・レプリカを cold(β 最大)に割り当てれば</strong>、スワップは良い配置を「実測最良の低ポンプ側」へ集めるようになり、前提のねじれが解消されるはず——これが v2 の仮説である。</p>
+<p>変更したのは <strong>β の向きだけ</strong>(物理パラメータ・ポンプ準位 $[0.8,1.0,1.3]\times P_{\rm th}$・スワップ間隔・seed はすべて v1 と同一)。swap 無効 run の定常カット $[13191.7,\,13122.7,\,12994.8]$(低→高ポンプ)から較正した β を、v1 とは逆順に割り当てた:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>replica0(低ポンプ/ノイズ)</th>
+<th>replica1(臨界)</th>
+<th>replica2(高ポンプ/飽和)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>定常カット(swap無)</td>
+<td>13191.7(最良)</td>
+<td>13122.7</td>
+<td>12994.8(最悪)</td>
+</tr>
+<tr>
+<td>β v1向き(高ポンプ=cold)</td>
+<td>0 (hot)</td>
+<td>0.0145</td>
+<td><strong>0.0223 (cold)</strong></td>
+</tr>
+<tr>
+<td>β v2反転(低ポンプ=cold)</td>
+<td><strong>0.0223 (cold)</strong></td>
+<td>0.0078</td>
+<td>0 (hot)</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="β ラダーの向き" src="file:///C:/Users/owner/igarashi/cim-cac-maxcut-g22/results/2026-06-06/cim_pt_v2/v1_rounds1500_swap10_revladder/beta_ladders.png" /></p>
+<h3>結果</h3>
+<table>
+<thead>
+<tr>
+<th>手法</th>
+<th>平均カット</th>
+<th>最良カット</th>
+<th>対ランプ CIM(平均)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ランプ CIM(baseline)</td>
+<td><strong>13276.7</strong></td>
+<td><strong>13326</strong></td>
+<td>—</td>
+</tr>
+<tr>
+<td>CIM+PT v1向き(良い解→高ポンプ)</td>
+<td>13152.1</td>
+<td>13207</td>
+<td>−124.6</td>
+</tr>
+<tr>
+<td>CIM+PT <strong>v2反転</strong>(良い解→低ポンプ)</td>
+<td>13183.0</td>
+<td>13271</td>
+<td>−93.7</td>
+</tr>
+</tbody>
+</table>
+<p><img alt="v2 反転の累積最良カット" src="file:///C:/Users/owner/igarashi/cim-cac-maxcut-g22/results/2026-06-06/cim_pt_v2/v1_rounds1500_swap10_revladder/running_best.png" /></p>
+<p>カット値の分布(頻度)で見ると、ランプ CIM(青・最も右)に対し v2反転(緑)は中央、v1向き(紫)が最も左で、向きの修正で右へ寄ったがランプ CIM には遠いことが分かる。</p>
+<p><img alt="v2 のカット値分布" src="file:///C:/Users/owner/igarashi/cim-cac-maxcut-g22/results/2026-06-06/cim_pt_v2/v1_rounds1500_swap10_revladder/hist.png" /></p>
+<h3>考察 — 「向きは逆だったが、それでも届かない」</h3>
+<p><strong>(1) ラダーの向きは確かに逆だった。</strong> v2 反転は v1 向きに対し平均 +30.9・最良 +64 改善し、図でも一貫して上を走る。スワップ受理率も v1 の $[0.86,0.93]$(混ざりすぎ)から v2 の $[0.65,0.79]$ へ健全化した。診断どおり「良い配置は実測最良の低ポンプ側へ集めるべき」で、v1 の割り当ては裏返しだったと検証できた。</p>
+<p><strong>(2) ただし向きを直しても、依然ランプ CIM には届かない</strong>(v2 13183 &lt; ランプ 13277)。これは構造的な理由による:</p>
+<ul>
+<li>低ポンプ(ノイズ支配)レプリカは <strong>探索は得意だが、良い配置を「凍結」できない</strong>。発振しないので符号が揺らぎ続け、せっかく流し込んだ良い配置もすぐ崩れる。一方で唯一「凍結」できる高ポンプ側は、早すぎる飽和で悪い配置に固まる。<strong>「探索する場所」と「凍結する場所」が分離してしまい、両立しない</strong>。</li>
+<li>ランプ CIM の強みは、ポンプ倍率を $0 \to$ 約 $2$ へ <strong>連続的に上げる時間的な焼きなまし</strong>そのものにある。固定ポンプ 3 点 + スワップでは、この「時間軸の冷却スケジュール」を再現できない。スワップが移すのは<em>瞬間の配置</em>であって、<em>ポンプを徐々に上げる</em>という時間発展は移せない。</li>
+</ul>
+<h3>結論</h3>
+<p>β ラダーの向きを「実測の解質」に合わせて反転すると PT 内部の整合性は改善する(v2 &gt; v1)。しかしそれでもランプ CIM に勝てないことが、<strong>「CIM は非平衡力学系であり、固定ポンプ + 構成スワップでは焼きなまし(連続的な凍結)を代替できない」という本質</strong>をかえって強く裏付けた。PT を活かすなら、向きの修正に加えて「各レプリカ内にも時間的なポンプランプを持たせる」「凍結機構(高ポンプ)と探索機構(低ポンプ)を時間的に切り替える」など、<strong>非平衡な凍結ダイナミクスそのものを設計に組み込む</strong>必要がある。</p>
+<p>(再現コード: <code>modules/2026-06-06_CIM_PT_v2.py</code>、データ: <code>results/2026-06-06/cim_pt_v2/v1_rounds1500_swap10_revladder/</code>)</p>
+<h2>発展: 各レプリカにも時間発展(ランプ)を入れたら(v3)</h2>
+<p>v2 の考察で挙げた発展案——<strong>各レプリカ内にも時間的なポンプランプを持たせる</strong>——を実装したのが v3 である。v1/v2 は各レプリカのポンプを<em>固定</em>していたが、v3 では各レプリカに<strong>焼きなまし(ポンプ・ランプ)そのもの</strong>を持たせる:</p>
+<p>$$P_r(k) = \text{mult}_r \times P_{\rm ramp}(k), \qquad P_{\rm ramp}(k) = (k+1)\,dP \;\;(dP=0.05\ \text{mW})$$</p>
+<p>mult $=[0.8, 1.0, 1.3]$ とすると、replica1 は<strong>通常ランプ CIM そのもの</strong>、replica0 はゆっくり昇温して探索を長く保ち、replica2 は速く昇温して早く凍結する。3 本のランプは発振しきい値 $P_{\rm th}=38$ mW を <strong>round 950 / 760 / 585</strong>(低→高 mult)で順に横切り、振幅も順に立ち上がる。<strong>全レプリカが最終的に発振・凍結する</strong>ので、v2 で問題だった「探索する場所と凍結する場所の分離」が解消される(= 焼きなまし速度の異なる集団 + 構成スワップ、population annealing 的な構成)。</p>
+<p><img alt="各レプリカのランプと凍結" src="file:///C:/Users/owner/igarashi/cim-cac-maxcut-g22/results/2026-06-06/cim_pt_v3/v1_rounds1500_swap10_perreplica_ramp/ramps_amplitude.png" /></p>
+<p>swap 無効ランの定常カットは $[13278.1, 13276.3, 13266.6]$(mult 低→高)で、<strong>3 レプリカとも良い</strong>(v1/v2 のように悪いレプリカが無い)。最良はゆっくり昇温する低 mult 側なので、v2 の教訓どおり低 mult を cold に較正した。</p>
+<h3>結果 — ついにランプ CIM を上回る</h3>
+<table>
+<thead>
+<tr>
+<th>手法</th>
+<th>平均カット</th>
+<th>最良カット</th>
+<th>標準偏差</th>
+<th>既知ベスト比</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ランプ CIM(baseline)</td>
+<td>13276.7</td>
+<td>13326</td>
+<td>21.0</td>
+<td>0.9975</td>
+</tr>
+<tr>
+<td>CIM+PT v2(固定ポンプ反転)</td>
+<td>13183.0</td>
+<td>13271</td>
+<td>23.7</td>
+<td>0.9934</td>
+</tr>
+<tr>
+<td><strong>CIM+PT v3(各レプリカ・ランプ)</strong></td>
+<td><strong>13294.3</strong></td>
+<td><strong>13337</strong></td>
+<td><strong>15.9</strong></td>
+<td><strong>0.9984</strong></td>
+</tr>
+</tbody>
+</table>
+<p><img alt="v3 の累積最良カット" src="file:///C:/Users/owner/igarashi/cim-cac-maxcut-g22/results/2026-06-06/cim_pt_v3/v1_rounds1500_swap10_perreplica_ramp/running_best.png" /></p>
+<p>v3 は平均で <strong>+17.7</strong>、最良で <strong>+11</strong>(13337 &gt; 13326)ランプ CIM を上回り、しかも<strong>標準偏差が最小</strong>(15.9 &lt; 21.0)で最も安定している。スワップ受理率も $[0.32, 0.57]$ と健全(v1/v2 の $0.8$ 超から PT らしい範囲に収まった)。</p>
+<h3>考察 — 何が効いたか</h3>
+<ul>
+<li><strong>焼きなましを各レプリカに戻したことが本質</strong>だった。固定ポンプ(v1/v2)では「徐々に凍結する」という CIM 最大の武器を捨てていた。各レプリカにランプを戻すと、全レプリカが良い解へ凍結できるようになり、PT の前提(各レプリカがまともな解を持つ)も自然に満たされる。</li>
+<li>その上で <strong>PT スワップが「昇温速度の異なる焼きなまし」の間で良い配置を共有</strong>する。早く凍結したレプリカが見つけた良い配置を、まだ探索中のレプリカへ渡して再加熱・再探索する、といった協調が効き、単独ランプ CIM より平均・最良・安定性のすべてで上回った。</li>
+<li>一連の流れ(v1 失敗 → v2 で向きは直るが届かない → v3 で焼きなましを戻して逆転)は、<strong>「CIM で PT を活かす鍵は、温度ラダーの向きよりも、各レプリカが非平衡な凍結ダイナミクス(ランプ)を保持していること」</strong>だと示している。</li>
+</ul>
+<p>ただし伸びは僅差(対ランプ +17.7)であり、G22 単一インスタンス・100 trial の結果である点には注意。今後は複数グラフ・seed での再現性確認、mult/swap 間隔/レプリカ数の最適化が課題。</p>
+<p>(再現コード: <code>modules/2026-06-06_CIM_PT_v3.py</code>、データ: <code>results/2026-06-06/cim_pt_v3/v1_rounds1500_swap10_perreplica_ramp/</code>)</p>
+<hr />
+<h2>⚠️ 訂正(2026-06-08): swap アブレーションの結果、上の v3 結論は過大評価だった</h2>
+<p>上の v3 比較は <strong>ランプCIM(1レプリカ) / v2(swap有) / v3(swap有)</strong> を並べていたため、「v3 がランプCIMに勝った」効果に</p>
+<ul>
+<li><strong>(a) 1→3 レプリカ化</strong>(異なるランプ速度の multi-start)の寄与</li>
+<li><strong>(b) その3本の間で swap した寄与</strong>(= PT の本体)</li>
+</ul>
+<p>が<strong>混在</strong>しており、<strong>swap 自体が効いたのか multi-start だけで勝てたのか</strong>を区別できていなかった。そこで <strong>3本ランプ構成のまま swap 有/無だけを切り替えた対照</strong>(pump_mults・ランプ・seed・trial数すべて同一、<code>do_swap</code> のみ変更)を取り直した。</p>
+<table>
+<thead>
+<tr>
+<th>手法</th>
+<th>平均カット</th>
+<th>最良カット</th>
+<th>標準偏差</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ランプ CIM(1レプリカ)</td>
+<td>13276.7</td>
+<td>13326</td>
+<td>21.0</td>
+</tr>
+<tr>
+<td><strong>v3 swap無</strong>(3本ランプのみ)</td>
+<td><strong>13291.9</strong></td>
+<td><strong>13337</strong></td>
+<td>17.0</td>
+</tr>
+<tr>
+<td><strong>v3 swap有</strong></td>
+<td><strong>13294.3</strong></td>
+<td><strong>13337</strong></td>
+<td>15.9</td>
+</tr>
+</tbody>
+</table>
+<p><strong>効果の分解:</strong></p>
+<table>
+<thead>
+<tr>
+<th>寄与</th>
+<th>平均</th>
+<th>最良</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(a) 3本ランプ化(swap無 − ランプCIM)</td>
+<td><strong>+15.3</strong></td>
+<td><strong>+11</strong></td>
+</tr>
+<tr>
+<td>(b) swap 自体(swap有 − swap無)</td>
+<td><strong>+2.4</strong></td>
+<td><strong>±0</strong></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>ランプCIM超え +17.7 のうち <strong>約 87%(+15.3)は3本ランプ化(multi-start)</strong>による。</li>
+<li><strong>swap の純粋寄与は平均 +2.4(std≈16〜17 の中なので誤差レベル)・最良は ±0</strong>(swap 有無とも 13337 で同一)。累積最良カット図でも swap無と swap有はほぼ完全に重なる。</li>
+</ul>
+<p><strong>したがって上の (2) 考察「PT スワップが良い配置を集団間で共有して効いた」は、正しい対照を取ると支持されない。</strong> 正確には:</p>
+<blockquote>
+<p><strong>v3 がランプCIMを上回った主因は PT スワップではなく、「異なるランプ速度を持つ3本のCIMを並走させ最良を採る multi-start 効果」である。swap の追加寄与はこの設定では誤差程度。</strong></p>
+</blockquote>
+<p>一方、「<strong>各レプリカに時間発展(ランプ)を戻したことが本質</strong>」(v1/v2 の固定ポンプが悪かった)という点は引き続き正しい。崩れたのは「swap が効いた」という因果のみ。現状は「PT」ではなく「ランプ速度違いの multi-start CIM」と呼ぶのが正確で、swap を活かすにはレプリカ間多様性の拡大・swap間隔/β/レプリカ数の最適化が必要。</p>
+<p>(対照実験コード: <code>modules/2026-06-08_CIM_PT_v3_swap_ablation.py</code>、データ・詳細: <code>results/2026-06-08/cim_pt_v3_swap_ablation/v1_rounds1500_swap10_swap_ablation/</code>)</p>
+</body>
+</html>
