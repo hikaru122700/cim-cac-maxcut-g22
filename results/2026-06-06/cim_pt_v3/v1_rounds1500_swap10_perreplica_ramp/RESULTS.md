@@ -103,7 +103,7 @@ $$\mathbf{F}(n) = a\,\mathbf{E}(n-1) + b\,\mathbf{J}\mathbf{E}(n-1) + c\,\mathbf
 | `c·n₀` | ノイズ | `noise_i` |
 | **`α·p(n)`** | **ポンプ項(利得)** | **`½·g0 = κL√P`** |
 | `β` | 飽和係数 | `γ` |
-| `\|F(n)\|²` | 強度 | `coupled_in²` |
+| $|F(n)|^2$ | 強度 | `coupled_in²` |
 
 → **ポンプ項は** $\alpha\,p(n) = \tfrac{1}{2}g_0 = \kappa L\sqrt{P}$。`α` を定数とみなすと**正味ポンプ `p(n)` は `√P` に比例**する。
 
