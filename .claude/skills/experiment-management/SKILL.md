@@ -205,4 +205,5 @@ python scripts/utils/md_to_pdf.py results/<date>/<kind>/v{N}_<desc>/RESULTS.md
 - [ ] 出力を `results/<date>/<kind>/v{N}_<desc>/` へ(`next_version` で採番、**上書き禁止**)
 - [ ] ファイル名から実験名・グラフ prefix を外す / プロットは共通スタイル
 - [ ] 実験完了後、出力ディレクトリ直下に `RESULTS.md`(標準構成・相対パス画像)を執筆
+- [ ] **数式の変更点**を記載(基準式画像 `docs/assets/base_update_equations.png` を貼り、変更記号・理由・変更後の式を明記)
 - [ ] `python scripts/utils/md_to_pdf.py .../RESULTS.md` で `RESULTS.pdf` を生成
