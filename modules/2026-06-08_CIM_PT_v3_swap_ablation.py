@@ -589,7 +589,8 @@ def main() -> None:
     print(f"\n[output] dir={out_dir}")
 
     colors = {"ランプCIM": "#1f77b4", "CIM+PT v2(固定ポンプ反転)": "#2ca02c",
-              "CIM+PT v3(各レプリカ・ランプ)": "#d62728"}
+              "CIM+PT v3(swap無/3本ランプのみ)": "#9467bd",
+              "CIM+PT v3(swap有)": "#d62728"}
 
     # --- Fig1: running best ---
     fig, ax = plt.subplots(figsize=(10, 5.4))
