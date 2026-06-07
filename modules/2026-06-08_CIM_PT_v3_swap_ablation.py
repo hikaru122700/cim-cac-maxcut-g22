@@ -618,8 +618,8 @@ def main() -> None:
     print(f"  saved: {out_dir / 'running_best.png'}")
 
     # --- Fig2: ヒストグラム ---
-    fig, axes = plt.subplots(1, 3, figsize=(16, 4.6))
-    all_cuts = np.concatenate([cim_cuts, v2_cuts, v3_cuts])
+    fig, axes = plt.subplots(1, len(order), figsize=(5.3 * len(order), 4.6))
+    all_cuts = np.concatenate([results[name] for name in order])
     x_min = float(all_cuts.min()) - max(20, abs(all_cuts.min()) * 0.005)
     x_max = max(float(all_cuts.max()) + 20, (known_best + 10) if known_best else 0)
     bins = np.linspace(x_min, x_max, 30)
@@ -636,7 +636,7 @@ def main() -> None:
         ax.grid(axis="y", alpha=0.25)
         ax.legend(fontsize=8, loc="upper left")
         ticks_in(ax)
-    fig.suptitle(f"ランプCIM vs v2固定反転 vs v3各レプリカランプ — {graph_name} (等計算量)", fontsize=13)
+    fig.suptitle(f"swap 有/無 対照を含む分布比較 — {graph_name} (等計算量)", fontsize=13)
     fig.tight_layout()
     fig.savefig(out_dir / "hist.png", dpi=150)
     plt.close(fig)
