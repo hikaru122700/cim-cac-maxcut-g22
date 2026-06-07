@@ -502,8 +502,13 @@ def main() -> None:
     tail = max(1, sample_rounds.size // 3)
     cut_tail = res_noswap["traj_cut"][:, -tail:, :].mean(axis=(0, 1))
     amp_tail = res_noswap["traj_amp"][:, -tail:, :].mean(axis=(0, 1))
+    # swap無 の trial 別ベスト分布(= 3本ランプ多スタートのみ・swap無しの対照群)。
+    # swap有(res_v3)と pump_mults/ランプ/seed/trial数が完全一致し、do_swap だけが違う。
+    v3_noswap_cuts = res_noswap["best_cuts"]
     print(f"  time={noswap_time:.2f}s  定常カット (mult低→高) = "
           f"[{cut_tail[0]:.1f}, {cut_tail[1]:.1f}, {cut_tail[2]:.1f}]")
+    print(f"  [対照群] v3 swap無 best: mean={v3_noswap_cuts.mean():.1f}  "
+          f"best={v3_noswap_cuts.max():.0f}  std={v3_noswap_cuts.std():.1f}")
 
     betas_norm = calibrate_betas(cut_tail, kappa_target=args.kappa_target)
     # v2 の教訓: 最良カットのレプリカを cold(β最大) に。
@@ -545,10 +550,15 @@ def main() -> None:
         raise SystemExit("検証失敗")
 
     # ==== サマリ ====
-    results = {"ランプCIM": cim_cuts, "CIM+PT v2(固定ポンプ反転)": v2_cuts,
-               "CIM+PT v3(各レプリカ・ランプ)": v3_cuts}
-    times = {"ランプCIM": cim_time, "CIM+PT v2(固定ポンプ反転)": v2_time,
-             "CIM+PT v3(各レプリカ・ランプ)": v3_time}
+    # 主眼は「v3 swap無」vs「v3 swap有」の対照(swap の純粋効果)。
+    results = {"ランプCIM": cim_cuts,
+               "CIM+PT v2(固定ポンプ反転)": v2_cuts,
+               "CIM+PT v3(swap無/3本ランプのみ)": v3_noswap_cuts,
+               "CIM+PT v3(swap有)": v3_cuts}
+    times = {"ランプCIM": cim_time,
+             "CIM+PT v2(固定ポンプ反転)": v2_time,
+             "CIM+PT v3(swap無/3本ランプのみ)": noswap_time,
+             "CIM+PT v3(swap有)": v3_time}
     order = list(results.keys())
     print("\n" + "=" * 96)
     print(f"{'Method':<28} {'Ntrial':>7} {'Mean':>10} {'Best':>10} {'Worst':>10} {'Std':>8} {'Time[s]':>9}")
