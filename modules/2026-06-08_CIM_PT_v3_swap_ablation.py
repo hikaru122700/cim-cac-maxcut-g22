@@ -600,13 +600,15 @@ def main() -> None:
             linewidth=2.0, label=f"ランプCIM ({cim_time:.1f}s)")
     ax.plot(x_pt, np.maximum.accumulate(v2_cuts), color=colors["CIM+PT v2(固定ポンプ反転)"],
             linewidth=2.0, label=f"CIM+PT v2 固定ポンプ反転 ({v2_time:.1f}s)")
-    ax.plot(x_pt, np.maximum.accumulate(v3_cuts), color=colors["CIM+PT v3(各レプリカ・ランプ)"],
-            linewidth=2.4, label=f"CIM+PT v3 各レプリカ・ランプ ({v3_time:.1f}s)")
+    ax.plot(x_pt, np.maximum.accumulate(v3_noswap_cuts), color=colors["CIM+PT v3(swap無/3本ランプのみ)"],
+            linewidth=2.0, linestyle="--", label=f"CIM+PT v3 swap無 ({noswap_time:.1f}s)")
+    ax.plot(x_pt, np.maximum.accumulate(v3_cuts), color=colors["CIM+PT v3(swap有)"],
+            linewidth=2.4, label=f"CIM+PT v3 swap有 ({v3_time:.1f}s)")
     if known_best is not None:
         ax.axhline(known_best, color="red", linestyle="--", linewidth=1.2, label=f"既知ベスト {known_best}")
     ax.set_xlabel("計算量(レプリカ実行数 換算)", fontsize=LABEL_FS)
     ax.set_ylabel("これまでの最良カット", fontsize=LABEL_FS)
-    ax.set_title(f"等計算量での累積最良カット — 各レプリカにランプを入れた効果 ({graph_name})")
+    ax.set_title(f"等計算量での累積最良カット — swap 有/無の対照 ({graph_name})")
     ax.legend(loc="lower right")
     ax.grid(alpha=0.3)
     ticks_in(ax)
