@@ -705,16 +705,22 @@ def main() -> None:
     }
     with open(out_dir / "summary.json", "w", encoding="utf-8") as f:
         json.dump(summary, f, ensure_ascii=False, indent=2)
-    np.savez(out_dir / "data.npz", cim=cim_cuts, v2=v2_cuts, v3=v3_cuts,
+    np.savez(out_dir / "data.npz", cim=cim_cuts, v2=v2_cuts,
+             v3_swap_off=v3_noswap_cuts, v3_swap_on=v3_cuts,
              v3_traj_best=res_v3["traj_best"], v3_traj_amp=res_noswap["traj_amp"],
              v3_traj_cut=res_noswap["traj_cut"], sample_rounds=sample_rounds,
              pump_mults=pump_mults, betas_v3=betas_v3)
     print(f"  saved: {out_dir / 'summary.json'}")
     print("\n[結論メモ]")
+    print(f"  ★swap の純粋効果 (v3 swap有 − swap無): "
+          f"平均={v3_cuts.mean()-v3_noswap_cuts.mean():+.1f}, "
+          f"最良={v3_cuts.max()-v3_noswap_cuts.max():+.0f}, "
+          f"std={v3_cuts.std()-v3_noswap_cuts.std():+.1f}")
+    print(f"  3本ランプ化の効果 (v3 swap無 − ランプCIM): "
+          f"平均={v3_noswap_cuts.mean()-cim_cuts.mean():+.1f}, "
+          f"最良={v3_noswap_cuts.max()-cim_cuts.max():+.0f}")
     print(f"  平均カット差 (対 ランプCIM): v2固定反転={v2_cuts.mean()-cim_cuts.mean():+.1f}, "
-          f"v3ランプ={v3_cuts.mean()-cim_cuts.mean():+.1f}")
-    print(f"  最良カット差 (対 ランプCIM): v2固定反転={v2_cuts.max()-cim_cuts.max():+.1f}, "
-          f"v3ランプ={v3_cuts.max()-cim_cuts.max():+.1f}")
+          f"v3swap有={v3_cuts.mean()-cim_cuts.mean():+.1f}")
 
 
 if __name__ == "__main__":
