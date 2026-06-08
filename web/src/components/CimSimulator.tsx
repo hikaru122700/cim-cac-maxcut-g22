@@ -1,12 +1,16 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import {
   CimSim,
   DEFAULT_CONFIG,
+  FILE_GRAPHS,
   P_TH_MW,
-  buildEdges,
+  buildSyntheticGraph,
+  isFileGraph,
+  parseGsetText,
   type CimConfig,
   type CimSnapshot,
+  type GraphData,
   type GraphKind,
 } from "../lib/cim";
 
@@ -14,7 +18,6 @@ interface HistPoint {
   round: number;
   cut: number;
   meanAmp: number;
-  pumpRatio: number;
 }
 
 const GRAPH_LABELS: Record<GraphKind, string> = {
@@ -22,6 +25,8 @@ const GRAPH_LABELS: Record<GraphKind, string> = {
   ring: "リング",
   complete: "完全グラフ",
   grid: "格子",
+  G22: "G22 (Gset)",
+  K2000: "K2000 (SK ±1)",
 };
 
 const POS = "#60a5fa";
@@ -30,39 +35,75 @@ const NEG = "#fb923c";
 /**
  * CIM 物理シミュレーションのインタラクティブ可視化ページ。
  * パルス→利得→減衰→J結合→ノイズ→次パルス、のループを 1 ラウンドずつ回し、
- * 振幅・ポンプランプ・カット値/凍結曲線をリアルタイム描画する。
+ * 振幅・ポンプランプ・カット値・凍結曲線をリアルタイム描画する。
  */
 export function CimSimulator() {
   const [cfg, setCfg] = useState<CimConfig>(DEFAULT_CONFIG);
   const [running, setRunning] = useState(false);
   const [snap, setSnap] = useState<CimSnapshot | null>(null);
   const [bestCut, setBestCut] = useState(0);
-  const [speed, setSpeed] = useState(8); // steps / frame
+  const [speed, setSpeed] = useState(8);
+  const [graphData, setGraphData] = useState<GraphData | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const simRef = useRef<CimSim | null>(null);
   const histRef = useRef<HistPoint[]>([]);
   const rafRef = useRef<number | null>(null);
 
-  const edges = useMemo(
-    () => buildEdges(cfg.graph, cfg.n, cfg.edgeProb, cfg.seed),
-    [cfg.graph, cfg.n, cfg.edgeProb, cfg.seed],
-  );
-
-  const reset = useCallback(() => {
+  // --- グラフの読み込み (合成は同期 / ファイルは非同期 fetch) ---
+  useEffect(() => {
+    let ignore = false;
     setRunning(false);
-    const sim = new CimSim(cfg, edges);
+    if (isFileGraph(cfg.graph)) {
+      setLoading(true);
+      setLoadError(null);
+      const meta = FILE_GRAPHS[cfg.graph];
+      fetch(meta.path)
+        .then((r) => {
+          if (!r.ok) throw new Error(`${meta.path} を取得できません (${r.status})`);
+          return r.text();
+        })
+        .then((text) => {
+          if (ignore) return;
+          const g = parseGsetText(text);
+          setGraphData(g);
+          setLoading(false);
+        })
+        .catch((e: unknown) => {
+          if (ignore) return;
+          setLoadError(e instanceof Error ? e.message : String(e));
+          setGraphData(null);
+          setLoading(false);
+        });
+    } else {
+      setLoadError(null);
+      setLoading(false);
+      setGraphData(
+        buildSyntheticGraph(cfg.graph, cfg.n, cfg.edgeProb, cfg.seed),
+      );
+    }
+    return () => {
+      ignore = true;
+    };
+  }, [cfg.graph, cfg.n, cfg.edgeProb, cfg.seed]);
+
+  // --- graphData / 物理パラメータが変わったら sim を作り直す ---
+  const reset = useCallback(() => {
+    if (!graphData) return;
+    setRunning(false);
+    const sim = new CimSim(cfg, graphData);
     simRef.current = sim;
-    histRef.current = [{ round: 0, cut: sim.cut(), meanAmp: 0, pumpRatio: 0 }];
+    histRef.current = [{ round: 0, cut: sim.cut(), meanAmp: 0 }];
     setSnap(sim.snapshot());
     setBestCut(sim.cut());
-  }, [cfg, edges]);
+  }, [cfg, graphData]);
 
-  // config 変更時は作り直す
   useEffect(() => {
     reset();
   }, [reset]);
 
-  // アニメーションループ
+  // --- アニメーションループ ---
   useEffect(() => {
     if (!running) return;
     const tick = () => {
@@ -74,7 +115,6 @@ export function CimSimulator() {
         round: snapshot.round,
         cut: snapshot.cut,
         meanAmp: snapshot.meanAbsAmp,
-        pumpRatio: snapshot.pumpRatio,
       });
       setSnap(snapshot);
       setBestCut((b) => Math.max(b, snapshot.cut));
@@ -99,7 +139,6 @@ export function CimSimulator() {
       round: snapshot.round,
       cut: snapshot.cut,
       meanAmp: snapshot.meanAbsAmp,
-      pumpRatio: snapshot.pumpRatio,
     });
     setSnap(snapshot);
     setBestCut((b) => Math.max(b, snapshot.cut));
@@ -107,26 +146,35 @@ export function CimSimulator() {
 
   const ampCanvas = useRef<HTMLCanvasElement>(null);
   const pumpCanvas = useRef<HTMLCanvasElement>(null);
-  const histCanvas = useRef<HTMLCanvasElement>(null);
+  const cutCanvas = useRef<HTMLCanvasElement>(null);
+  const freezeCanvas = useRef<HTMLCanvasElement>(null);
 
-  // --- 振幅バー ---
   useEffect(() => {
     drawAmps(ampCanvas.current, snap);
   }, [snap]);
-
-  // --- ポンプ・ランプ ---
   useEffect(() => {
     drawPump(pumpCanvas.current, cfg, snap);
   }, [snap, cfg]);
-
-  // --- カット値 / 凍結曲線 ---
   useEffect(() => {
-    drawHistory(histCanvas.current, histRef.current, cfg);
-  }, [snap, cfg]);
+    drawSeries(cutCanvas.current, histRef.current, cfg.rounds, "cut", {
+      color: POS,
+      label: "カット値",
+      asInt: !graphData?.weighted,
+    });
+  }, [snap, cfg.rounds, graphData]);
+  useEffect(() => {
+    drawSeries(freezeCanvas.current, histRef.current, cfg.rounds, "meanAmp", {
+      color: "#fbbf24",
+      label: "平均振幅 mean|c|",
+      asInt: false,
+    });
+  }, [snap, cfg.rounds, graphData]);
 
   const set = <K extends keyof CimConfig>(key: K, value: CimConfig[K]) =>
     setCfg((c) => ({ ...c, [key]: value }));
 
+  const fileGraph = isFileGraph(cfg.graph);
+  const nDisplay = graphData?.n ?? cfg.n;
   const pumpRatio = snap?.pumpRatio ?? 0;
   const regime =
     pumpRatio < 0.97
@@ -178,12 +226,20 @@ export function CimSimulator() {
             </select>
           </label>
 
+          {cfg.graph === "K2000" && (
+            <div className="cim-note">
+              ⚠ K2000 は 2000 頂点・約 200 万辺(±1, 22MB)。読込・1ラウンドが重いので
+              速度を落として実行してください。
+            </div>
+          )}
+
           <Slider
             label="スピン数 N"
-            value={cfg.n}
+            value={nDisplay}
             min={4}
             max={64}
             step={1}
+            disabled={fileGraph}
             onChange={(v) => set("n", v)}
           />
           {cfg.graph === "random" && (
@@ -262,14 +318,18 @@ export function CimSimulator() {
             <button
               className={running ? "btn warn" : "btn primary"}
               onClick={() => setRunning((r) => !r)}
-              disabled={simRef.current?.done && !running}
+              disabled={loading || !graphData || (simRef.current?.done && !running)}
             >
               {running ? "⏸ 一時停止" : "▶ 実行"}
             </button>
-            <button className="btn" onClick={stepOnce} disabled={running}>
+            <button
+              className="btn"
+              onClick={stepOnce}
+              disabled={running || loading || !graphData}
+            >
               ⏭ ステップ
             </button>
-            <button className="btn" onClick={reset}>
+            <button className="btn" onClick={reset} disabled={loading}>
               ⟲ リセット
             </button>
           </div>
@@ -278,6 +338,12 @@ export function CimSimulator() {
         {/* 右: 可視化 */}
         <div className="cim-viz">
           <div className="card">
+            {loading && (
+              <div className="cim-loading">
+                ⏳ {FILE_GRAPHS[cfg.graph]?.label ?? cfg.graph} を読み込み中…
+              </div>
+            )}
+            {loadError && <div className="error-banner">⚠ {loadError}</div>}
             <div className="cim-stats">
               <Stat label="round" value={`${snap?.round ?? 0} / ${cfg.rounds}`} />
               <Stat
@@ -286,13 +352,13 @@ export function CimSimulator() {
                 sub={`${(snap?.pumpMW ?? 0).toFixed(1)} mW`}
               />
               <Stat label="状態" value={regime} small />
-              <Stat label="cut" value={String(snap?.cut ?? 0)} hl />
-              <Stat label="best cut" value={String(bestCut)} hl />
+              <Stat label="cut" value={fmtNum(snap?.cut ?? 0)} hl />
+              <Stat label="best cut" value={fmtNum(bestCut)} hl />
               <Stat
                 label="mean |c|"
                 value={(snap?.meanAbsAmp ?? 0).toFixed(3)}
               />
-              <Stat label="edges" value={String(edges.length)} />
+              <Stat label="N / edges" value={`${nDisplay} / ${fmtNum(graphData?.m ?? 0)}`} />
             </div>
           </div>
 
@@ -315,10 +381,20 @@ export function CimSimulator() {
             </div>
             <div className="card">
               <div className="card-header">
-                <h2>カット値 と 平均振幅 (凍結)</h2>
+                <h2>カット値の推移</h2>
               </div>
-              <canvas ref={histCanvas} style={{ width: "100%", height: 180 }} />
+              <canvas ref={cutCanvas} style={{ width: "100%", height: 180 }} />
             </div>
+          </div>
+
+          <div className="card">
+            <div className="card-header">
+              <h2>平均振幅 mean|c| (凍結曲線)</h2>
+            </div>
+            <div className="legend">
+              0 から立ち上がって頭打ちになるほど、全スピンが発振・凍結したことを表す。
+            </div>
+            <canvas ref={freezeCanvas} style={{ width: "100%", height: 180 }} />
           </div>
         </div>
       </section>
@@ -335,11 +411,21 @@ interface SliderProps {
   max: number;
   step: number;
   fmt?: (v: number) => string;
+  disabled?: boolean;
   onChange: (v: number) => void;
 }
-function Slider({ label, value, min, max, step, fmt, onChange }: SliderProps) {
+function Slider({
+  label,
+  value,
+  min,
+  max,
+  step,
+  fmt,
+  disabled,
+  onChange,
+}: SliderProps) {
   return (
-    <label className="ctrl">
+    <label className={"ctrl" + (disabled ? " disabled" : "")}>
       <span>
         {label} <b>{fmt ? fmt(value) : value}</b>
       </span>
@@ -349,6 +435,7 @@ function Slider({ label, value, min, max, step, fmt, onChange }: SliderProps) {
         max={max}
         step={step}
         value={value}
+        disabled={disabled}
         onChange={(e) => onChange(Number(e.target.value))}
       />
     </label>
@@ -366,15 +453,16 @@ function Stat({ label, value, sub, hl, small }: StatProps) {
   return (
     <div className={"stat" + (hl ? " hl" : "")}>
       <span className="stat-label">{label}</span>
-      <span
-        className="stat-value"
-        style={small ? { fontSize: 13 } : undefined}
-      >
+      <span className="stat-value" style={small ? { fontSize: 13 } : undefined}>
         {value}
       </span>
       {sub && <span className="stat-sub">{sub}</span>}
     </div>
   );
+}
+
+function fmtNum(v: number): string {
+  return Number.isInteger(v) ? v.toLocaleString("en-US") : v.toFixed(1);
 }
 
 // ---------- 描画ヘルパ ----------
@@ -408,7 +496,6 @@ function drawAmps(canvas: HTMLCanvasElement | null, snap: CimSnapshot | null) {
   const padX = 8;
   const bw = (W - 2 * padX) / n;
 
-  // 中心線
   ctx.strokeStyle = "#374151";
   ctx.lineWidth = 1;
   ctx.beginPath();
@@ -421,13 +508,13 @@ function drawAmps(canvas: HTMLCanvasElement | null, snap: CimSnapshot | null) {
     const h = (Math.abs(v) / amax) * (mid - 12);
     const x = padX + i * bw;
     ctx.fillStyle = v >= 0 ? POS : NEG;
-    if (v >= 0) ctx.fillRect(x + 0.5, mid - h, Math.max(1, bw - 1), h);
-    else ctx.fillRect(x + 0.5, mid, Math.max(1, bw - 1), h);
+    if (v >= 0) ctx.fillRect(x, mid - h, Math.max(1, bw - 1), h);
+    else ctx.fillRect(x, mid, Math.max(1, bw - 1), h);
   }
   ctx.fillStyle = "#9ca3af";
   ctx.font = "10px monospace";
   ctx.textAlign = "left";
-  ctx.fillText(`|c|max = ${amax.toFixed(3)}`, padX, 12);
+  ctx.fillText(`|c|max = ${amax.toFixed(3)}  (N=${n})`, padX, 12);
 }
 
 function drawPump(
@@ -447,13 +534,12 @@ function drawPump(
 
   const rounds = cfg.rounds;
   const pumpAt = (k: number) =>
-    (cfg.pumpMult * (cfg.dPumpMW > 0 ? (k + 1) * cfg.dPumpMW : P_TH_MW));
+    cfg.pumpMult * (cfg.dPumpMW > 0 ? (k + 1) * cfg.dPumpMW : P_TH_MW);
   const pMaxMW = Math.max(pumpAt(rounds - 1), P_TH_MW * 1.2);
 
   const x = (k: number) => padL + (k / rounds) * plotW;
   const y = (mw: number) => padT + plotH - (mw / pMaxMW) * plotH;
 
-  // しきい値線
   ctx.strokeStyle = "#6b7280";
   ctx.setLineDash([4, 4]);
   ctx.beginPath();
@@ -466,7 +552,6 @@ function drawPump(
   ctx.textAlign = "left";
   ctx.fillText(`P_th=${P_TH_MW.toFixed(0)}mW`, padL + 2, y(P_TH_MW) - 3);
 
-  // ランプ曲線
   ctx.strokeStyle = "#34d399";
   ctx.lineWidth = 2;
   ctx.beginPath();
@@ -478,7 +563,6 @@ function drawPump(
   }
   ctx.stroke();
 
-  // 現在位置
   if (snap) {
     const px = x(snap.round);
     ctx.strokeStyle = "#f9fafb";
@@ -507,56 +591,47 @@ function drawPump(
   ctx.fillText("round", padL + plotW / 2, H - 5);
 }
 
-function drawHistory(
+interface SeriesOpts {
+  color: string;
+  label: string;
+  asInt: boolean;
+}
+function drawSeries(
   canvas: HTMLCanvasElement | null,
   hist: readonly HistPoint[],
-  cfg: CimConfig,
+  rounds: number,
+  key: "cut" | "meanAmp",
+  opts: SeriesOpts,
 ) {
   const s = setupCanvas(canvas, 180);
   if (!s || hist.length < 2) return;
   const { ctx, W, H } = s;
-  const padL = 42;
-  const padR = 36;
+  const padL = 52;
+  const padR = 12;
   const padT = 12;
   const padB = 22;
   const plotW = W - padL - padR;
   const plotH = H - padT - padB;
-  const rounds = cfg.rounds;
 
-  let cMin = Infinity;
-  let cMax = -Infinity;
-  let aMax = 1e-9;
+  let vMin = Infinity;
+  let vMax = -Infinity;
   for (const p of hist) {
-    cMin = Math.min(cMin, p.cut);
-    cMax = Math.max(cMax, p.cut);
-    aMax = Math.max(aMax, p.meanAmp);
+    const v = p[key];
+    vMin = Math.min(vMin, v);
+    vMax = Math.max(vMax, v);
   }
-  if (cMax - cMin < 1) cMax = cMin + 1;
+  if (key === "meanAmp") vMin = 0;
+  if (vMax - vMin < 1e-9) vMax = vMin + 1;
 
   const x = (k: number) => padL + (k / rounds) * plotW;
-  const yCut = (c: number) =>
-    padT + plotH - ((c - cMin) / (cMax - cMin)) * plotH;
-  const yAmp = (a: number) => padT + plotH - (a / aMax) * plotH;
+  const y = (v: number) => padT + plotH - ((v - vMin) / (vMax - vMin)) * plotH;
 
-  // 平均振幅 (右軸, 凍結曲線)
-  ctx.strokeStyle = "#fbbf24";
-  ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  hist.forEach((p, i) => {
-    const px = x(p.round);
-    const py = yAmp(p.meanAmp);
-    if (i === 0) ctx.moveTo(px, py);
-    else ctx.lineTo(px, py);
-  });
-  ctx.stroke();
-
-  // カット値 (左軸)
-  ctx.strokeStyle = "#60a5fa";
+  ctx.strokeStyle = opts.color;
   ctx.lineWidth = 2;
   ctx.beginPath();
   hist.forEach((p, i) => {
     const px = x(p.round);
-    const py = yCut(p.cut);
+    const py = y(p[key]);
     if (i === 0) ctx.moveTo(px, py);
     else ctx.lineTo(px, py);
   });
@@ -570,16 +645,14 @@ function drawHistory(
   ctx.lineTo(padL + plotW, padT + plotH);
   ctx.stroke();
 
+  const fmt = (v: number) =>
+    opts.asInt ? Math.round(v).toLocaleString("en-US") : v.toFixed(3);
   ctx.font = "10px monospace";
-  ctx.fillStyle = "#60a5fa";
+  ctx.fillStyle = opts.color;
   ctx.textAlign = "right";
-  ctx.fillText(String(cMax), padL - 3, padT + 8);
-  ctx.fillText(String(cMin), padL - 3, padT + plotH);
-  ctx.fillStyle = "#fbbf24";
-  ctx.textAlign = "left";
-  ctx.fillText(aMax.toFixed(2), padL + plotW + 3, padT + 8);
-  ctx.fillText("0", padL + plotW + 3, padT + plotH);
+  ctx.fillText(fmt(vMax), padL - 3, padT + 8);
+  ctx.fillText(fmt(vMin), padL - 3, padT + plotH);
   ctx.fillStyle = "#9ca3af";
   ctx.textAlign = "center";
-  ctx.fillText("青=cut / 橙=mean|c|", padL + plotW / 2, H - 5);
+  ctx.fillText(opts.label, padL + plotW / 2, H - 5);
 }
