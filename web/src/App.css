@@ -204,3 +204,123 @@ html, body, #root {
   font-size: 11px;
   text-align: center;
 }
+
+/* ---- ページタブ ---- */
+.app-titlebar {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.page-tabs {
+  display: flex;
+  gap: 6px;
+}
+.page-tabs button {
+  background: var(--card);
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  padding: 6px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 120ms;
+}
+.page-tabs button:hover { color: var(--text); border-color: var(--accent-hi); }
+.page-tabs button.active {
+  background: var(--accent);
+  border-color: var(--accent-hi);
+  color: white;
+  font-weight: 600;
+}
+
+/* ---- CIM シミュレータ ---- */
+.cim-pipeline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  font-family: "SF Mono", Consolas, monospace;
+  font-size: 12px;
+  color: var(--text);
+}
+.cim-pipeline span { background: var(--card-hi); padding: 4px 8px; border-radius: 4px; }
+.cim-pipeline .arrow { background: none; color: var(--accent-hi); padding: 0; }
+
+.cim-main {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 14px;
+  margin-top: 14px;
+  align-items: start;
+}
+@media (max-width: 880px) {
+  .cim-main { grid-template-columns: 1fr; }
+}
+
+.cim-controls .ctrl {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 10px 0;
+  font-size: 12px;
+  color: var(--text-dim);
+}
+.cim-controls .ctrl b { color: var(--accent-hi); font-family: monospace; }
+.cim-controls select,
+.cim-controls input[type="range"] { width: 100%; }
+.cim-controls select {
+  background: var(--card-hi);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 5px;
+  font-size: 13px;
+}
+
+.cim-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+}
+.btn {
+  flex: 1;
+  min-width: 80px;
+  background: var(--card-hi);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 8px 10px;
+  font-size: 13px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+.btn:hover:not(:disabled) { background: #2d3748; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn.primary { background: var(--accent); border-color: var(--accent-hi); color: white; }
+.btn.warn { background: #b45309; border-color: var(--warn); color: white; }
+
+.cim-viz { display: flex; flex-direction: column; gap: 0; }
+.cim-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.cim-stats .stat {
+  display: flex;
+  flex-direction: column;
+  min-width: 92px;
+  padding: 4px 10px;
+  border-left: 2px solid var(--border);
+}
+.cim-stats .stat.hl { border-left-color: var(--accent); }
+.stat-sub { font-size: 10px; color: var(--text-dim); font-family: monospace; }
+
+.cim-row2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+@media (max-width: 880px) {
+  .cim-row2 { grid-template-columns: 1fr; }
+}
