@@ -177,12 +177,6 @@ function Visualizer() {
           <CutDegreeHist stats={stats} />
         </>
       )}
-
-      <footer className="app-footer">
-        <span>
-          Client-side only. No data leaves your browser.
-        </span>
-      </footer>
-    </div>
+    </>
   );
 }
