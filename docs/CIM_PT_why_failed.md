@@ -34,7 +34,7 @@ $$\sqrt{\eta}\,e^{g_0/2}=1 \;\Rightarrow\; g_0=\ln(1/\eta) \;\Rightarrow\; P_{\r
 
 CIM は次の式を毎ラウンド回す。
 
-![CIM の更新式](cim_equations.png)
+![CIM の更新式](../assets/cim_equations.png)
 
 $$\mathbf{F}(n) = a\,\mathbf{E}(n-1) + b\,\mathbf{J}\mathbf{E}(n-1) + c\,\mathbf{n}_0$$
 
@@ -102,7 +102,7 @@ $$\mathbf{E}(n) = \mathbf{F}(n)\,\exp\!\left[\alpha\,p(n)\left(1 - \beta\,|\math
 
 下図は **PT 有効(紫)**・swap 無(茶)・ランプ CIM(青)を等計算量で比べたもの。**CIM+PT が 3 手法で最下位**(平均 13156 < swap 無 13193 < ランプ CIM 13276)で、PT を足すほど悪化した。
 
-![累積最良カット](../results/2026-06-02/cim_pt/v2_rounds1500_swap10_metro_tuned/running_best.png)
+![累積最良カット](../../results/2026-06-02/cim_pt/v2_rounds1500_swap10_metro_tuned/running_best.png)
 
 ## PT が成り立つ前提 — SA は満たし、CIM は満たさない
 
@@ -198,7 +198,7 @@ PT のもう一つの前提は、**「低温レプリカほど良い解(低エ�
 
 なぜ悪化するのかを診断するには、**スワップで配置が混ざる前**の各レプリカ本来の性質を見る必要がある(混ぜた後では各温度本来のカット質が見えない)。そこで下図は **swap 無効** run の図で、決定的なのは右パネルの **温度と解質の逆転** である。
 
-![3 レプリカの動作領域(swap 無効で各温度本来の質を診断)](../results/2026-06-02/cim_pt/v2_rounds1500_swap10_metro_tuned/amplitude_regimes.png)
+![3 レプリカの動作領域(swap 無効で各温度本来の質を診断)](../../results/2026-06-02/cim_pt/v2_rounds1500_swap10_metro_tuned/amplitude_regimes.png)
 
 PT が成り立つ前提は「低温レプリカほど良い解(高カット)を持つ」こと。ところが CIM では逆で、**高温(ノイズ支配)レプリカが最高カット、低温(飽和)レプリカが最低カット**になっている。低温側は振幅が早く飽和して悪い配置に凍結してしまうためだ。実際このとおり前提が崩れているので、上の比較図で PT 有効が最下位になる。
 
@@ -216,7 +216,7 @@ PT が成り立つ前提は「低温レプリカほど良い解(高カット)を
 | β v1向き(高ポンプ=cold) | 0 (hot) | 0.0145 | **0.0223 (cold)** |
 | β v2反転(低ポンプ=cold) | **0.0223 (cold)** | 0.0078 | 0 (hot) |
 
-![β ラダーの向き](../results/2026-06-06/cim_pt_v2/v1_rounds1500_swap10_revladder/beta_ladders.png)
+![β ラダーの向き](../../results/2026-06-06/cim_pt_v2/v1_rounds1500_swap10_revladder/beta_ladders.png)
 
 ### 結果
 
@@ -226,11 +226,11 @@ PT が成り立つ前提は「低温レプリカほど良い解(高カット)を
 | CIM+PT v1向き(良い解→高ポンプ) | 13152.1 | 13207 | −124.6 |
 | CIM+PT **v2反転**(良い解→低ポンプ) | 13183.0 | 13271 | −93.7 |
 
-![v2 反転の累積最良カット](../results/2026-06-06/cim_pt_v2/v1_rounds1500_swap10_revladder/running_best.png)
+![v2 反転の累積最良カット](../../results/2026-06-06/cim_pt_v2/v1_rounds1500_swap10_revladder/running_best.png)
 
 カット値の分布(頻度)で見ると、ランプ CIM(青・最も右)に対し v2反転(緑)は中央、v1向き(紫)が最も左で、向きの修正で右へ寄ったがランプ CIM には遠いことが分かる。
 
-![v2 のカット値分布](../results/2026-06-06/cim_pt_v2/v1_rounds1500_swap10_revladder/hist.png)
+![v2 のカット値分布](../../results/2026-06-06/cim_pt_v2/v1_rounds1500_swap10_revladder/hist.png)
 
 ### 考察 — 「向きは逆だったが、それでも届かない」
 
@@ -255,7 +255,7 @@ $$P_r(k) = \text{mult}_r \times P_{\rm ramp}(k), \qquad P_{\rm ramp}(k) = (k+1)\
 
 mult $=[0.8, 1.0, 1.3]$ とすると、replica1 は**通常ランプ CIM そのもの**、replica0 はゆっくり昇温して探索を長く保ち、replica2 は速く昇温して早く凍結する。3 本のランプは発振しきい値 $P_{\rm th}=38$ mW を **round 950 / 760 / 585**(低→高 mult)で順に横切り、振幅も順に立ち上がる。**全レプリカが最終的に発振・凍結する**ので、v2 で問題だった「探索する場所と凍結する場所の分離」が解消される(= 焼きなまし速度の異なる集団 + 構成スワップ、population annealing 的な構成)。
 
-![各レプリカのランプと凍結](../results/2026-06-06/cim_pt_v3/v1_rounds1500_swap10_perreplica_ramp/ramps_amplitude.png)
+![各レプリカのランプと凍結](../../results/2026-06-06/cim_pt_v3/v1_rounds1500_swap10_perreplica_ramp/ramps_amplitude.png)
 
 swap 無効ランの定常カットは $[13278.1, 13276.3, 13266.6]$(mult 低→高)で、**3 レプリカとも良い**(v1/v2 のように悪いレプリカが無い)。最良はゆっくり昇温する低 mult 側なので、v2 の教訓どおり低 mult を cold に較正した。
 
@@ -267,7 +267,7 @@ swap 無効ランの定常カットは $[13278.1, 13276.3, 13266.6]$(mult 低→
 | CIM+PT v2(固定ポンプ反転) | 13183.0 | 13271 | 23.7 | 0.9934 |
 | **CIM+PT v3(各レプリカ・ランプ)** | **13294.3** | **13337** | **15.9** | **0.9984** |
 
-![v3 の累積最良カット](../results/2026-06-06/cim_pt_v3/v1_rounds1500_swap10_perreplica_ramp/running_best.png)
+![v3 の累積最良カット](../../results/2026-06-06/cim_pt_v3/v1_rounds1500_swap10_perreplica_ramp/running_best.png)
 
 v3 は平均で **+17.7**、最良で **+11**(13337 > 13326)ランプ CIM を上回り、しかも**標準偏差が最小**(15.9 < 21.0)で最も安定している。スワップ受理率も $[0.32, 0.57]$ と健全(v1/v2 の $0.8$ 超から PT らしい範囲に収まった)。
 
