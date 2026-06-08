@@ -673,23 +673,30 @@ def main() -> None:
         "CIM_PT_v2_fixed_reversed": {"mean": float(v2_cuts.mean()), "best": float(v2_cuts.max()),
                                      "worst": float(v2_cuts.min()), "std": float(v2_cuts.std()),
                                      "n_trial": int(v2_cuts.size), "time_s": v2_time},
+        "v3_noswap_ensemble": {"mean": float(noswap_cuts.mean()), "best": float(noswap_cuts.max()),
+                               "worst": float(noswap_cuts.min()), "std": float(noswap_cuts.std()),
+                               "n_trial": int(noswap_cuts.size), "time_s": noswap_time},
         "CIM_PT_v3_perreplica_ramp": {"mean": float(v3_cuts.mean()), "best": float(v3_cuts.max()),
                                       "worst": float(v3_cuts.min()), "std": float(v3_cuts.std()),
                                       "n_trial": int(v3_cuts.size), "time_s": v3_time},
+        # ★ PT スワップの正味効果 = v3(swap有) − v3 swap無(ランプ集団のみ)
+        "swap_net_effect_mean": float(v3_cuts.mean() - noswap_cuts.mean()),
+        "swap_net_effect_best": float(v3_cuts.max() - noswap_cuts.max()),
         "verify_ok": bool(ok),
     }
     with open(out_dir / "summary.json", "w", encoding="utf-8") as f:
         json.dump(summary, f, ensure_ascii=False, indent=2)
-    np.savez(out_dir / "data.npz", cim=cim_cuts, v2=v2_cuts, v3=v3_cuts,
+    np.savez(out_dir / "data.npz", cim=cim_cuts, v2=v2_cuts, noswap=noswap_cuts, v3=v3_cuts,
              v3_traj_best=res_v3["traj_best"], v3_traj_amp=res_noswap["traj_amp"],
              v3_traj_cut=res_noswap["traj_cut"], sample_rounds=sample_rounds,
              pump_mults=pump_mults, betas_v3=betas_v3)
     print(f"  saved: {out_dir / 'summary.json'}")
     print("\n[結論メモ]")
-    print(f"  平均カット差 (対 ランプCIM): v2固定反転={v2_cuts.mean()-cim_cuts.mean():+.1f}, "
-          f"v3ランプ={v3_cuts.mean()-cim_cuts.mean():+.1f}")
-    print(f"  最良カット差 (対 ランプCIM): v2固定反転={v2_cuts.max()-cim_cuts.max():+.1f}, "
-          f"v3ランプ={v3_cuts.max()-cim_cuts.max():+.1f}")
+    print(f"  対 ランプCIM(平均): v2固定反転={v2_cuts.mean()-cim_cuts.mean():+.1f}, "
+          f"v3 swap無={noswap_cuts.mean()-cim_cuts.mean():+.1f}, "
+          f"v3 swap有={v3_cuts.mean()-cim_cuts.mean():+.1f}")
+    print(f"  ★PT スワップの正味効果 (v3 swap有 − v3 swap無): "
+          f"平均={v3_cuts.mean()-noswap_cuts.mean():+.1f}, 最良={v3_cuts.max()-noswap_cuts.max():+.1f}")
 
 
 if __name__ == "__main__":
