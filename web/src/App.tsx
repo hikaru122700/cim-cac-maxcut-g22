@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 
+import { CimSimulator } from "./components/CimSimulator";
 import { CutDegreeHist } from "./components/CutDegreeHist";
 import { FileDrop } from "./components/FileDrop";
 import { SpinGrid } from "./components/SpinGrid";
@@ -7,6 +8,8 @@ import { Summary } from "./components/Summary";
 import { computeCutStats } from "./lib/analysis";
 import { ParseError, parseAssignment, parseGraph } from "./lib/parse";
 import type { Assignment, Graph } from "./types";
+
+type Page = "visualizer" | "cim";
 
 interface LoadedGraph {
   graph: Graph;
