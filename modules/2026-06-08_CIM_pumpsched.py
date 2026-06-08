@@ -272,10 +272,21 @@ def main() -> None:
               f"std={cuts.std():5.1f}  ({dt:.1f}s)")
 
     base = rows[0]  # P軸 linear
-    print(f"\n  baseline(P軸linear) mean={base['mean']:.1f} best={base['best']:.0f}")
-    print(f"  {'形状':<28} {'Δmean':>8} {'Δbest':>7}  (vs baseline, std≈{base['std']:.0f})")
+    base_cuts = base["cuts"]
+    # ★ ペア比較: 全形状が同一 seed なので、per-seed の差 d=形状−baseline を取ると
+    #   seed 起因のばらつきが相殺され、平均差の標準誤差が大幅に縮む(鋭い有意性判定)。
+    print(f"\n  baseline(P軸linear) mean={base['mean']:.1f} best={base['best']:.0f}  (N={NT} seeds)")
+    print(f"  {'形状':<26} {'Δmean(ペア)':>11} {'SE':>6} {'z=Δ/SE':>8} {'有意|z|≥2':>9}")
     for r in rows[1:]:
-        print(f"  {r['label']:<28} {r['mean']-base['mean']:+8.1f} {r['best']-base['best']:+7.0f}")
+        d = r["cuts"] - base_cuts
+        dm = float(d.mean())
+        dse = float(d.std(ddof=1) / np.sqrt(NT)) if NT > 1 else 0.0
+        z = dm / dse if dse > 0 else 0.0
+        r["d_mean_paired"] = dm
+        r["d_se_paired"] = dse
+        r["z"] = z
+        r["sig"] = bool(abs(z) >= 2.0)
+        print(f"  {r['label']:<26} {dm:+11.2f} {dse:6.2f} {z:+8.2f} {'★' if r['sig'] else '−':>9}")
 
     # ===== 出力 =====
     kind_root = Path("results") / date.today().isoformat() / EXPERIMENT_KIND
