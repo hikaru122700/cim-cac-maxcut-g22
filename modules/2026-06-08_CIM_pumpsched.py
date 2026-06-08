@@ -350,6 +350,29 @@ def main() -> None:
     plt.close(fig)
     print(f"  saved: {out_dir / 'shape_meancut.png'}")
 
+    # Fig3: ペアΔmean ±2SE (有意性の本命図; CI が 0 を跨げば非有意)
+    others = rows[1:]
+    ys = np.arange(len(others))
+    dms = [r["d_mean_paired"] for r in others]
+    errs = [2.0 * r["d_se_paired"] for r in others]
+    cols = ["#2ca02c" if r["axis"] == "g0" else "#1f77b4" for r in others]
+    fig, ax = plt.subplots(figsize=(10, 5.6))
+    ax.axvline(0.0, color="#d62728", linestyle="--", linewidth=1.6, label="baseline (P軸 linear)")
+    for y, dm, er, c in zip(ys, dms, errs, cols):
+        ax.errorbar(dm, y, xerr=er, fmt="o", color=c, ecolor="gray",
+                    elinewidth=1.5, capsize=4, markersize=8)
+    ax.set_yticks(ys)
+    ax.set_yticklabels([r["label"] for r in others], fontsize=9)
+    ax.set_xlabel("ペア Δmean (形状 − baseline) ±2SE", fontsize=LABEL_FS)
+    ax.set_title(f"ポンプ形状のペア比較有意性 ({graph_name}, {NT} seed)")
+    ax.legend(loc="lower right")
+    ax.grid(axis="x", alpha=0.3)
+    ticks_in(ax)
+    fig.tight_layout()
+    fig.savefig(out_dir / "paired_significance.png", dpi=150)
+    plt.close(fig)
+    print(f"  saved: {out_dir / 'paired_significance.png'}")
+
     # summary.json
     summary = {
         "graph": graph_name, "n": n, "k_edges": k_edges,
