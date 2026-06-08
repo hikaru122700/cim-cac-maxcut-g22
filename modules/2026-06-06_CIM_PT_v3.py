@@ -535,8 +535,10 @@ def main() -> None:
 
     # ==== サマリ ====
     results = {"ランプCIM": cim_cuts, "CIM+PT v2(固定ポンプ反転)": v2_cuts,
+               "v3 swap無(ランプ集団のみ)": noswap_cuts,
                "CIM+PT v3(各レプリカ・ランプ)": v3_cuts}
     times = {"ランプCIM": cim_time, "CIM+PT v2(固定ポンプ反転)": v2_time,
+             "v3 swap無(ランプ集団のみ)": noswap_time,
              "CIM+PT v3(各レプリカ・ランプ)": v3_time}
     order = list(results.keys())
     print("\n" + "=" * 96)
