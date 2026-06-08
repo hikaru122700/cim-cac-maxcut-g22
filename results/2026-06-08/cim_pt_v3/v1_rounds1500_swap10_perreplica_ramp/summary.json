@@ -1,0 +1,90 @@
+{
+  "graph": "G22",
+  "n": 2000,
+  "k_edges": 19990,
+  "num_trials_pt": 100,
+  "num_trials_cim": 300,
+  "equal_compute": true,
+  "n_replicas": 3,
+  "cim_rounds": 1500,
+  "pump_mults": [
+    0.8,
+    1.0,
+    1.3
+  ],
+  "p_th_mW": 37.96033558389859,
+  "p_th_cross_round": [
+    950,
+    760,
+    585
+  ],
+  "dP_per_round_mW": 0.05,
+  "swap_interval": 10,
+  "kappa_target": 1.0,
+  "v3_tail_cut": [
+    13278.0755,
+    13276.28,
+    13266.6495
+  ],
+  "v3_tail_mean_abs_c": [
+    0.219452191863993,
+    0.23443952742410468,
+    0.2430908840175608
+  ],
+  "v3_best_replica_index": 0,
+  "v3_beta_direction": "低mult(ゆっくり昇温)=cold",
+  "betas_v3": [
+    0.6607846939686729,
+    0.10383676859974911,
+    0.0
+  ],
+  "swap_rate_v3": [
+    0.31666666666666665,
+    0.5661333333333334
+  ],
+  "betas_v2_fixed_reversed": [
+    0.022305237045150347,
+    0.00781983109164847,
+    0.0
+  ],
+  "swap_rate_v2": [
+    0.6494666666666666,
+    0.7915333333333333
+  ],
+  "known_best": 13359,
+  "ramp_CIM": {
+    "mean": 13276.673333333334,
+    "best": 13326.0,
+    "worst": 13220.0,
+    "std": 21.03108704328481,
+    "n_trial": 300,
+    "time_s": 3.9743611812591553
+  },
+  "CIM_PT_v2_fixed_reversed": {
+    "mean": 13183.0,
+    "best": 13271.0,
+    "worst": 13137.0,
+    "std": 23.730571000294113,
+    "n_trial": 100,
+    "time_s": 3.8934884071350098
+  },
+  "v3_noswap_ensemble": {
+    "mean": 13291.93,
+    "best": 13337.0,
+    "worst": 13262.0,
+    "std": 17.01014697173425,
+    "n_trial": 100,
+    "time_s": 8.57371711730957
+  },
+  "CIM_PT_v3_perreplica_ramp": {
+    "mean": 13294.34,
+    "best": 13337.0,
+    "worst": 13257.0,
+    "std": 15.904225853527107,
+    "n_trial": 100,
+    "time_s": 3.829225540161133
+  },
+  "swap_net_effect_mean": 2.4099999999998545,
+  "swap_net_effect_best": 0.0,
+  "verify_ok": true
+}
