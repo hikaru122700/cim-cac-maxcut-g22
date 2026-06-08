@@ -487,8 +487,12 @@ def main() -> None:
     tail = max(1, sample_rounds.size // 3)
     cut_tail = res_noswap["traj_cut"][:, -tail:, :].mean(axis=(0, 1))
     amp_tail = res_noswap["traj_amp"][:, -tail:, :].mean(axis=(0, 1))
+    # ★ 対照: 同一構成・同一 seed・等計算量で swap だけ切った「ランプ集団のみ」。
+    #   v3(swap有) との差が PT スワップの正味効果。これと比べないと swap の意味が出ない。
+    noswap_cuts = res_noswap["best_cuts"]
     print(f"  time={noswap_time:.2f}s  定常カット (mult低→高) = "
           f"[{cut_tail[0]:.1f}, {cut_tail[1]:.1f}, {cut_tail[2]:.1f}]")
+    print(f"  [対照] swap無(ランプ集団のみ): mean={noswap_cuts.mean():.1f}  best={noswap_cuts.max():.0f}")
 
     betas_norm = calibrate_betas(cut_tail, kappa_target=args.kappa_target)
     # v2 の教訓: 最良カットのレプリカを cold(β最大) に。
