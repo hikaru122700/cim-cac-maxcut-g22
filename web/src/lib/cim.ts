@@ -27,7 +27,24 @@ const TWO_KAPPA_L = 2.0 * KAPPA * L;
 export const P_TH_W = Math.pow(Math.log(1.0 / ETA) / TWO_KAPPA_L, 2);
 export const P_TH_MW = P_TH_W * 1e3;
 
-export type GraphKind = "ring" | "random" | "complete" | "grid";
+/** 合成グラフ種別 + 実ベンチマーク (Gset/K2000)。 */
+export type GraphKind =
+  | "ring"
+  | "random"
+  | "complete"
+  | "grid"
+  | "G22"
+  | "K2000";
+
+/** 内部表現: 辺を 3 本の TypedArray で持つ (大規模グラフ対応)。 */
+export interface GraphData {
+  readonly n: number;
+  readonly m: number;
+  readonly ea: Int32Array;
+  readonly eb: Int32Array;
+  readonly ew: Float64Array;
+  readonly weighted: boolean;
+}
 
 export interface CimConfig {
   readonly n: number;
@@ -58,8 +75,15 @@ export const DEFAULT_CONFIG: CimConfig = {
   seed: 1,
 };
 
-/** 0-indexed 重みなし辺リスト。 */
-export type Edge = readonly [number, number];
+/** ファイルから読み込む実グラフの種別と公開パス。 */
+export const FILE_GRAPHS: Record<string, { path: string; n: number; label: string }> = {
+  G22: { path: "graphs/G22.txt", n: 2000, label: "G22 (Gset, N=2000)" },
+  K2000: { path: "graphs/K2000.txt", n: 2000, label: "K2000 (SK ±1, N=2000)" },
+};
+
+export function isFileGraph(kind: GraphKind): boolean {
+  return kind === "G22" || kind === "K2000";
+}
 
 // --- seedable RNG (mulberry32) ---
 function mulberry32(seed: number): () => number {
@@ -92,59 +116,148 @@ function gaussianFactory(rand: () => number): () => number {
   };
 }
 
-/** グラフ種別から辺リストを生成する。 */
-export function buildEdges(
+/** 合成グラフを生成する (重みは全て 1)。 */
+export function buildSyntheticGraph(
   kind: GraphKind,
   n: number,
   edgeProb: number,
   seed: number,
-): Edge[] {
+): GraphData {
   const rand = mulberry32(seed ^ 0x9e3779b9);
-  const edges: Edge[] = [];
+  const a: number[] = [];
+  const b: number[] = [];
+  const push = (u: number, v: number) => {
+    a.push(u);
+    b.push(v);
+  };
   if (kind === "ring") {
-    for (let i = 0; i < n; i++) edges.push([i, (i + 1) % n]);
+    for (let i = 0; i < n; i++) push(i, (i + 1) % n);
   } else if (kind === "complete") {
-    for (let i = 0; i < n; i++)
-      for (let j = i + 1; j < n; j++) edges.push([i, j]);
+    for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) push(i, j);
   } else if (kind === "grid") {
     const side = Math.max(2, Math.round(Math.sqrt(n)));
     for (let r = 0; r < side; r++) {
       for (let c = 0; c < side; c++) {
         const v = r * side + c;
         if (v >= n) continue;
-        if (c + 1 < side && v + 1 < n) edges.push([v, v + 1]);
-        if (r + 1 < side && v + side < n) edges.push([v, v + side]);
+        if (c + 1 < side && v + 1 < n) push(v, v + 1);
+        if (r + 1 < side && v + side < n) push(v, v + side);
       }
     }
   } else {
-    // random (Erdős–Rényi)、連結性確保のためまずリングを張る
-    for (let i = 0; i < n; i++) edges.push([i, (i + 1) % n]);
+    for (let i = 0; i < n; i++) push(i, (i + 1) % n);
     for (let i = 0; i < n; i++)
-      for (let j = i + 2; j < n; j++)
-        if (rand() < edgeProb) edges.push([i, j]);
+      for (let j = i + 2; j < n; j++) if (rand() < edgeProb) push(i, j);
   }
-  return edges;
+  const m = a.length;
+  const ew = new Float64Array(m).fill(1);
+  return {
+    n,
+    m,
+    ea: Int32Array.from(a),
+    eb: Int32Array.from(b),
+    ew,
+    weighted: false,
+  };
 }
 
-/** 隣接リスト (CSR 風) を作る。 */
-function buildAdjacency(
-  n: number,
-  edges: readonly Edge[],
-): { indptr: Int32Array; indices: Int32Array } {
+/**
+ * Gset 形式テキストをパースする。
+ * 1 行目 "N K", 続く K 行 "u v w" (1-indexed)。大規模ファイル向けに
+ * 文字列を 1 パスでスキャンして整数を直接取り出す。
+ */
+export function parseGsetText(text: string): GraphData {
+  const len = text.length;
+  let pos = 0;
+  let sign = 1;
+  // 整数を 1 つ読む
+  const nextInt = (): number => {
+    while (pos < len) {
+      const ch = text.charCodeAt(pos);
+      if (ch === 45) {
+        // '-'
+        sign = -1;
+        pos++;
+        break;
+      }
+      if (ch >= 48 && ch <= 57) break;
+      pos++;
+    }
+    let val = 0;
+    let any = false;
+    while (pos < len) {
+      const ch = text.charCodeAt(pos);
+      if (ch < 48 || ch > 57) break;
+      val = val * 10 + (ch - 48);
+      pos++;
+      any = true;
+    }
+    const out = any ? sign * val : NaN;
+    sign = 1;
+    return out;
+  };
+
+  const n = nextInt();
+  const k = nextInt();
+  if (!Number.isFinite(n) || !Number.isFinite(k)) {
+    throw new Error("Gset ヘッダ (N K) を読めません");
+  }
+  const ea = new Int32Array(k);
+  const eb = new Int32Array(k);
+  const ew = new Float64Array(k);
+  let weighted = false;
+  let idx = 0;
+  for (let e = 0; e < k; e++) {
+    const u = nextInt();
+    const v = nextInt();
+    const w = nextInt();
+    if (!Number.isFinite(u) || !Number.isFinite(v)) break;
+    ea[idx] = u - 1;
+    eb[idx] = v - 1;
+    ew[idx] = Number.isFinite(w) ? w : 1;
+    if (ew[idx] !== 1) weighted = true;
+    idx++;
+  }
+  return {
+    n,
+    m: idx,
+    ea: ea.subarray(0, idx),
+    eb: eb.subarray(0, idx),
+    ew: ew.subarray(0, idx),
+    weighted,
+  };
+}
+
+/** 重み付き隣接リスト (CSR)。 */
+function buildAdjacency(g: GraphData): {
+  indptr: Int32Array;
+  indices: Int32Array;
+  wdata: Float64Array;
+} {
+  const { n, m, ea, eb, ew } = g;
   const deg = new Int32Array(n);
-  for (const [a, b] of edges) {
-    deg[a]++;
-    deg[b]++;
+  for (let e = 0; e < m; e++) {
+    deg[ea[e]]++;
+    deg[eb[e]]++;
   }
   const indptr = new Int32Array(n + 1);
   for (let i = 0; i < n; i++) indptr[i + 1] = indptr[i] + deg[i];
-  const indices = new Int32Array(indptr[n]);
+  const total = indptr[n];
+  const indices = new Int32Array(total);
+  const wdata = new Float64Array(total);
   const cursor = indptr.slice(0, n);
-  for (const [a, b] of edges) {
-    indices[cursor[a]++] = b;
-    indices[cursor[b]++] = a;
+  for (let e = 0; e < m; e++) {
+    const a = ea[e];
+    const b = eb[e];
+    const w = ew[e];
+    indices[cursor[a]] = b;
+    wdata[cursor[a]] = w;
+    cursor[a]++;
+    indices[cursor[b]] = a;
+    wdata[cursor[b]] = w;
+    cursor[b]++;
   }
-  return { indptr, indices };
+  return { indptr, indices, wdata };
 }
 
 export interface CimSnapshot {
@@ -163,23 +276,27 @@ export interface CimSnapshot {
  */
 export class CimSim {
   readonly n: number;
-  readonly edges: readonly Edge[];
+  readonly graph: GraphData;
   private readonly cfg: CimConfig;
   private readonly indptr: Int32Array;
   private readonly indices: Int32Array;
+  private readonly wdata: Float64Array;
   private readonly c: Float64Array;
+  private readonly next: Float64Array;
   private readonly jcoef: number; // 反強磁性: 負
   private readonly gauss: () => number;
   private k = 0;
 
-  constructor(cfg: CimConfig, edges?: readonly Edge[]) {
+  constructor(cfg: CimConfig, graph: GraphData) {
     this.cfg = cfg;
-    this.n = cfg.n;
-    this.edges = edges ?? buildEdges(cfg.graph, cfg.n, cfg.edgeProb, cfg.seed);
-    const adj = buildAdjacency(cfg.n, this.edges);
+    this.graph = graph;
+    this.n = graph.n;
+    const adj = buildAdjacency(graph);
     this.indptr = adj.indptr;
     this.indices = adj.indices;
-    this.c = new Float64Array(cfg.n);
+    this.wdata = adj.wdata;
+    this.c = new Float64Array(graph.n);
+    this.next = new Float64Array(graph.n);
     this.jcoef = -Math.abs(cfg.coupling); // MAX-CUT は反強磁性 (J<0)
     this.gauss = gaussianFactory(mulberry32(cfg.seed));
   }
@@ -193,47 +310,46 @@ export class CimSim {
 
   /** round k でのポンプ電力 [W]。 */
   private pumpW(): number {
-    const ramp = this.cfg.dPumpMW > 0 ? (this.k + 1) * this.cfg.dPumpMW : P_TH_MW;
+    const ramp =
+      this.cfg.dPumpMW > 0 ? (this.k + 1) * this.cfg.dPumpMW : P_TH_MW;
     return (this.cfg.pumpMult * ramp) / 1e3;
   }
 
   /** 1 ラウンド (パルス 1 周) を進める。 */
   step(): void {
     if (this.done) return;
-    const { n, c, indptr, indices, jcoef } = this;
+    const { n, c, next, indptr, indices, wdata, jcoef } = this;
     const P = this.pumpW();
     const g0 = TWO_KAPPA_L * Math.sqrt(P);
     const halfG0 = 0.5 * g0;
     const negHalfG0Gamma = -0.5 * g0 * GAMMA;
     const noiseScale = this.cfg.noise;
 
-    const next = new Float64Array(n);
     for (let i = 0; i < n; i++) {
-      // 3. 結合 (J_ij c_j の総和 = MFB)
+      // 3. 結合 (Σ_j J_ij c_j = MFB)
       let jc = 0.0;
-      for (let p = indptr[i]; p < indptr[i + 1]; p++) jc += c[indices[p]];
+      const end = indptr[i + 1];
+      for (let p = indptr[i]; p < end; p++) jc += wdata[p] * c[indices[p]];
       jc *= jcoef;
       // 2. 減衰 + 3. 結合 → 場 F
       const coupledIn = SQRT_ETA * c[i] + jc;
       const Iin = coupledIn * coupledIn;
       // 4. 利得 (飽和つき) exp[½g0(1 − γ|F|²)]
-      const halfG = halfG0 + negHalfG0Gamma * Iin;
-      const sqrtGI = Math.exp(halfG);
-      // 5. ノイズ (利得に比例)
-      const noise = this.gauss() * noiseScale * sqrtGI;
-      // 6. 次のパルス
-      next[i] = sqrtGI * coupledIn + noise;
+      const sqrtGI = Math.exp(halfG0 + negHalfG0Gamma * Iin);
+      // 5. ノイズ (利得に比例) → 6. 次のパルス
+      next[i] = sqrtGI * coupledIn + this.gauss() * noiseScale * sqrtGI;
     }
     c.set(next);
     this.k++;
   }
 
-  /** 現在のカット値 (符号が異なる辺の本数)。 */
+  /** 現在のカット値 (符号が異なる辺の重み総和; 無重みなら本数)。 */
   cut(): number {
     let cut = 0;
-    const { c } = this;
-    for (const [a, b] of this.edges) {
-      if (c[a] > 0 !== c[b] > 0) cut++;
+    const { c, graph } = this;
+    const { ea, eb, ew, m } = graph;
+    for (let e = 0; e < m; e++) {
+      if (c[ea[e]] > 0 !== c[eb[e]] > 0) cut += ew[e];
     }
     return cut;
   }
