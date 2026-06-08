@@ -67,6 +67,19 @@
 - → Phase 2: ペア200 seed 手法(±5 を検出可能)で、linear-gain を基準形状に **端点 u_max/u_0・しきい超え
   タイミング(two-phase の explore 割合)** を掃引。勝者は held-out seed＋複数グラフで汎化確認。
 
+## Phase 2 知見(2026-06-08, G22, ペア200 seed)
+基準形状 = linear-gain。2つの 1-D 掃引で「終端準位」と「しきい超えタイミング」を交絡分離。
+- **2A 終端利得 $u_{\max}$**: $u_{\max}\approx1.2$–$1.3$ で頂点 **Δmean +7.0(z≈3.5)**。$u_{\max}\ge1.8$ は
+  **有意に悪化**(−6〜−10)。現行ベースラインは $u_{\max}=1.406$ まで上げており**やや過剰ポンプ**。
+- **2B explore割合 $f$**(終端 $u_{\max}=1.4$ 固定): **遅くしきいを超えるほど単調改善**。f=0.3(round450)で
+  −28、f=0.9(round1350)で **+7.2(z≈3.8)**。0 交差は f≈0.6(round≈900)。
+- **統一した結論(レバー)**: **「しきい超えを遅らせ、過剰に上げない」**。すなわち低利得での探索を長く取り
+  (しきい超え round 760→1100〜1350)、終端利得は控えめ($u_{\max}\approx1.3$)に。物理的に explore→gentle freeze。
+- **効果は ~+7 mean(z≈3.5)と有意だが小さい**(13275.7→13282.9, +0.05%; best はほぼ不変)。**ポンプ関数は
+  実在するが2次のレバー**。doc の「大レバーは multi-start」と整合。
+- 残課題: 2B は f=0.9 まで単調 → さらに遅い超え(f≈0.95)の確認、$u_{\max}\times f$ の2D最適化(Phase 3.5)。
+
 ## 成果物
-- カーネル＋族生成＋サニティ＋Phase1: `modules/2026-06-08_CIM_pumpsched.py`
-- 結果: `results/2026-06-08/cim_pumpsched/v1_rounds1500_phase1_shapes/`
+- Phase0/1(カーネル＋形状族＋サニティ＋ペア有意性): `modules/2026-06-08_CIM_pumpsched.py`
+- Phase2(端点/タイミング掃引): `modules/2026-06-08_CIM_pumpsched2.py`
+- 結果: `results/2026-06-08/cim_pumpsched/v1_*(Phase1) v2_*(200seed) v3_*(Phase2)/`
