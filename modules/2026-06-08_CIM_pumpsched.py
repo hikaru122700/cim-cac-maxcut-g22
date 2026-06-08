@@ -386,7 +386,9 @@ def main() -> None:
             {"axis": r["axis"], "family": r["family"], "params": r["kw"], "label": r["label"],
              "mean": r["mean"], "best": r["best"], "worst": r["worst"], "std": r["std"],
              "d_mean_vs_baseline": r["mean"] - base["mean"],
-             "d_best_vs_baseline": r["best"] - base["best"], "time_s": r["time"]}
+             "d_best_vs_baseline": r["best"] - base["best"],
+             "d_mean_paired": r.get("d_mean_paired"), "d_se_paired": r.get("d_se_paired"),
+             "z": r.get("z"), "significant": r.get("sig"), "time_s": r["time"]}
             for r in rows
         ],
     }
