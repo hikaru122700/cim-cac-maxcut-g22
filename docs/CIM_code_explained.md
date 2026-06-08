@@ -1,6 +1,6 @@
 # CIM シミュレータ コード詳解(`modules/CIM.py`)
 
-本資料は CIM(Coherent Ising Machine)シミュレータの実装 [`modules/CIM.py`](../modules/CIM.py) を、**更新式の画像**・**論文の数式**・**実際のコード行**の三者を突き合わせて詳細に解説する。「どの式の、どの項を、コードのどこで計算しているか」を一行ずつ対応させることを目的とする。
+本資料は CIM(Coherent Ising Machine)シミュレータの実装 [`modules/CIM.py`](../../modules/CIM.py) を、**更新式の画像**・**論文の数式**・**実際のコード行**の三者を突き合わせて詳細に解説する。「どの式の、どの項を、コードのどこで計算しているか」を一行ずつ対応させることを目的とする。
 
 参照論文:Inoue & Yoshida, *"Traveling-wave model of coherent Ising machine based on fiber loop with pulse-pumped phase-sensitive amplifier"*, Optics Communications **522** (2022) 128642.
 
@@ -22,7 +22,7 @@ CIM は **光ファイバーのループ**の中を $N$ 個の光パルスが周
 
 実装が 1 ラウンドで計算しているのは、次の 2 本の式である(画像 `docs/cim_equations.png`)。
 
-![CIM の更新式](cim_equations.png)
+![CIM の更新式](../assets/cim_equations.png)
 
 $$\mathbf{F}(n) = a\,\mathbf{E}(n-1) + b\,\mathbf{J}\mathbf{E}(n-1) + c\,\mathbf{n}_0 \tag{結合}$$
 
@@ -58,7 +58,7 @@ $$\mathbf{E}(n) = \mathbf{F}(n)\,\exp\!\left[\alpha\,p(n)\left(1 - \beta\,|\math
 
 ## 3. メインループのコード詳解(`simulate_cim`)
 
-実際の 1 ラウンドの計算は [`modules/CIM.py:316-341`](../modules/CIM.py) にある(可読性の高い slow path を引用。JIT 版 `_simulate_cim_batch:96-119` も計算内容は同一)。以下、Step ごとに画像/論文式と対応づける。
+実際の 1 ラウンドの計算は [`modules/CIM.py:316-341`](../../modules/CIM.py) にある(可読性の高い slow path を引用。JIT 版 `_simulate_cim_batch:96-119` も計算内容は同一)。以下、Step ごとに画像/論文式と対応づける。
 
 ### Step 1 — ポンプ電力 → 非飽和利得係数 $g_0$
 
@@ -71,7 +71,7 @@ g0 = 2.0 * kappa * np.sqrt(P_p) * L
 - **何をしているか**:ラウンド $k$ のポンプ電力を決め、そこから PSA の非飽和利得係数 $g_0$ を計算する。
 - **論文式 Eq.(14)**:$g_0(k) = 2\kappa\sqrt{P_p(k)}\,L$。
 - **画像との対応**:この $\tfrac12 g_0 = \kappa L\sqrt{P_p}$ が画像の **ポンプ項 $\alpha\,p(n)$** に相当する。
-- **ポンプの増え方**:$P_p=(k+1)\cdot dP$ なので電力は**ラウンドに線形**。一方ポンプ項 $\alpha p(n)=\kappa L\sqrt{P_p}\propto\sqrt{k+1}$ は**平方根**(縮退パラメトリック増幅では利得が電場振幅 $\propto\sqrt{\text{電力}}$ に比例するため)。詳細は [`CIM_pump_fixed_and_linear_vs_sqrt.md`](CIM_pump_fixed_and_linear_vs_sqrt.md)。
+- **ポンプの増え方**:$P_p=(k+1)\cdot dP$ なので電力は**ラウンドに線形**。一方ポンプ項 $\alpha p(n)=\kappa L\sqrt{P_p}\propto\sqrt{k+1}$ は**平方根**(縮退パラメトリック増幅では利得が電場振幅 $\propto\sqrt{\text{電力}}$ に比例するため)。詳細は [`CIM_pump_fixed_and_linear_vs_sqrt.md`](1156_CIM_pump_fixed_and_linear_vs_sqrt.md)。
 
 ### Step 2 — 結合入力 $\mathbf{J}\mathbf{E}(n-1)$ の計算(スパース行列ベクトル積)
 
