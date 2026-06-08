@@ -570,6 +570,7 @@ def main() -> None:
     print(f"\n[output] dir={out_dir}")
 
     colors = {"ランプCIM": "#1f77b4", "CIM+PT v2(固定ポンプ反転)": "#2ca02c",
+              "v3 swap無(ランプ集団のみ)": "#ff7f0e",
               "CIM+PT v3(各レプリカ・ランプ)": "#d62728"}
 
     # --- Fig1: running best ---
@@ -580,8 +581,10 @@ def main() -> None:
             linewidth=2.0, label=f"ランプCIM ({cim_time:.1f}s)")
     ax.plot(x_pt, np.maximum.accumulate(v2_cuts), color=colors["CIM+PT v2(固定ポンプ反転)"],
             linewidth=2.0, label=f"CIM+PT v2 固定ポンプ反転 ({v2_time:.1f}s)")
+    ax.plot(x_pt, np.maximum.accumulate(noswap_cuts), color=colors["v3 swap無(ランプ集団のみ)"],
+            linewidth=2.0, linestyle="--", label=f"v3 swap無 ランプ集団のみ ({noswap_time:.1f}s)")
     ax.plot(x_pt, np.maximum.accumulate(v3_cuts), color=colors["CIM+PT v3(各レプリカ・ランプ)"],
-            linewidth=2.4, label=f"CIM+PT v3 各レプリカ・ランプ ({v3_time:.1f}s)")
+            linewidth=2.4, label=f"CIM+PT v3 swap有 各レプリカ・ランプ ({v3_time:.1f}s)")
     if known_best is not None:
         ax.axhline(known_best, color="red", linestyle="--", linewidth=1.2, label=f"既知ベスト {known_best}")
     ax.set_xlabel("計算量(レプリカ実行数 換算)", fontsize=LABEL_FS)
