@@ -18,6 +18,13 @@ from pathlib import Path
 
 import numpy as np
 
+# modules/verify.py prints Japanese; on Windows the default cp932 console would
+# raise UnicodeEncodeError. Force UTF-8 so the driver is self-contained.
+try:
+    sys.stdout.reconfigure(encoding="utf-8")
+except Exception:
+    pass
+
 # skill is at <root>/.claude/skills/run-cim-cac-maxcut-g22/driver.py → root = parents[3]
 ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT))
