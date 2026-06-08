@@ -130,15 +130,7 @@ function Visualizer() {
     assignLoaded.assignment.side.length !== graphLoaded.graph.n;
 
   return (
-    <div className="app">
-      <header className="app-header">
-        <h1>MAX-CUT Visualizer</h1>
-        <div className="subtitle">
-          Gset 形式のグラフ + N 行 0/1 割当ファイルをアップロードすると、
-          cut 値・パーティション・局所最適性を可視化します。
-        </div>
-      </header>
-
+    <>
       <section className="upload-row">
         <FileDrop
           label="1. Graph file (.txt)"
