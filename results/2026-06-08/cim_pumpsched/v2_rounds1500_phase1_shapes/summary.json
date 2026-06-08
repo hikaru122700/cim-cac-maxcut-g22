@@ -1,0 +1,209 @@
+{
+  "graph": "G22",
+  "n": 2000,
+  "k_edges": 19990,
+  "rounds": 1500,
+  "trials": 200,
+  "seed_base": 0,
+  "P_th_mW": 37.96033558389859,
+  "g0_th": 2.5328436022934504,
+  "endpoints": {
+    "P_axis": [
+      0.0013171643303703617,
+      1.9757464955555424
+    ],
+    "g0_axis": [
+      0.03629275864921764,
+      1.405612498363451
+    ]
+  },
+  "phase0_linear_reproduces_current": true,
+  "known_best": 13359,
+  "baseline_label": "P軸 linear (=現行ベースライン)",
+  "results": [
+    {
+      "axis": "P",
+      "family": "linear",
+      "params": {},
+      "label": "P軸 linear (=現行ベースライン)",
+      "mean": 13276.14,
+      "best": 13328.0,
+      "worst": 13229.0,
+      "std": 19.937913632072938,
+      "d_mean_vs_baseline": 0.0,
+      "d_best_vs_baseline": 0.0,
+      "d_mean_paired": null,
+      "d_se_paired": null,
+      "z": null,
+      "significant": null,
+      "time_s": 2.6889023780822754
+    },
+    {
+      "axis": "P",
+      "family": "power",
+      "params": {
+        "p": 0.5
+      },
+      "label": "P軸 power p=0.5 (早上げ)",
+      "mean": 13246.35,
+      "best": 13309.0,
+      "worst": 13192.0,
+      "std": 22.915224197026745,
+      "d_mean_vs_baseline": -29.789999999999054,
+      "d_best_vs_baseline": -19.0,
+      "d_mean_paired": -29.79,
+      "d_se_paired": 2.115503789031595,
+      "z": -14.081752136041711,
+      "significant": true,
+      "time_s": 2.74348783493042
+    },
+    {
+      "axis": "P",
+      "family": "power",
+      "params": {
+        "p": 2.0
+      },
+      "label": "P軸 power p=2.0 (遅上げ)",
+      "mean": 13281.325,
+      "best": 13320.0,
+      "worst": 13235.0,
+      "std": 18.130895592882332,
+      "d_mean_vs_baseline": 5.18500000000131,
+      "d_best_vs_baseline": -8.0,
+      "d_mean_paired": 5.185,
+      "d_se_paired": 1.892793494033429,
+      "z": 2.7393373954128912,
+      "significant": true,
+      "time_s": 2.714381456375122
+    },
+    {
+      "axis": "P",
+      "family": "sigmoid",
+      "params": {},
+      "label": "P軸 sigmoid (遅速遅)",
+      "mean": 13253.89,
+      "best": 13313.0,
+      "worst": 13200.0,
+      "std": 22.527048186568962,
+      "d_mean_vs_baseline": -22.25,
+      "d_best_vs_baseline": -15.0,
+      "d_mean_paired": -22.25,
+      "d_se_paired": 2.066747377793931,
+      "z": -10.765708590737342,
+      "significant": true,
+      "time_s": 2.818431854248047
+    },
+    {
+      "axis": "P",
+      "family": "slowdown",
+      "params": {
+        "dwell": 0.5,
+        "band": 0.12
+      },
+      "label": "P軸 臨界減速",
+      "mean": 13264.27,
+      "best": 13318.0,
+      "worst": 13213.0,
+      "std": 21.631622685318824,
+      "d_mean_vs_baseline": -11.869999999998981,
+      "d_best_vs_baseline": -10.0,
+      "d_mean_paired": -11.87,
+      "d_se_paired": 1.9655105337523522,
+      "z": -6.039143416514286,
+      "significant": true,
+      "time_s": 2.870903968811035
+    },
+    {
+      "axis": "g0",
+      "family": "linear",
+      "params": {},
+      "label": "g0軸 linear",
+      "mean": 13281.49,
+      "best": 13337.0,
+      "worst": 13231.0,
+      "std": 19.197132598385625,
+      "d_mean_vs_baseline": 5.350000000000364,
+      "d_best_vs_baseline": 9.0,
+      "d_mean_paired": 5.35,
+      "d_se_paired": 1.8165314288943102,
+      "z": 2.9451733754237592,
+      "significant": true,
+      "time_s": 2.632909059524536
+    },
+    {
+      "axis": "g0",
+      "family": "power",
+      "params": {
+        "p": 0.5
+      },
+      "label": "g0軸 power p=0.5",
+      "mean": 13274.395,
+      "best": 13323.0,
+      "worst": 13213.0,
+      "std": 20.152889991264278,
+      "d_mean_vs_baseline": -1.7449999999989814,
+      "d_best_vs_baseline": -5.0,
+      "d_mean_paired": -1.745,
+      "d_se_paired": 1.5559094272253262,
+      "z": -1.1215305784938148,
+      "significant": false,
+      "time_s": 2.718705892562866
+    },
+    {
+      "axis": "g0",
+      "family": "power",
+      "params": {
+        "p": 2.0
+      },
+      "label": "g0軸 power p=2.0",
+      "mean": 13269.225,
+      "best": 13324.0,
+      "worst": 13216.0,
+      "std": 20.06226245965295,
+      "d_mean_vs_baseline": -6.914999999999054,
+      "d_best_vs_baseline": -4.0,
+      "d_mean_paired": -6.915,
+      "d_se_paired": 2.060928432776142,
+      "z": -3.3552839050724605,
+      "significant": true,
+      "time_s": 2.7698638439178467
+    },
+    {
+      "axis": "g0",
+      "family": "sigmoid",
+      "params": {},
+      "label": "g0軸 sigmoid",
+      "mean": 13239.285,
+      "best": 13298.0,
+      "worst": 13174.0,
+      "std": 23.827794169834522,
+      "d_mean_vs_baseline": -36.85499999999956,
+      "d_best_vs_baseline": -30.0,
+      "d_mean_paired": -36.855,
+      "d_se_paired": 2.0810390415516746,
+      "z": -17.709903208985445,
+      "significant": true,
+      "time_s": 2.847461223602295
+    },
+    {
+      "axis": "g0",
+      "family": "slowdown",
+      "params": {
+        "dwell": 0.5,
+        "band": 0.12
+      },
+      "label": "g0軸 臨界減速",
+      "mean": 13255.25,
+      "best": 13294.0,
+      "worst": 13188.0,
+      "std": 19.708310429866888,
+      "d_mean_vs_baseline": -20.889999999999418,
+      "d_best_vs_baseline": -34.0,
+      "d_mean_paired": -20.89,
+      "d_se_paired": 1.9462344779640712,
+      "z": -10.733547389342695,
+      "significant": true,
+      "time_s": 2.786972999572754
+    }
+  ]
+}
