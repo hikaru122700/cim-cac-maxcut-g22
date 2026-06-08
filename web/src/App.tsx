@@ -38,6 +38,45 @@ function detectBks(filename: string): number | undefined {
 }
 
 export default function App() {
+  const [page, setPage] = useState<Page>("visualizer");
+
+  return (
+    <div className="app">
+      <header className="app-header">
+        <div className="app-titlebar">
+          <h1>Ising Machine Lab</h1>
+          <nav className="page-tabs">
+            <button
+              className={page === "visualizer" ? "active" : ""}
+              onClick={() => setPage("visualizer")}
+            >
+              MAX-CUT Visualizer
+            </button>
+            <button
+              className={page === "cim" ? "active" : ""}
+              onClick={() => setPage("cim")}
+            >
+              CIM Simulator
+            </button>
+          </nav>
+        </div>
+        <div className="subtitle">
+          {page === "visualizer"
+            ? "Gset 形式のグラフ + N 行 0/1 割当ファイルをアップロードして cut 値を可視化。"
+            : "コヒーレント・イジングマシン (CIM) の測定フィードバック・ダイナミクスを 1 ラウンドずつ物理シミュレーション。"}
+        </div>
+      </header>
+
+      {page === "cim" ? <CimSimulator /> : <Visualizer />}
+
+      <footer className="app-footer">
+        <span>Client-side only. No data leaves your browser.</span>
+      </footer>
+    </div>
+  );
+}
+
+function Visualizer() {
   const [graphLoaded, setGraphLoaded] = useState<LoadedGraph | null>(null);
   const [assignLoaded, setAssignLoaded] = useState<LoadedAssignment | null>(
     null,
