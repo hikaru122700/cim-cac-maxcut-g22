@@ -397,10 +397,13 @@ def main() -> None:
     print(f"  saved: {out_dir / 'summary.json'}")
 
     # 結論メモ
-    best_shape = max(rows[1:], key=lambda r: r["mean"])
-    print(f"\n[結論メモ] 平均最良の非線形形状: {best_shape['label']} "
-          f"(Δmean={best_shape['mean']-base['mean']:+.1f}, Δbest={best_shape['best']-base['best']:+.0f})")
-    print("  Δmean が std を超えるかで有意性を判断。次フェーズで Optuna 最適化＋held-out検証。")
+    best_shape = max(rows[1:], key=lambda r: r["d_mean_paired"])
+    sig_pos = [r for r in rows[1:] if r["sig"] and r["d_mean_paired"] > 0]
+    sig_neg = [r for r in rows[1:] if r["sig"] and r["d_mean_paired"] < 0]
+    print(f"\n[結論メモ] ペアΔ最大: {best_shape['label']} "
+          f"(Δmean={best_shape['d_mean_paired']:+.2f}±{2*best_shape['d_se_paired']:.2f}, z={best_shape['z']:+.2f})")
+    print(f"  baseline を有意に上回る形状: {[r['label'] for r in sig_pos] or 'なし'}")
+    print(f"  有意に下回る形状: {[r['label'] for r in sig_neg] or 'なし'}")
 
 
 if __name__ == "__main__":
