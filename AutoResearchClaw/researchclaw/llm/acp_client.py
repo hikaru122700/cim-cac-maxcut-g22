@@ -281,6 +281,8 @@ class ACPClient:
     _RECONNECT_ERRORS = (
         "agent needs reconnect",
         "session not found",
+        "No acpx session found",  # acpx evicted/expired the named session mid-run
+        "no acpx session",
         "Query closed",
     )
     _MAX_RECONNECT_ATTEMPTS = 2
