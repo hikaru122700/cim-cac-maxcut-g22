@@ -32,3 +32,19 @@ tools/
 # Local temp / backup files
 *.tmp
 input/K2000_numpy_seed0_backup.txt
+
+# === AutoResearchClaw: ローカル実行物・環境・設定は無視(ソースはコミット済み) ===
+# auto_push.sh の `git add -A` が実験成果物やAPIキー入り設定を巻き込むのを防ぐ。
+AutoResearchClaw/.venv/
+AutoResearchClaw/config.yaml
+AutoResearchClaw/config.arc.yaml
+AutoResearchClaw/config_*.yaml
+AutoResearchClaw/artifacts/
+AutoResearchClaw/output/
+AutoResearchClaw/workspaces/
+AutoResearchClaw/.researchclaw/
+AutoResearchClaw/.researchclaw_cache/
+AutoResearchClaw/cost_log.jsonl
+AutoResearchClaw/test_outputs/
+AutoResearchClaw/**/*.egg-info/
+AutoResearchClaw/.pytest_cache/
