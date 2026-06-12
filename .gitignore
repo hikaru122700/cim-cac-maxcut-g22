@@ -48,3 +48,8 @@ AutoResearchClaw/cost_log.jsonl
 AutoResearchClaw/test_outputs/
 AutoResearchClaw/**/*.egg-info/
 AutoResearchClaw/.pytest_cache/
+AutoResearchClaw/*.log
+AutoResearchClaw/**/*.log
+AutoResearchClaw/pipeline_run_*.log
+AutoResearchClaw/.serena/
+AutoResearchClaw/records/
