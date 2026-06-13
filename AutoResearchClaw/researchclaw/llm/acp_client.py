@@ -284,6 +284,9 @@ class ACPClient:
         "No acpx session found",  # acpx evicted/expired the named session mid-run
         "no acpx session",
         "Query closed",
+        # Any non-zero acpx exit (often a transient agent/connection hiccup on
+        # long runs) — retry with a fresh session, bounded by _MAX_RECONNECT_ATTEMPTS.
+        "ACP prompt failed (exit",
     )
     _MAX_RECONNECT_ATTEMPTS = 2
 
