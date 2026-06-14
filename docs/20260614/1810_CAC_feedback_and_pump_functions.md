@@ -205,7 +205,9 @@ $$\dot x_i=(p-1)x_i - x_i^3 + \beta_{\rm inj}\,e_i\textstyle\sum_j J_{ij}x_j,\qq
 
 ## D-1. CAC の正準形（①′②′＋③）
 
-$$\mathbf{F}(n) = a\,\mathbf{E}(n-1) + b\,\big[\,\mathbf{e}(n-1)\odot \mathbf{J}\mathbf{E}(n-1)\,\big] + c\,\mathbf{n}_0 \qquad\text{…①′}$$
+> **記号注意（重要）：** ①′の自己項係数 $a_{\rm self}$（CIM 図の $a=\sqrt\eta$ に対応、ループ損失）と、③の**目標強度 $a$**（振幅² の目標値、$x_i^2\to a$）は**まったくの別物**である。紛らわしいので、本資料では自己項側を $a_{\rm self}$、CAC の目標強度を $a$ と書き分ける（Part A・E の $a$ はすべて後者＝目標強度）。
+
+$$\mathbf{F}(n) = a_{\rm self}\,\mathbf{E}(n-1) + b\,\big[\,\mathbf{e}(n-1)\odot \mathbf{J}\mathbf{E}(n-1)\,\big] + c\,\mathbf{n}_0 \qquad\text{…①′}$$
 $$\mathbf{E}(n) = \mathbf{F}(n)\exp\!\big[\,\alpha\,p\,(1-\beta|\mathbf{F}(n)|^2)\,\big]\quad(p=\text{const}<1) \qquad\text{…②′}$$
 $$\mathbf{e}(n) = \mathbf{e}(n-1)\exp\!\big[-\beta_0\,(|\mathbf{E}(n-1)|^2-a)\,\Delta t\,\big] \qquad\text{…③}$$
 
