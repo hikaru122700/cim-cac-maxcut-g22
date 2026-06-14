@@ -217,7 +217,7 @@ $$\mathbf{e}(n) = \mathbf{e}(n-1)\exp\!\big[-\beta_0\,(|\mathbf{E}(n-1)|^2-a)\,\
 
 | 正準式の項 | CIM（①②） | CAC（①′②′③） | 差分 |
 |---|---|---|---|
-| 自己項 $a\mathbf E(n-1)$ | $a=\sqrt\eta$（ループ損失） | 同じ役割の線形係数（分岐しきい下 $p-1<0$） | 実質同じ（値が違うだけ） |
+| 自己項 $a_{\rm self}\mathbf E(n-1)$ | $a_{\rm self}=\sqrt\eta$（ループ損失） | 同じ役割の線形係数（分岐しきい下 $p-1<0$） | 実質同じ（値が違うだけ） |
 | 相互作用 $b\mathbf J\mathbf E(n-1)$ | $b\mathbf J\mathbf E$ | $b\,[\mathbf e(n-1)\odot \mathbf J\mathbf E(n-1)]$ | ★①′ **結合入力にパルスごと誤差ゲイン $e_i$ を挿入** |
 | ノイズ $c\mathbf n_0$ | 真空/ASE | 同じ | 同じ |
 | ポンプ $\alpha p(n)$ | 時間ランプ（Part B で最適化） | **定数 $\alpha p$（分岐しきい下に固定）** | ★②′ **ポンプ波形を使わない** |
