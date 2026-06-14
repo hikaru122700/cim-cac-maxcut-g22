@@ -127,6 +127,68 @@ $\tau=(k+1)/K$ を正規化時間、$s(\tau)\in[0,1]$ を正規化形状とす�
 
 ---
 
+# Part C. 正準更新式（図）で全体を整理する
+
+Part A（CAC）と Part B（ポンプ関数）は、実は CIM の**正準更新式の別々の項**に対応している。それを 1 枚で整理する。
+
+![CIM の正準更新式（Inoue–Yoshida ファイバーループ模型）](../assets/base_update_equations.png)
+
+$$\mathbf{F}(n) = a\mathbf{E}(n-1) + b\mathbf{J}\mathbf{E}(n-1) + c\,\mathbf{n}_0 \quad\text{…①(結合場の形成)}$$
+$$\mathbf{E}(n) = \mathbf{F}(n)\exp\!\big[\alpha\,p(n)\big(1-\beta|\mathbf{F}(n)|^2\big)\big] \quad\text{…②(飽和つき増幅)}$$
+
+1 周＝1 ラウンドで「①結合場をつくる → ②増幅して飽和」が起きる。
+
+## C-1. 各項の意味
+
+**式①（結合場の形成）**
+- $a\,\mathbf{E}(n-1)$：**自己項**。ループ損失で減った自分の残り（$a=\sqrt\eta$）。
+- $b\mathbf{J}\mathbf{E}(n-1)$：**相互作用項**。結合行列を通した他パルスからの入力 $\sum_j J_{ij}E_j$（MAX-CUT の問題構造はここに入る）。
+- $c\,\mathbf{n}_0$：**ノイズ**（真空ゆらぎ／ASE）。
+- → 合成された $\mathbf{F}(n)$ が「増幅器に入る場」。
+
+**式②（増幅＋飽和）**
+- $\alpha\,p(n)$：**ポンプ項（利得）**＝ Part B で最適化した対象。
+- $(1-\beta|\mathbf{F}|^2)$：**飽和**。$|\mathbf{F}|^2$ 小→ $e^{+}$ で増幅、$|\mathbf{F}|^2>1/\beta$→ $e^{-}$ で減衰。
+- 「増幅→飽和」で振幅が頭打ちになり、位相が $0/\pi$（符号 $\pm$）にロック＝イジングスピン。
+
+## C-2. `modules/CIM.py` との対応（記号 → コード）
+
+| 図の記号 | 意味 | コード（`modules/CIM.py`） |
+|---|---|---|
+| $\mathbf{E}(n)$ | round $n$ の振幅 | `c[i]` |
+| $\mathbf{F}(n)$ | 結合後の場 | `coupled_in` |
+| $a$ | 自己結合（損失） | `sqrt_eta`（$=\sqrt\eta$） |
+| $b\mathbf{J}$ | 相互作用結合 | `Jc`（matvec, J に係数 -0.03 込み） |
+| $c\,\mathbf{n}_0$ | ノイズ | `noise_i` |
+| $\alpha\,p(n)$ | **ポンプ項** | $\tfrac12 g_0=\kappa L\sqrt{P(n)}$ |
+| $\beta$ | 飽和係数 | `gamma`（=42.09） |
+| $\lvert\mathbf{F}(n)\rvert^2$ | 強度 | `I_in = coupled_in**2` |
+
+コードの核心 `c = exp[½·g0·(1−γ·I_in)] · coupled_in + noise` が、まさに式②（＋ノイズ）。
+
+> 細かい注：正準式①はノイズを $\mathbf{F}$ に入れるが、実装は増幅後の $\mathbf{E}(n)$ に足す。物理的役割（ASE/真空ノイズ）は同じで、置き場所が違うだけ。
+
+## C-3. しきい値（分岐）も式から出る
+
+小信号（$|\mathbf{F}|^2\to0$）では②は $\mathbf{E}(n)\approx\mathbf{F}(n)\,e^{\alpha p(n)}$。①の自己項とあわせ 1 周の正味倍率は $\sqrt\eta\,e^{\alpha p(n)}$。これが 1 を超えると発振：
+
+$$\sqrt\eta\,e^{\alpha p_{\rm th}}=1\ \Rightarrow\ 2\alpha p_{\rm th}=\ln(1/\eta)\ \Rightarrow\ g_{0,\rm th}=\ln(1/\eta),\quad P_{\rm th}=37.96\ \text{mW}$$
+
+Part B のポンプ関数図で各曲線が赤破線（しきい）を横切る点は、まさにこの条件。
+
+## C-4. Part A / Part B はこの 2 式のどの項か（統一）
+
+| 触る項 | 何を変えるか | これまでの呼び名 | レバーの大きさ |
+|---|---|---|---|
+| 式② のポンプ項 $\alpha p(n)$ | ポンプ波形の時間軌道（開ループ） | **Part B**（線形利得/線形電力/シグモイド/べき乗） | 小（G22 で ~0.7%, 2 次レバー） |
+| 式① の相互作用項 $b\mathbf{J}\mathbf{E}$ | パルスごとの誤差ゲイン $e_i$ で結合を変調（閉ループ） | **Part A**（CAC） | 大（唯一 best 13358＝既知最良$-1$に到達） |
+
+- **Part B（ポンプ最適化）= 式② の係数 $\alpha p(n)$ の“形”選び**。$\alpha p(n)=\tfrac12 g_0=\kappa L\sqrt{P(n)}$ なので、線形利得＝ $g_0\propto n$、線形電力＝ $\alpha p\propto\sqrt n$、等。形だけ変えても効果は小さい。
+- **Part A（CAC）= 式① の結合 $b\mathbf{J}\mathbf{E}$ を変調**：$b\,\mathbf{J}\mathbf{E}\to b\,(e_i\odot\mathbf{J}\mathbf{E})$、$\dot e_i=-\beta_0(x_i^2-a)e_i$。
+- → **「開ループ（②の係数）＝小レバー / 閉ループ（①の結合構造）＝本丸」**という結論は、結局この 2 式の**どの項に手を入れるか**の違いに帰着する。ポンプ最適化は②の係数、CAC は①の結合構造を動かしている。
+
+---
+
 ## 成果物
 
 - 図: `docs/20260614/pump_schedules.png`（生成: `scripts/plotting/plot_pump_schedules.py`）
