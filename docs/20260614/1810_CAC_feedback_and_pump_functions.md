@@ -189,6 +189,62 @@ Part B のポンプ関数図で各曲線が赤破線（しきい）を横切る�
 
 ---
 
+# Part D. CIM の正準 2 式を流用して CAC を書き下す
+
+Part C で見た CIM の正準更新式（`docs/assets/base_update_equations.png`）
+
+$$\mathbf{F}(n) = a\,\mathbf{E}(n-1) + b\,\mathbf{J}\mathbf{E}(n-1) + c\,\mathbf{n}_0 \qquad\text{…①}$$
+$$\mathbf{E}(n) = \mathbf{F}(n)\exp\!\big[\,\alpha\,p(n)\,(1-\beta|\mathbf{F}(n)|^2)\,\big] \qquad\text{…②}$$
+
+は、**CAC にもそのまま流用できる**。CAC は Part A の連続時間 2 式
+
+$$\dot x_i=(p-1)x_i - x_i^3 + \beta_{\rm inj}\,e_i\textstyle\sum_j J_{ij}x_j,\qquad
+\dot e_i=-\beta_0\,(x_i^2-a)\,e_i$$
+
+を回すが、これを 1 周＝1 ラウンド（刻み $\Delta t$）で離散化すると、**①→②と同じサイクルに、たった 3 か所の差分**を入れた形で書ける。
+
+## D-1. CAC の正準形（①′②′＋③）
+
+$$\mathbf{F}(n) = a\,\mathbf{E}(n-1) + b\,\big[\,\mathbf{e}(n-1)\odot \mathbf{J}\mathbf{E}(n-1)\,\big] + c\,\mathbf{n}_0 \qquad\text{…①′}$$
+$$\mathbf{E}(n) = \mathbf{F}(n)\exp\!\big[\,\alpha\,p\,(1-\beta|\mathbf{F}(n)|^2)\,\big]\quad(p=\text{const}<1) \qquad\text{…②′}$$
+$$\mathbf{e}(n) = \mathbf{e}(n-1)\exp\!\big[-\beta_0\,(|\mathbf{E}(n-1)|^2-a)\,\Delta t\,\big] \qquad\text{…③}$$
+
+ここで $\odot$ は要素ごとの積（パルスごとに別ゲイン）。③は $\dot e_i=-\beta_0(x_i^2-a)e_i$ の 1 ラウンド積分形で、線形化すると $\mathbf e(n)\approx\mathbf e(n-1)\big[1-\beta_0(|\mathbf E(n-1)|^2-a)\Delta t\big]$ と Part A の式に一致する。②′の指数を小信号展開すると $\mathbf E\approx e^{\alpha p}\mathbf F(1-\alpha p\,\beta|\mathbf F|^2)$ となり、$(p-1)x-x^3$ の「線形ゲイン－3 次飽和」を再現する（$p<1$ なので自己項は減衰側）。
+
+## D-2. CIM との差分は 3 か所だけ
+
+| 正準式の項 | CIM（①②） | CAC（①′②′③） | 差分 |
+|---|---|---|---|
+| 自己項 $a\mathbf E(n-1)$ | $a=\sqrt\eta$（ループ損失） | 同じ役割の線形係数（分岐しきい下 $p-1<0$） | 実質同じ（値が違うだけ） |
+| 相互作用 $b\mathbf J\mathbf E(n-1)$ | $b\mathbf J\mathbf E$ | $b\,[\mathbf e(n-1)\odot \mathbf J\mathbf E(n-1)]$ | ★①′ **結合入力にパルスごと誤差ゲイン $e_i$ を挿入** |
+| ノイズ $c\mathbf n_0$ | 真空/ASE | 同じ | 同じ |
+| ポンプ $\alpha p(n)$ | 時間ランプ（Part B で最適化） | **定数 $\alpha p$（分岐しきい下に固定）** | ★②′ **ポンプ波形を使わない** |
+| 飽和 $(1-\beta|\mathbf F|^2)$ | あり | あり（$-x^3$ を供給） | 同じ |
+| 誤差更新 | なし | $\mathbf e(n)=\mathbf e(n-1)\exp[-\beta_0(|\mathbf E(n-1)|^2-a)\Delta t]$ | ★③ **CAC 固有の追加式** |
+
+つまり CAC とは、**CIM の正準サイクルの「相互作用項にゲイン $e$ を挟み（①′）、ポンプは固定し（②′）、その $e$ を強度フィードバックで動かす式を 1 本足した（③）」もの**である。
+
+## D-3. 探索を生む“係数の時間依存”
+
+CAC の探索性（A-4）は、上の正準形では **①′と③の係数を適応的にする**ことに対応する。
+
+- $b\to b(n)=\beta_{\rm inj}(n)$：結合強度を 0 から線形に育て、$\tau$ 改善なしで 0 にリセット（再加熱）。
+- $a\to a(n)=\alpha+\rho\tanh(\delta(H-H_{\rm opt}))$：③の目標強度を停滞時に引き上げ、振幅に圧をかける。
+
+CIM が②の係数 $\alpha p(n)$ を時間で動かす（＝ポンプ最適化）のに対し、**CAC は①′の結合係数 $b(n)$ と③の目標 $a(n)$ を時間で動かす**。動かす「式の場所」が違うだけで、どちらも同じ正準 2 式の係数スケジューリングとして統一的に読める。
+
+## D-4. 実装との対応（`modules/CAC.py`）
+
+| 正準形 | コード | 備考 |
+|---|---|---|
+| $b\,[\mathbf e\odot\mathbf J\mathbf E]$（①′の相互作用） | `I_inj = beta_inj * e * Jx` | $\mathbf J\mathbf E=$ `Jx`、$\odot e=$ パルスごとゲイン |
+| $a\mathbf E+b[\dots]+(\text{自己 }-x^3)$（①′②′の合成） | `dx = (p-1)*x - x^3 + I_inj` | $p<1$＝しきい下、$-x^3$＝②′の飽和 |
+| ③ 誤差更新 | `de = -beta0*(x_prev_sq - a)*e` | $x^2$ 依存＝符号に盲目（A-3） |
+
+> まとめ：**Part B（ポンプ最適化）＝ ② の係数 $\alpha p(n)$ の形選び**、**Part A（CAC）＝ ① の結合に $e$ を挿入し（①′）③でそれを駆動**。Part C の結論「②の係数＝小レバー／①の結合構造＝本丸」は、この Part D の正準形で見ると「どの式のどの係数を動かすか」の違いとして一目で整理できる。
+
+---
+
 ## 成果物
 
 - 図: `docs/20260614/pump_schedules.png`（生成: `scripts/plotting/plot_pump_schedules.py`）
