@@ -1,0 +1,291 @@
+{
+  "graph": "G22",
+  "known_best": 13359,
+  "pooled_best": 12801.0,
+  "C_best_used": 13359.0,
+  "hyperparameters": {
+    "T_steps": 100,
+    "dt": 0.05,
+    "K_trajectories": 20,
+    "xi": 0.5,
+    "sigma": 0.05,
+    "p0": -1.0,
+    "pf": 1.0,
+    "p_max": 2.0,
+    "opt_steps_freeform": 24,
+    "optuna_n_trials": 50,
+    "cmaes_evals": 192,
+    "cac_beta": 0.3,
+    "cac_a": 1.0,
+    "S_train_seeds": [
+      10,
+      11
+    ],
+    "S_test_seeds": [
+      0,
+      1,
+      2
+    ]
+  },
+  "records": [
+    {
+      "condition": "linear_ramp_baseline",
+      "best_cut_mean": 11565.666666666666,
+      "best_cut_max": 11597.0,
+      "best_cut_std": 22.691163233490013,
+      "mean_cut_mean": 11456.616666666667,
+      "success_rate": 1.0,
+      "fit_seconds": 0.00013327598571777344,
+      "eval_seconds": 0.8943789005279541,
+      "pooled_best": 12801.0,
+      "C_best_used": 13359.0,
+      "gap_vs_known": 0.13424158494897326,
+      "gap_vs_pooled": 0.09650287737937145,
+      "pct_of_best": 0.8681038999925144
+    },
+    {
+      "condition": "kibble_zurek_analytic_pump",
+      "best_cut_mean": 12417.333333333334,
+      "best_cut_max": 12437.0,
+      "best_cut_std": 22.395436042987768,
+      "mean_cut_mean": 12310.533333333333,
+      "success_rate": 1.0,
+      "fit_seconds": 0.001407623291015625,
+      "eval_seconds": 1.2884671688079834,
+      "pooled_best": 12801.0,
+      "C_best_used": 13359.0,
+      "gap_vs_known": 0.07048930808194222,
+      "gap_vs_pooled": 0.029971616800770727,
+      "pct_of_best": 0.9309828579983531
+    },
+    {
+      "condition": "cac_chaotic_amplitude_control",
+      "best_cut_mean": 12786.333333333334,
+      "best_cut_max": 12801.0,
+      "best_cut_std": 12.710450643291747,
+      "mean_cut_mean": 12724.316666666666,
+      "success_rate": 1.0,
+      "fit_seconds": 4.982948303222656e-05,
+      "eval_seconds": 0.9810831546783447,
+      "pooled_best": 12801.0,
+      "C_best_used": 13359.0,
+      "gap_vs_known": 0.042867480100805905,
+      "gap_vs_pooled": 0.0011457438220971847,
+      "pct_of_best": 0.95823040646755
+    },
+    {
+      "condition": "optuna_scalar_sigmoid_ramp",
+      "best_cut_mean": 12450.333333333334,
+      "best_cut_max": 12472.0,
+      "best_cut_std": 15.755069730795299,
+      "mean_cut_mean": 12357.683333333334,
+      "success_rate": 1.0,
+      "fit_seconds": 2.5635457038879395,
+      "eval_seconds": 0.8335037231445312,
+      "pooled_best": 12801.0,
+      "C_best_used": 13359.0,
+      "gap_vs_known": 0.0680190633031414,
+      "gap_vs_pooled": 0.027393693201051953,
+      "pct_of_best": 0.9336028145819297
+    },
+    {
+      "condition": "differentiable_freeform_pump",
+      "best_cut_mean": 12420.666666666666,
+      "best_cut_max": 12455.0,
+      "best_cut_std": 31.98263417682929,
+      "mean_cut_mean": 12306.816666666666,
+      "success_rate": 1.0,
+      "fit_seconds": 31.243983030319214,
+      "eval_seconds": 0.8455708026885986,
+      "pooled_best": 12801.0,
+      "C_best_used": 13359.0,
+      "gap_vs_known": 0.07023978840731596,
+      "gap_vs_pooled": 0.029711220477566903,
+      "pct_of_best": 0.9323302642413355
+    },
+    {
+      "condition": "monotonic_constrained_pump",
+      "best_cut_mean": 12335.666666666666,
+      "best_cut_max": 12342.0,
+      "best_cut_std": 5.792715732327588,
+      "mean_cut_mean": 12237.716666666667,
+      "success_rate": 1.0,
+      "fit_seconds": 30.72438621520996,
+      "eval_seconds": 0.7962155342102051,
+      "pooled_best": 12801.0,
+      "C_best_used": 13359.0,
+      "gap_vs_known": 0.07660254011028775,
+      "gap_vs_pooled": 0.036351326719266774,
+      "pct_of_best": 0.9238715472715023
+    },
+    {
+      "condition": "gradient_free_cmaes_freeform_pump",
+      "best_cut_mean": 12442.333333333334,
+      "best_cut_max": 12463.0,
+      "best_cut_std": 14.636332266733433,
+      "mean_cut_mean": 12338.016666666665,
+      "success_rate": 1.0,
+      "fit_seconds": 29.41166663169861,
+      "eval_seconds": 0.8066596984863281,
+      "pooled_best": 12801.0,
+      "C_best_used": 13359.0,
+      "gap_vs_known": 0.06861791052224463,
+      "gap_vs_pooled": 0.028018644376741352,
+      "pct_of_best": 0.9329291114604387
+    },
+    {
+      "condition": "spectral_conditioned_pump_net",
+      "best_cut_mean": 10445.0,
+      "best_cut_max": 10447.0,
+      "best_cut_std": 1.632993161855452,
+      "mean_cut_mean": 10316.75,
+      "success_rate": 1.0,
+      "fit_seconds": 24.354570388793945,
+      "eval_seconds": 0.7618427276611328,
+      "pooled_best": 12801.0,
+      "C_best_used": 13359.0,
+      "gap_vs_known": 0.21813009955835017,
+      "gap_vs_pooled": 0.18404812124052808,
+      "pct_of_best": 0.7820196122464256
+    }
+  ],
+  "raw_per_seed": {
+    "linear_ramp_baseline": {
+      "0": {
+        "best_cut": 11556.0,
+        "mean_cut": 11440.9,
+        "success": true
+      },
+      "1": {
+        "best_cut": 11544.0,
+        "mean_cut": 11462.55,
+        "success": true
+      },
+      "2": {
+        "best_cut": 11597.0,
+        "mean_cut": 11466.4,
+        "success": true
+      }
+    },
+    "kibble_zurek_analytic_pump": {
+      "0": {
+        "best_cut": 12429.0,
+        "mean_cut": 12332.55,
+        "success": true
+      },
+      "1": {
+        "best_cut": 12437.0,
+        "mean_cut": 12300.8,
+        "success": true
+      },
+      "2": {
+        "best_cut": 12386.0,
+        "mean_cut": 12298.25,
+        "success": true
+      }
+    },
+    "cac_chaotic_amplitude_control": {
+      "0": {
+        "best_cut": 12801.0,
+        "mean_cut": 12734.6,
+        "success": true
+      },
+      "1": {
+        "best_cut": 12770.0,
+        "mean_cut": 12718.65,
+        "success": true
+      },
+      "2": {
+        "best_cut": 12788.0,
+        "mean_cut": 12719.7,
+        "success": true
+      }
+    },
+    "optuna_scalar_sigmoid_ramp": {
+      "0": {
+        "best_cut": 12444.0,
+        "mean_cut": 12364.7,
+        "success": true
+      },
+      "1": {
+        "best_cut": 12435.0,
+        "mean_cut": 12343.45,
+        "success": true
+      },
+      "2": {
+        "best_cut": 12472.0,
+        "mean_cut": 12364.9,
+        "success": true
+      }
+    },
+    "differentiable_freeform_pump": {
+      "0": {
+        "best_cut": 12429.0,
+        "mean_cut": 12331.4,
+        "success": true
+      },
+      "1": {
+        "best_cut": 12455.0,
+        "mean_cut": 12295.3,
+        "success": true
+      },
+      "2": {
+        "best_cut": 12378.0,
+        "mean_cut": 12293.75,
+        "success": true
+      }
+    },
+    "monotonic_constrained_pump": {
+      "0": {
+        "best_cut": 12337.0,
+        "mean_cut": 12254.15,
+        "success": true
+      },
+      "1": {
+        "best_cut": 12342.0,
+        "mean_cut": 12231.35,
+        "success": true
+      },
+      "2": {
+        "best_cut": 12328.0,
+        "mean_cut": 12227.65,
+        "success": true
+      }
+    },
+    "gradient_free_cmaes_freeform_pump": {
+      "0": {
+        "best_cut": 12431.0,
+        "mean_cut": 12355.8,
+        "success": true
+      },
+      "1": {
+        "best_cut": 12463.0,
+        "mean_cut": 12327.15,
+        "success": true
+      },
+      "2": {
+        "best_cut": 12433.0,
+        "mean_cut": 12331.1,
+        "success": true
+      }
+    },
+    "spectral_conditioned_pump_net": {
+      "0": {
+        "best_cut": 10443.0,
+        "mean_cut": 10305.0,
+        "success": true
+      },
+      "1": {
+        "best_cut": 10445.0,
+        "mean_cut": 10309.75,
+        "success": true
+      },
+      "2": {
+        "best_cut": 10447.0,
+        "mean_cut": 10335.5,
+        "success": true
+      }
+    }
+  },
+  "elapsed_seconds": 126.3727240562439
+}

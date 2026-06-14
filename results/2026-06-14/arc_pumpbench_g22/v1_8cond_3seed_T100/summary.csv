@@ -1,0 +1,9 @@
+rank,condition,best_cut_mean,best_cut_max,best_cut_std,mean_cut_mean,gap_vs_known,gap_vs_pooled,pct_of_best,fit_s,eval_s
+1,cac_chaotic_amplitude_control,12786.3,12801,12.7,12724.3,0.0429,0.0011,0.9582,0.0,1.0
+2,optuna_scalar_sigmoid_ramp,12450.3,12472,15.8,12357.7,0.0680,0.0274,0.9336,2.6,0.8
+3,gradient_free_cmaes_freeform_pump,12442.3,12463,14.6,12338.0,0.0686,0.0280,0.9329,29.4,0.8
+4,differentiable_freeform_pump,12420.7,12455,32.0,12306.8,0.0702,0.0297,0.9323,31.2,0.8
+5,kibble_zurek_analytic_pump,12417.3,12437,22.4,12310.5,0.0705,0.0300,0.9310,0.0,1.3
+6,monotonic_constrained_pump,12335.7,12342,5.8,12237.7,0.0766,0.0364,0.9239,30.7,0.8
+7,linear_ramp_baseline,11565.7,11597,22.7,11456.6,0.1342,0.0965,0.8681,0.0,0.9
+8,spectral_conditioned_pump_net,10445.0,10447,1.6,10316.8,0.2181,0.1840,0.7820,24.4,0.8
