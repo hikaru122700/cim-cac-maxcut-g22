@@ -240,7 +240,7 @@ CIM が②の係数 $\alpha p(n)$ を時間で動かす（＝ポンプ最適化�
 | 正準形 | コード | 備考 |
 |---|---|---|
 | $b\,[\mathbf e\odot\mathbf J\mathbf E]$（①′の相互作用） | `I_inj = beta_inj * e * Jx` | $\mathbf J\mathbf E=$ `Jx`、$\odot e=$ パルスごとゲイン |
-| $a\mathbf E+b[\dots]+(\text{自己 }-x^3)$（①′②′の合成） | `dx = (p-1)*x - x^3 + I_inj` | $p<1$＝しきい下、$-x^3$＝②′の飽和 |
+| $a_{\rm self}\mathbf E+b[\dots]+(\text{自己 }-x^3)$（①′②′の合成） | `dx = (p-1)*x - x^3 + I_inj` | $p<1$＝しきい下、$-x^3$＝②′の飽和 |
 | ③ 誤差更新 | `de = -beta0*(x_prev_sq - a)*e` | $x^2$ 依存＝符号に盲目（A-3） |
 
 > まとめ：**Part B（ポンプ最適化）＝ ② の係数 $\alpha p(n)$ の形選び**、**Part A（CAC）＝ ① の結合に $e$ を挿入し（①′）③でそれを駆動**。Part C の結論「②の係数＝小レバー／①の結合構造＝本丸」は、この Part D の正準形で見ると「どの式のどの係数を動かすか」の違いとして一目で整理できる。
