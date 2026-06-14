@@ -119,6 +119,7 @@ def main() -> None:
     # ---- 閉ループ条件: 本物 CAC ----
     J_cac = build_coupling_matrix(n, edges, -1.0)    # CAC の正しい結合
     cac_params = compute_gset_parameters(J_cac, n)
+    cac_params.pop("d_0", None); cac_params.pop("d_1", None)  # 診断用キーを除外
     print(f"  [CAC] p={cac_params['p']:.4f} beta0={cac_params['beta0_error']:.4f} "
           f"tau={cac_params['tau']:.0f} (outer_steps={CAC_OUTER_STEPS})")
     t = time.time()
