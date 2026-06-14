@@ -1,0 +1,83 @@
+{
+  "graph": "G22",
+  "known_best": 13359,
+  "rounds": 1500,
+  "trials": 100,
+  "models": {
+    "open_loop": "modules/CIM.py fiber-loop (coupling -0.03)",
+    "closed_loop": "modules/CAC.py (coupling -1.0)"
+  },
+  "records": [
+    {
+      "name": "linear_power",
+      "label": "\u7dda\u5f62\u96fb\u529b\u30e9\u30f3\u30d7(\u73fe\u884c)",
+      "color": "#7f8c8d",
+      "mean": 13275.29,
+      "best": 13326.0,
+      "worst": 13220.0,
+      "std": 20.471587627734202,
+      "p0_hits": 0,
+      "pct_of_best": 0.9975297552211992,
+      "gap_vs_known": 0.0024702447788008085,
+      "seconds": 1.2536451816558838,
+      "budget": "1500 rounds"
+    },
+    {
+      "name": "power_early_p05",
+      "label": "\u3079\u304d\u4e57 \u65e9\u4e0a\u3052 p=0.5",
+      "color": "#d35400",
+      "mean": 13246.91,
+      "best": 13306.0,
+      "worst": 13192.0,
+      "std": 22.49315229130857,
+      "p0_hits": 0,
+      "pct_of_best": 0.9960326371734411,
+      "gap_vs_known": 0.003967362826558874,
+      "seconds": 1.1540822982788086,
+      "budget": "1500 rounds"
+    },
+    {
+      "name": "sigmoid",
+      "label": "\u30b7\u30b0\u30e2\u30a4\u30c9",
+      "color": "#2c5f8a",
+      "mean": 13253.7,
+      "best": 13313.0,
+      "worst": 13206.0,
+      "std": 22.61658683356089,
+      "p0_hits": 0,
+      "pct_of_best": 0.9965566284901565,
+      "gap_vs_known": 0.0034433715098435513,
+      "seconds": 1.2678868770599365,
+      "budget": "1500 rounds"
+    },
+    {
+      "name": "gain_linear",
+      "label": "\u7dda\u5f62\u5229\u5f97\u30e9\u30f3\u30d7(\u6700\u826f\u958b\u30eb\u30fc\u30d7)",
+      "color": "#16a085",
+      "mean": 13280.0,
+      "best": 13337.0,
+      "worst": 13239.0,
+      "std": 17.60340876080539,
+      "p0_hits": 0,
+      "pct_of_best": 0.9983531701474662,
+      "gap_vs_known": 0.0016468298525338723,
+      "seconds": 1.2144520282745361,
+      "budget": "1500 rounds"
+    },
+    {
+      "name": "cac",
+      "label": "CAC(\u672c\u7269\u30fb\u9589\u30eb\u30fc\u30d7)",
+      "color": "#c0392b",
+      "mean": 13278.78,
+      "best": 13358.0,
+      "worst": 13210.0,
+      "std": 28.223954365042477,
+      "p0_hits": 0,
+      "pct_of_best": 0.9999251440976121,
+      "gap_vs_known": 7.485590238790328e-05,
+      "seconds": 26.668774127960205,
+      "budget": "50000 outer\u00d7(nx6+ne4)"
+    }
+  ],
+  "elapsed_seconds": 31.58448338508606
+}
