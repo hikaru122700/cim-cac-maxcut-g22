@@ -146,8 +146,41 @@ PARAMS = {
 }
 
 
+# --- 永続的な tuned パラメータ上書き(tune_anytime_params.py が書き込む) ---
+import json as _json
+import os as _os
+
+_OVERRIDE_PATH = _os.path.join("results", "anytime_tuned_params.json")
+
+
+def load_overrides():
+    """results/anytime_tuned_params.json があれば PARAMS にマージする。
+
+    形式: {dataset: {algo: {param: value, ...}}}。CIM/CAC の per-dataset
+    tuned 値を反映する。読めなければ無視。
+    """
+    if not _os.path.exists(_OVERRIDE_PATH):
+        return
+    try:
+        with open(_OVERRIDE_PATH, "r", encoding="utf-8") as f:
+            ov = _json.load(f)
+    except Exception:  # noqa: BLE001
+        return
+    for ds, algos in ov.items():
+        if ds not in PARAMS:
+            continue
+        for algo, params in algos.items():
+            if PARAMS[ds].get(algo) is None:
+                PARAMS[ds][algo] = dict(params)
+            else:
+                PARAMS[ds][algo].update(params)
+
+
+load_overrides()
+
+
 def cac_params(ctx: GraphContext) -> dict:
-    """CAC パラメータ。G22 は実 tuned、他は compute_gset_parameters。"""
+    """CAC パラメータ。tuned 上書き or G22 実 tuned or compute_gset_parameters。"""
     pre = PARAMS[ctx.name]["CAC"]
     if pre is not None:
         return pre
