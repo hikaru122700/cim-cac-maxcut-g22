@@ -24,3 +24,5 @@
   SA-cold      b=   300000 t=  6.19s max= 31306 mean=  30623.2 gap=2031.0
   SA-cold      b=  1000000 t= 18.49s max= 31306 mean=  30873.4 gap=2031.0
   SA-cold      b=  3000000 t= 38.72s max= 31687 mean=  31049.4 gap=1650.0
+  SA-cold      b= 10000000 t=164.63s max= 31989 mean=  31544.9 gap=1348.0
+  SA-cold batch>40.0s → 以後スキップ
