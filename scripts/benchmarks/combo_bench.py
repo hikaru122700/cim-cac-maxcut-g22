@@ -202,6 +202,9 @@ def main():
                                  "cut_mean": float(sc.mean())})
                 log(f"  {ex}→{rf}     b={b:>9} t={dt:6.2f}s(+{t_exp:.2f}) "
                     f"max={int(sc.max()):6d} mean={sc.mean():9.1f} gap={bks - sc.max():.1f}")
+                if dt > MAX_REFINE_SEC:
+                    log(f"  {ex}→{rf} batch>{MAX_REFINE_SEC}s → 以後スキップ")
+                    break
             results["runs"][f"{ex}_{rf}"] = warm_pts
 
         with open(out_dir / "results.json", "w", encoding="utf-8") as f:
