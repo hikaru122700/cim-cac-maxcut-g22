@@ -1,0 +1,16 @@
+=== ga_memetic_reproduce G22 n=2000 edges=19990 bks=13359 ===
+GA(memetic): pop_size=10 ts_iters=20000 cr=3000 alpha_tenure=15 beta_quality=0.6 generations=50
+独立 run 数 num_trials=20
+
+[warmup] JIT コンパイル中 ...
+[run] 計測中 ...
+
+--- 結果(20 run, 2.3s 計, 0.1s/run) ---
+  best  cut =  13357   (gap +2)
+  mean  cut =  13330.05 (gap +28.95)
+  worst cut =  13305
+  std       = 16.24
+  BKS(13359) 到達率 = 0/20 = 0%
+  各 run best: [13305, 13306, 13311, 13316, 13316, 13318, 13320, 13320, 13324, 13326, 13330, 13331, 13332, 13339, 13343, 13347, 13351, 13352, 13357, 13357]
+
+saved → results\2026-06-19\ga_memetic_reproduce\v1_G22_nt20_gen50
