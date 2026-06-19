@@ -60,3 +60,6 @@ datasets=['G22', 'K2000', 'G55', 'G70'] algos=['CIM', 'CAC', 'SA', 'SB', 'PT', '
     CAC  b=     4000 t= 90.08s  mean=  27338.0  max= 32364  gap= 973.0
     CAC  batch>45.0s → 以後の大予算スキップ
   --- SA ---
+    SA   b=    30000 t=  1.72s  mean=  29699.6  max= 30646  gap=2691.0
+    SA   b=   100000 t=  2.56s  mean=  30695.4  max= 31092  gap=2245.0
+    SA   b=   300000 t=  5.51s  mean=  31128.9  max= 31510  gap=1827.0
