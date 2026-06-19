@@ -1,0 +1,7 @@
+##### TUNE G55 SA (bud=1000000 nt=8 tr=25) #####
+[tune] best mean weighted cut = 10162.4 (bks=10299, gap_mean=136.6)
+[tune] saved → results\anytime_tuned_params.json
+##### TUNE G70 SA (bud=1000000 nt=8 tr=25) #####
+[tune] best mean weighted cut = 9315.8 (bks=9591, gap_mean=275.2)
+[tune] saved → results\anytime_tuned_params.json
+##### TUNE K2000 SA (bud=1000000 nt=6 tr=25) #####
