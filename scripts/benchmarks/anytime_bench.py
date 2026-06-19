@@ -76,9 +76,10 @@ def run_algo_sweep(ctx, algo_key, num_trials, max_batch_sec, log):
     points = []
     for b in grid:
         t0 = time.perf_counter()
-        cuts, _signs = run(ctx, b, num_trials, seeds)
+        _cuts, signs = run(ctx, b, num_trials, seeds)
         dt = time.perf_counter() - t0
-        cuts = np.asarray(cuts, dtype=float)
+        # 全手法を統一の重み付きカットで再採点(CAC の非重みカウント等を補正)
+        cuts = np.asarray(ctx.score(signs), dtype=float)
         pt = {
             "budget": float(b),
             "time": dt,
