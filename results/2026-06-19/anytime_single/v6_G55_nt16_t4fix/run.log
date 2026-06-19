@@ -1,0 +1,48 @@
+=== anytime_single v6 ===
+datasets=['G55'] algos=['CIM', 'CAC', 'SA', 'SB', 'PT', 'GA'] num_trials=16
+
+[G55] loading...
+[G55] n=5000 edges=12498 bks=10299
+  --- CIM ---
+    CIM  b=      150 t=  0.08s  mean=   9787.1  max=  9833  gap= 466.0
+    CIM  b=      300 t=  0.15s  mean=  10014.3  max= 10049  gap= 250.0
+    CIM  b=      600 t=  0.29s  mean=  10133.8  max= 10179  gap= 120.0
+    CIM  b=     1200 t=  0.58s  mean=  10180.9  max= 10220  gap=  79.0
+    CIM  b=     2400 t=  1.15s  mean=  10186.2  max= 10225  gap=  74.0
+    CIM  b=     4800 t=  2.34s  mean=  10186.4  max= 10225  gap=  74.0
+  --- CAC ---
+    CAC  b=      500 t=  0.08s  mean=  10119.6  max= 10179  gap= 120.0
+    CAC  b=     1500 t=  0.26s  mean=  10169.3  max= 10215  gap=  84.0
+    CAC  b=     4000 t=  0.67s  mean=  10204.0  max= 10237  gap=  62.0
+    CAC  b=    12000 t=  2.15s  mean=  10231.5  max= 10246  gap=  53.0
+    CAC  b=    35000 t=  7.25s  mean=  10250.1  max= 10269  gap=  30.0
+    CAC  b=    80000 t= 16.94s  mean=  10260.4  max= 10269  gap=  30.0
+  --- SA ---
+    SA   b=    30000 t=  0.01s  mean=   9629.2  max=  9661  gap= 638.0
+    SA   b=   100000 t=  0.02s  mean=   9871.6  max=  9905  gap= 394.0
+    SA   b=   300000 t=  0.06s  mean=   9993.7  max= 10032  gap= 267.0
+    SA   b=  1000000 t=  0.17s  mean=  10084.8  max= 10126  gap= 173.0
+    SA   b=  3000000 t=  0.48s  mean=  10174.8  max= 10201  gap=  98.0
+    SA   b= 10000000 t=  1.58s  mean=  10221.1  max= 10237  gap=  62.0
+  --- SB ---
+    SB   b=      150 t=  0.03s  mean=  10123.7  max= 10173  gap= 126.0
+    SB   b=      400 t=  0.08s  mean=  10185.9  max= 10209  gap=  90.0
+    SB   b=     1000 t=  0.19s  mean=  10223.8  max= 10251  gap=  48.0
+    SB   b=     2500 t=  0.48s  mean=  10250.3  max= 10278  gap=  21.0
+    SB   b=     6000 t=  1.15s  mean=  10263.8  max= 10281  gap=  18.0
+    SB   b=    15000 t=  2.86s  mean=  10271.5  max= 10287  gap=  12.0
+  --- PT ---
+    PT   b=       30 t=  0.80s  mean=   9991.1  max= 10036  gap= 263.0
+    PT   b=       80 t=  2.10s  mean=  10096.0  max= 10130  gap= 169.0
+    PT   b=      200 t=  5.17s  mean=  10142.7  max= 10176  gap= 123.0
+    PT   b=      600 t= 15.62s  mean=  10195.2  max= 10223  gap=  76.0
+    PT   b=     1800 t= 46.66s  mean=  10226.7  max= 10246  gap=  53.0
+    PT   batch>45.0s → 以後の大予算スキップ
+  --- GA ---
+    GA   b=        3 t=  3.46s  mean=   9832.5  max=  9869  gap= 430.0
+    GA   b=        8 t=  4.78s  mean=   9911.2  max=  9959  gap= 340.0
+    GA   b=       20 t=  8.07s  mean=   9994.2  max= 10035  gap= 264.0
+    GA   b=       50 t= 16.52s  mean=  10104.9  max= 10129  gap= 170.0
+    GA   b=      120 t= 36.38s  mean=  10169.8  max= 10202  gap=  97.0
+
+saved → results\2026-06-19\anytime_single\v6_G55_nt16_t4fix

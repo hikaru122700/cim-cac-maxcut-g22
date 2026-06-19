@@ -1,0 +1,39 @@
+=== combo_hybrid G55 n=5000 bks=10299 num_trials=16 ===
+[explorer] CIM b=800 t=0.38s cut_max=7969 mean=7121.8 gap=2330.0
+[explorer] CAC b=4000 t=0.73s cut_max=10237 mean=10204.0 gap=62.0
+
+[refiner] TS grid=[2000, 8000, 30000, 100000, 300000]
+  TS-cold      b=     2000 t=  0.02s max=  9534 mean=   9493.9 gap=765.0
+  TS-cold      b=     8000 t=  0.05s max=  9634 mean=   9581.8 gap=665.0
+  TS-cold      b=    30000 t=  0.20s max=  9726 mean=   9676.9 gap=573.0
+  TS-cold      b=   100000 t=  0.70s max=  9889 mean=   9842.4 gap=410.0
+  TS-cold      b=   300000 t=  1.99s max= 10068 mean=  10003.0 gap=231.0
+  CIM→TS     b=     2000 t=  0.02s(+0.38) max=  9871 mean=   9695.3 gap=428.0
+  CIM→TS     b=     8000 t=  0.05s(+0.38) max=  9898 mean=   9746.4 gap=401.0
+  CIM→TS     b=    30000 t=  0.20s(+0.38) max=  9948 mean=   9814.0 gap=351.0
+  CIM→TS     b=   100000 t=  0.68s(+0.38) max= 10023 mean=   9940.8 gap=276.0
+  CIM→TS     b=   300000 t=  1.99s(+0.38) max= 10112 mean=  10046.4 gap=187.0
+  CAC→TS     b=     2000 t=  0.01s(+0.73) max= 10244 mean=  10213.1 gap=55.0
+  CAC→TS     b=     8000 t=  0.06s(+0.73) max= 10244 mean=  10213.9 gap=55.0
+  CAC→TS     b=    30000 t=  0.20s(+0.73) max= 10244 mean=  10214.2 gap=55.0
+  CAC→TS     b=   100000 t=  0.68s(+0.73) max= 10244 mean=  10214.3 gap=55.0
+  CAC→TS     b=   300000 t=  2.02s(+0.73) max= 10244 mean=  10215.4 gap=55.0
+
+[refiner] SA grid=[100000, 300000, 1000000, 3000000, 10000000]
+  SA-cold      b=   100000 t=  0.02s max=  9905 mean=   9871.6 gap=394.0
+  SA-cold      b=   300000 t=  0.06s max= 10032 mean=   9993.7 gap=267.0
+  SA-cold      b=  1000000 t=  0.17s max= 10126 mean=  10084.8 gap=173.0
+  SA-cold      b=  3000000 t=  0.48s max= 10201 mean=  10174.8 gap=98.0
+  SA-cold      b= 10000000 t=  1.59s max= 10237 mean=  10221.1 gap=62.0
+  CIM→SA     b=   100000 t=  0.02s(+0.38) max= 10011 mean=   9926.0 gap=288.0
+  CIM→SA     b=   300000 t=  0.06s(+0.38) max= 10070 mean=   9978.0 gap=229.0
+  CIM→SA     b=  1000000 t=  0.17s(+0.38) max= 10088 mean=  10028.2 gap=211.0
+  CIM→SA     b=  3000000 t=  0.47s(+0.38) max= 10157 mean=  10111.4 gap=142.0
+  CIM→SA     b= 10000000 t=  1.55s(+0.38) max= 10204 mean=  10170.2 gap=95.0
+  CAC→SA     b=   100000 t=  0.02s(+0.73) max= 10246 mean=  10216.7 gap=53.0
+  CAC→SA     b=   300000 t=  0.05s(+0.73) max= 10245 mean=  10217.1 gap=54.0
+  CAC→SA     b=  1000000 t=  0.16s(+0.73) max= 10248 mean=  10217.3 gap=51.0
+  CAC→SA     b=  3000000 t=  0.47s(+0.73) max= 10246 mean=  10222.8 gap=53.0
+  CAC→SA     b= 10000000 t=  1.58s(+0.73) max= 10253 mean=  10229.4 gap=46.0
+
+saved → results\2026-06-19\combo_hybrid\v4_G55_nt16_t4

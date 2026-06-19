@@ -1,0 +1,49 @@
+=== anytime_single v4 ===
+datasets=['G22'] algos=['CIM', 'CAC', 'SA', 'SB', 'PT', 'GA'] num_trials=16
+
+[G22] loading...
+[G22] n=2000 edges=19990 bks=13359
+  --- CIM ---
+    CIM  b=      150 t=  0.05s  mean=  11481.7  max= 11838  gap=1521.0
+    CIM  b=      300 t=  0.10s  mean=  13059.4  max= 13113  gap= 246.0
+    CIM  b=      600 t=  0.19s  mean=  13247.5  max= 13270  gap=  89.0
+    CIM  b=     1200 t=  0.37s  mean=  13307.6  max= 13341  gap=  18.0
+    CIM  b=     2400 t=  0.73s  mean=  13309.4  max= 13342  gap=  17.0
+    CIM  b=     4800 t=  1.47s  mean=  13309.4  max= 13342  gap=  17.0
+  --- CAC ---
+    CAC  b=      500 t=  0.15s  mean=  13284.8  max= 13308  gap=  51.0
+    CAC  b=     1500 t=  0.27s  mean=  13318.0  max= 13342  gap=  17.0
+    CAC  b=     4000 t=  0.73s  mean=  13337.9  max= 13356  gap=   3.0
+    CAC  b=    12000 t=  2.23s  mean=  13343.4  max= 13356  gap=   3.0
+    CAC  b=    35000 t=  6.39s  mean=  13346.9  max= 13357  gap=   2.0
+    CAC  b=    80000 t= 14.89s  mean=  13353.6  max= 13358  gap=   1.0
+  --- SA ---
+    SA   b=    30000 t=  0.02s  mean=  12988.2  max= 13012  gap= 347.0
+    SA   b=   100000 t=  0.03s  mean=  13071.1  max= 13115  gap= 244.0
+    SA   b=   300000 t=  0.07s  mean=  13172.1  max= 13221  gap= 138.0
+    SA   b=  1000000 t=  0.22s  mean=  13255.7  max= 13312  gap=  47.0
+    SA   b=  3000000 t=  0.63s  mean=  13293.4  max= 13314  gap=  45.0
+    SA   b= 10000000 t=  2.17s  mean=  13328.3  max= 13354  gap=   5.0
+  --- SB ---
+    SB   b=      150 t=  0.03s  mean=  13222.0  max= 13270  gap=  89.0
+    SB   b=      400 t=  0.08s  mean=  13280.7  max= 13331  gap=  28.0
+    SB   b=     1000 t=  0.30s  mean=  13308.2  max= 13336  gap=  23.0
+    SB   b=     2500 t=  0.48s  mean=  13340.8  max= 13357  gap=   2.0
+    SB   b=     6000 t=  1.13s  mean=  13349.1  max= 13358  gap=   1.0
+    SB   b=    15000 t=  2.88s  mean=  13353.7  max= 13358  gap=   1.0
+  --- PT ---
+    PT   b=       30 t=  0.36s  mean=  13128.4  max= 13203  gap= 156.0
+    PT   b=       80 t=  0.93s  mean=  13191.5  max= 13235  gap= 124.0
+    PT   b=      200 t=  2.28s  mean=  13246.1  max= 13308  gap=  51.0
+    PT   b=      600 t=  6.77s  mean=  13273.8  max= 13309  gap=  50.0
+    PT   b=     1800 t= 20.33s  mean=  13302.9  max= 13323  gap=  36.0
+    PT   b=     5000 t= 56.10s  mean=  13314.1  max= 13339  gap=  20.0
+    PT   batch>45.0s → 以後の大予算スキップ
+  --- GA ---
+    GA   b=        3 t=  0.94s  mean=  13276.4  max= 13329  gap=  30.0
+    GA   b=        8 t=  1.27s  mean=  13290.2  max= 13329  gap=  30.0
+    GA   b=       20 t=  2.15s  mean=  13313.8  max= 13334  gap=  25.0
+    GA   b=       50 t=  4.48s  mean=  13327.9  max= 13357  gap=   2.0
+    GA   b=      120 t=  9.60s  mean=  13332.2  max= 13358  gap=   1.0
+
+saved → results\2026-06-19\anytime_single\v4_G22_nt16_threadtest

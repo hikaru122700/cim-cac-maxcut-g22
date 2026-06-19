@@ -15,6 +15,13 @@ run シグネチャ:
 """
 from __future__ import annotations
 
+# Numba スレッド数の安全上限を numba import 前に設定する。
+# 多数のアルゴリズムを 1 プロセスで連続実行すると、Numba parallel(prange)の
+# スレッド過剰購読で累積負荷時に segfault する(特に PT-ICM)。4 で安定動作を確認済み。
+# 明示指定があればそれを尊重(setdefault)。
+import os as _os
+_os.environ.setdefault("NUMBA_NUM_THREADS", "4")
+
 from dataclasses import dataclass, field
 from typing import Callable, Optional
 
@@ -128,7 +135,7 @@ PARAMS = {
         "GA":  dict(pop_size=10, ts_iters=20000, cr=3000, alpha_tenure=15, beta_quality=0.6),
     },
     "G55": {
-        "CIM": _CIM_GSET,
+        "CIM": dict(_CIM_GSET),
         "CAC": None,
         "SA":  dict(t_start=2.0, t_end=0.001),
         "SB":  dict(variant="dSB", dt=0.5, a0=1.0),
@@ -136,7 +143,7 @@ PARAMS = {
         "GA":  dict(pop_size=10, ts_iters=40000, cr=3000, alpha_tenure=15, beta_quality=0.6),
     },
     "G70": {
-        "CIM": _CIM_GSET,
+        "CIM": dict(_CIM_GSET),
         "CAC": None,
         "SA":  dict(t_start=2.0, t_end=0.001),
         "SB":  dict(variant="dSB", dt=0.5, a0=1.0),
@@ -170,10 +177,9 @@ def load_overrides():
         if ds not in PARAMS:
             continue
         for algo, params in algos.items():
-            if PARAMS[ds].get(algo) is None:
-                PARAMS[ds][algo] = dict(params)
-            else:
-                PARAMS[ds][algo].update(params)
+            # 非破壊マージ(共有 dict を in-place 変異しない: _CIM_GSET 共有対策)
+            base = PARAMS[ds].get(algo) or {}
+            PARAMS[ds][algo] = {**base, **params}
 
 
 load_overrides()
@@ -196,7 +202,7 @@ BUDGET_GRIDS = {
     "CAC": [500, 1500, 4000, 12000, 35000, 80000],
     "SA":  [30000, 100000, 300000, 1000000, 3000000, 10000000],
     "SB":  [150, 400, 1000, 2500, 6000, 15000],
-    "PT":  [30, 80, 200, 600, 1800, 5000],
+    "PT":  [30, 80, 200, 600, 1800],
     "GA":  [3, 8, 20, 50, 120],
 }
 

@@ -217,7 +217,7 @@ class ACPClient:
              self.config.agent, "sessions", "ensure",
              "--name", self.config.session_name],
             capture_output=True, text=True, encoding="utf-8",
-            errors="replace", timeout=30,
+            errors="replace", timeout=120,
         )
         if result.returncode != 0:
             # Fall back to 'new'
@@ -226,7 +226,7 @@ class ACPClient:
                  self.config.agent, "sessions", "new",
                  "--name", self.config.session_name],
                 capture_output=True, text=True, encoding="utf-8",
-                errors="replace", timeout=30,
+                errors="replace", timeout=120,
             )
             if result.returncode != 0:
                 raise RuntimeError(
