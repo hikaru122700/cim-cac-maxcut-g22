@@ -26,6 +26,10 @@ import optuna
 
 from modules.CIM import simulate_cim_batch
 from modules.CAC import simulate_cac_batch
+from modules.SA import simulate_sa_batch
+from modules.SB import simulate_sb_batch
+from modules.PT_ICM import simulate_pticm_batch
+from modules.GA import simulate_ga_batch
 from scripts.benchmarks.algo_registry import load_context, PARAMS
 
 OVERRIDE_PATH = os.path.join("results", "anytime_tuned_params.json")
@@ -111,10 +115,119 @@ def tune_cac(ctx, budget, num_trials, n_trials, seed=0):
     return out, study.best_value
 
 
+def tune_sa(ctx, budget, num_trials, n_trials, seed=0):
+    """SA: 指数冷却の開始/終了温度を調整。"""
+    seeds = np.arange(num_trials, dtype=np.int64)
+
+    def objective(tr):
+        t_start = tr.suggest_float("t_start", 0.5, 6.0)
+        t_end = tr.suggest_float("t_end", 1e-4, 0.1, log=True)
+        _, signs = simulate_sa_batch(
+            ctx.n, ctx.edges, ctx.weights, int(budget), num_trials,
+            t_start=t_start, t_end=t_end, seeds=seeds,
+        )
+        return float(ctx.score(signs).mean())
+
+    study = optuna.create_study(direction="maximize",
+                                sampler=optuna.samplers.TPESampler(seed=seed))
+    study.optimize(objective, n_trials=n_trials, show_progress_bar=False)
+    bp = study.best_params
+    return dict(t_start=bp["t_start"], t_end=bp["t_end"]), study.best_value
+
+
+def tune_sb(ctx, budget, num_trials, n_trials, seed=0):
+    """SB: variant(bSB/dSB)・時間刻み dt・初期振幅係数 a0 を調整。"""
+    seeds = np.arange(num_trials, dtype=np.int64)
+
+    def objective(tr):
+        variant = tr.suggest_categorical("variant", ["bSB", "dSB"])
+        dt = tr.suggest_float("dt", 0.1, 1.0)
+        a0 = tr.suggest_float("a0", 0.5, 2.0)
+        _, signs = simulate_sb_batch(
+            ctx.n, ctx.J_sb, ctx.edges, int(budget), num_trials,
+            variant=variant, a0=a0, dt=dt, weights=ctx.weights, seeds=seeds,
+        )
+        return float(ctx.score(signs).mean())
+
+    study = optuna.create_study(direction="maximize",
+                                sampler=optuna.samplers.TPESampler(seed=seed))
+    study.optimize(objective, n_trials=n_trials, show_progress_bar=False)
+    bp = study.best_params
+    return dict(variant=bp["variant"], dt=bp["dt"], a0=bp["a0"]), study.best_value
+
+
+def tune_pt(ctx, budget, num_trials, n_trials, seed=0):
+    """PT-ICM: 温度ラダー(本数・範囲)と swap/ICM 間隔を調整。"""
+    seeds = np.arange(num_trials, dtype=np.int64)
+
+    def objective(tr):
+        num_temps = tr.suggest_int("num_temps", 8, 28)
+        t_min = tr.suggest_float("t_min", 0.02, 0.4, log=True)
+        t_max = tr.suggest_float("t_max", 1.5, 5.0)
+        swap_interval = tr.suggest_int("swap_interval", 1, 4)
+        icm_interval = tr.suggest_int("icm_interval", 1, 10)
+        _, signs, _ = simulate_pticm_batch(
+            ctx.n, ctx.edges, ctx.weights, num_trials,
+            num_sweeps=int(budget), num_temps=num_temps,
+            t_min=t_min, t_max=t_max, swap_interval=swap_interval,
+            icm_interval=icm_interval, seeds=seeds,
+        )
+        return float(ctx.score(signs).mean())
+
+    study = optuna.create_study(direction="maximize",
+                                sampler=optuna.samplers.TPESampler(seed=seed))
+    study.optimize(objective, n_trials=n_trials, show_progress_bar=False)
+    bp = study.best_params
+    return dict(num_temps=bp["num_temps"], t_min=bp["t_min"], t_max=bp["t_max"],
+                swap_interval=bp["swap_interval"],
+                icm_interval=bp["icm_interval"]), study.best_value
+
+
+def tune_ga(ctx, budget, num_trials, n_trials, seed=0):
+    """GA(memetic): 集団サイズ・TS 反復・摂動閾値 cr・tenure 係数・品質重み β を調整。
+
+    budget は世代数(max_generations)。各 trial は num_trials バッチで評価。
+    """
+    seeds = np.arange(num_trials, dtype=np.int64)
+
+    def objective(tr):
+        pop_size = tr.suggest_int("pop_size", 6, 20)
+        ts_iters = tr.suggest_int("ts_iters", 5000, 60000, log=True)
+        cr = tr.suggest_int("cr", 500, 8000, log=True)
+        alpha_tenure = tr.suggest_int("alpha_tenure", 5, 40)
+        beta_quality = tr.suggest_float("beta_quality", 0.3, 0.9)
+        cuts, _ = simulate_ga_batch(
+            ctx.n, ctx.edges, ctx.weights, num_trials,
+            pop_size=pop_size, max_generations=int(budget), ts_iters=ts_iters,
+            cr=cr, alpha_tenure=alpha_tenure, beta_quality=beta_quality,
+            seeds=seeds,
+        )
+        return float(np.mean(cuts))
+
+    study = optuna.create_study(direction="maximize",
+                                sampler=optuna.samplers.TPESampler(seed=seed))
+    study.optimize(objective, n_trials=n_trials, show_progress_bar=False)
+    bp = study.best_params
+    return dict(pop_size=bp["pop_size"], ts_iters=bp["ts_iters"], cr=bp["cr"],
+                alpha_tenure=bp["alpha_tenure"],
+                beta_quality=bp["beta_quality"]), study.best_value
+
+
+# algo -> (tune 関数, 既定の調整時 budget)
+_TUNERS = {
+    "CIM": (tune_cim, 2000),
+    "CAC": (tune_cac, 15000),
+    "SA":  (tune_sa, 1_000_000),
+    "SB":  (tune_sb, 2500),
+    "PT":  (tune_pt, 600),
+    "GA":  (tune_ga, 20),
+}
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dataset", required=True)
-    ap.add_argument("--algo", required=True, choices=["CIM", "CAC"])
+    ap.add_argument("--algo", required=True, choices=list(_TUNERS.keys()))
     ap.add_argument("--trials", type=int, default=50)
     ap.add_argument("--budget", type=int, default=None)
     ap.add_argument("--num-trials", type=int, default=8)
@@ -122,14 +235,12 @@ def main():
 
     optuna.logging.set_verbosity(optuna.logging.WARNING)
     ctx = load_context(args.dataset)
-    budget = args.budget or (2000 if args.algo == "CIM" else 15000)
+    tune_fn, default_budget = _TUNERS[args.algo]
+    budget = args.budget or default_budget
     print(f"[tune] {args.dataset}/{args.algo} budget={budget} "
           f"num_trials={args.num_trials} optuna_trials={args.trials}", flush=True)
 
-    if args.algo == "CIM":
-        best, val = tune_cim(ctx, budget, args.num_trials, args.trials)
-    else:
-        best, val = tune_cac(ctx, budget, args.num_trials, args.trials)
+    best, val = tune_fn(ctx, budget, args.num_trials, args.trials)
 
     print(f"[tune] best mean weighted cut = {val:.1f} (bks={ctx.bks}, "
           f"gap_mean={ctx.bks - val:.1f})", flush=True)
