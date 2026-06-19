@@ -1,0 +1,9 @@
+=== combo_hybrid G55 n=5000 bks=10299 num_trials=16 ===
+[explorer] CIM b=800 t=0.42s cut_max=10211 mean=10161.1 gap=88.0
+[explorer] CAC b=4000 t=1.09s cut_max=10237 mean=10204.0 gap=62.0
+
+[refiner] TS grid=[2000, 8000, 30000, 100000, 300000]
+  TS-cold      b=     2000 t=  0.03s max=  9534 mean=   9493.9 gap=765.0
+  TS-cold      b=     8000 t=  0.09s max=  9634 mean=   9581.8 gap=665.0
+  TS-cold      b=    30000 t=  0.33s max=  9726 mean=   9676.9 gap=573.0
+  TS-cold      b=   100000 t=  1.00s max=  9889 mean=   9842.4 gap=410.0

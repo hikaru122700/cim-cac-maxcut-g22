@@ -34,3 +34,7 @@
   CAC→SA     b=   100000 t=  3.11s(+168.83) max= 32786 mean=  31745.6 gap=551.0
   CAC→SA     b=   300000 t=  5.97s(+168.83) max= 32769 mean=  31645.0 gap=568.0
   CAC→SA     b=  1000000 t= 14.79s(+168.83) max= 32772 mean=  31732.4 gap=565.0
+  CAC→SA     b=  3000000 t= 51.16s(+168.83) max= 32722 mean=  31805.2 gap=615.0
+  CAC→SA batch>40.0s → 以後スキップ
+
+saved → results\2026-06-19\combo_hybrid\v8_K2000_nt16_alltuned
