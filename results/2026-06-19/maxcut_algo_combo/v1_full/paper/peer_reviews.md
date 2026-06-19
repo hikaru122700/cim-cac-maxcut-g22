@@ -1,93 +1,92 @@
-# Peer Review: "WARP: Warm-Starting Physics-Inspired Ising Solvers for Anytime MAX-CUT Optimization"
+# Peer Review: *PACE: When Tuned Heuristics Outrun Ising Machines on MAX-CUT*
 
-## Summary of Submission
-
-The paper proposes a unified, identically-scored, wall-clock "anytime" benchmark for six MAX-CUT solvers (CIM, CAC, SA, SB, PT-ICM, memetic GA), plus a warm-start hybrid (physics explorer → classical refiner) and a parallel best-of-K portfolio. The headline claims are that (a) tuned classical solvers dominate, (b) physics solvers are best used as global initializers, and (c) warm-starting Tabu Search from a brief CIM run breaks the CIM plateau and dominates cold-start at matched budget.
-
-I verified the paper's quantitative claims against the four supplied JSON evidence files (G22, K2000, G55, G70) and the automated quality flags. The internal arithmetic is impressively clean, but the work has **one structural defect that all three of us converge on independently: the central framing is temporal ("anytime," "wall-clock," "under one second") yet the supplied evidence contains no timing data at all (`elapsed_sec` is `null` in every file), and the key cold-start control has no reported numbers.**
+**Recommendation summary:** Major revision required. The empirical numbers in the tables are internally consistent and faithfully match the provided run evidence, the topic is well-scoped, and citation distribution is genuinely good. However, the paper's *central methodological contribution* — an **anytime, wall-clock-resolved** comparison — is not supported by any timing evidence (`elapsed_sec` is `null` in all four run files), and the experimental scale claimed in the text (16-trial batches; 25–1000 Optuna trials) is contradicted by the evidence, which records the experiment as executed **4 times (once per instance)** with single scalar outcomes and no dispersion. These two issues are disqualifying in their current form and must be resolved before the headline claims can stand.
 
 ---
 
 ## Reviewer A — Methodology Expert
 
 ### Strengths
-- **The core methodological commitment is sound and addresses a real gap.** Re-scoring every solver from the returned spin signs through one shared weighted-cut function `C(sign(s))` (§3.2) is the right way to neutralize machine-native metrics, and the paper correctly identifies that CAC's internal unweighted counting would otherwise corrupt comparisons. This is the paper's most defensible contribution.
-- **Budget-matched hybrid design (Algorithm 1) is, in principle, well-controlled.** Charging `t_E + t_R` and holding `b_R` fixed between warm and cold runs is exactly the right ablation logic to isolate the value of the initializer.
-- **The component ablation (Table 5) is genuinely informative** and its numbers match the evidence exactly (e.g., CIM→TS K2000 = 120, CIM→warm-SA = 356; CAC→warm-SA G70 = 101). The explorer × refiner decomposition is a real strength.
+- **The framing is correct and valuable.** "Tune every contender, score them with one identical functional, compare on a shared axis" is exactly the right correction to the asymmetric protocols common in this literature. The diagnosis in the Introduction (physics tuned, classical at defaults; weight-blind spin counters; final-cut-only reporting) is precise and well-argued.
+- **The unified weighted-cut scorer is a real methodological asset.** Re-scoring CAC's spin output with the same `C(·)` on signed K2000 is the kind of invariant that prevents the exact distortion the paper criticizes, and it is described concretely (Section: Problem formulation).
+- **Composition design is clean.** Algorithm 2's matched-budget cold-start control isolates *seed value* from *extra compute*, which is the correct way to evaluate warm-starting. This is better than most hybrid studies.
 
 ### Weaknesses
-- **The anytime axis is asserted, not measured.** Sections 3.2, 4 ("Hardware and runtime"), and Figures 2–4 all describe wall-clock time-versus-quality curves, but every evidence file reports `elapsed_sec: null` and a single final metric per solver — no time series, no per-knob grid points. The entire "anytime" methodology is therefore **unverifiable from the released artifacts**. A benchmark whose central axis is time must report time.
-- **The cold-start control has no data.** Algorithm 1's final line and the abstract/conclusion claim of "dominating cold-start at matched refinement budget" are central, but the evidence contains only warm-start hybrids (`hybrid_CIM_TS`, etc.). There is no `cold_TS` or random-init refiner number anywhere. The decisive experiment of the paper is described but not evidenced.
-- **The "collapse on a dense instance when parameters are not re-tuned" claim (abstract, §3.1, §4) has no supporting experiment.** The only K2000 CIM number is the *re-tuned* result (gap 794, 2.38%). There is no before/after datapoint demonstrating a collapse, so this reads as a tuning anecdote elevated to a finding.
-- **Experimental scope vs. evidence mismatch.** The paper claims "16 fixed-seed trials" per (knob, instance) point on a geometric grid across six solvers; the evidence note states the experiment was **executed 4 times** (consistent with one run per instance, not a swept grid of 16-trial batches). The full anytime sweep that the Method requires cannot be reconstructed from four single-value JSON files.
+1. **The anytime axis — the paper's stated core — has no supporting data (CRITICAL).** Abstract, Introduction (contribution 1), Method ("Unified anytime scoring"), and Figure 2 all rest on wall-clock trajectories. Every run file reports `"elapsed_sec": null`. There is no timing instrumentation anywhere in the evidence. Figure 2 ("anytime curves … horizontal axis is elapsed wall-clock time") therefore cannot be generated from the data provided. A "fairness-first *anytime* evaluation framework" with zero time measurements is not anytime — it is final-cut reporting with anytime *language*.
+2. **Claimed experimental scale contradicts the evidence (CRITICAL).** The text claims a "fixed-seed batch of 16 parallel trials" and Optuna budgets of "25–30" and "250–1000" trials. The evidence states the experiment was executed **4 times** and contains four JSON files of single scalar metrics. Either the 16-trial/Optuna machinery did not run as described, or only one summary value per (solver, instance) survived. As written, the Method over-describes a protocol the evidence cannot confirm.
+3. **Contribution 4 is unsupported.** "We quantify its advantage over single-core time-sharing" appears nowhere in Results — there is no time-sharing baseline table or figure. The portfolio row is, by construction, the per-instance min over solvers; presented this way it is a *definition*, not an empirical finding, and certainly not a quantified speedup over time-sharing.
+4. **The fairness narrative may be self-undermined by the GA.** A properly tuned memetic GA (Wu & Hao) is state-of-the-art on G-set, yet here it is the **worst** solver on G55 (gap 78) and G70 (gap 109). The most likely explanation is that 25–30 Optuna trials under-tune the GA on large graphs — i.e., the paper commits, on its own flagship baseline, the very under-tuning asymmetry it sets out to eliminate. This needs to be confronted, not glossed.
 
-### Actionable Revisions
-1. **Release and plot the actual (time, cut) traces.** Populate `elapsed_sec`, report per-knob grid points, and regenerate Figures 2–4 from real data. Without this, remove every temporal claim ("anytime," "wall-clock," "under one second," "rises fastest," "plateau").
-2. **Add the cold-start numbers to Table 4/5** as an explicit row/column (random-init TS and warm-SA at matched `b_R`). The warm-vs-cold delta is the paper's thesis and must be a number, not only Figure 3.
-3. **Run and tabulate the "collapse" experiment** (G22-tuned CIM applied unchanged to K2000) or downgrade the claim to "requires per-instance re-tuning."
-4. **Reconcile the trial count.** State unambiguously how many seeds/runs underlie each cell, and align the prose with the 4 executed runs.
+### Actionable revisions
+- Either (a) instrument and report wall-clock per knob value and produce a genuine Figure 2, or (b) retitle/reframe the paper around *tuned final-cut* comparison and remove all "anytime/wall-clock/time-resolved" claims (Abstract, contribution 1, Method, Section "Protocol notes," Figure 2). Option (b) is honest and still publishable; option (a) is stronger but requires re-running with timing.
+- Reconcile the trial-count language with what was actually run. If only one batch summary exists per instance, say so plainly and downgrade "16-trial batch" claims accordingly.
+- Delete contribution 4 or add the missing time-sharing-vs-portfolio measurement that quantifies it.
+- Add a tuning-budget sensitivity check for the GA (and PT-ICM) on G55/G70/K2000; otherwise soften "strong, reproducible memetic baseline" to reflect that it leads only on G22/K2000 and trails on large sparse graphs.
 
 ---
 
-## Reviewer B — Domain Expert (Ising machines / MAX-CUT)
+## Reviewer B — Domain Expert (Ising machines & MAX-CUT)
 
 ### Strengths
-- **The solver lineup and citations are appropriate and well-distributed.** CIM (Inoue & Yoshida), CAC (Leleu), dSB (Goto), PT-ICM with isoenergetic cluster moves (Zhu), and a memetic GA in the Wu & Hao / Benlic & Hao lineage are the right modern baselines. Critically, **citations appear in Method, Experiments, and Discussion**, not only Intro/Related Work — this satisfies the citation-distribution requirement and is above average for the area.
-- **Treating classical methods as first-class competitors rather than strawmen is the correct stance**, and the empirical conclusion (SB and memetic GA are strong; physics solvers sit mid-pack on the true weighted objective) is credible and matches community experience on dense SK instances.
-- **The instance selection is sensible** — sparse unweighted (G22), dense weighted SK (K2000), and large sparse (G55/G70) — and probes the regimes where physics solvers are known to be fragile.
+- **Solver descriptions are technically faithful.** The CIM traveling-wave / measurement-feedback account, CAC error-variable dynamics ($\dot e_i=-\beta(x_i^2-a)e_i$), dSB momentum/position updates with inelastic walls, and PT-ICM's replica + isoenergetic cluster moves are all correctly characterized and correctly attributed (Inoue–Yoshida, Leleu, Goto, Zhu).
+- **BKS reference values are correct** (G22 = 13359, K2000 = 33337, G55 = 10299, G70 = 9591) and match the standard literature, so the gaps are meaningful to readers in the field.
+- **The regime story is the right one.** CIM/CAC degrading on dense signed SK coupling while dSB stays robust, and PT-ICM collapsing on a million-edge instance under a small tuning budget, are both consistent with known behavior and well-motivated physically (uniform pump schedule vs. amplitude heterogeneity).
+- **Strong, well-placed citations in Method/Experiments/Discussion**, not just Intro/Related Work — this is exactly what is wanted and is a real strength relative to typical submissions.
 
 ### Weaknesses
-- **The "physics solvers are fast" premise is never substantiated here.** Every speed claim ("despite their speed," "CIM climbs fastest," "fast early climb") depends on timing the paper does not provide. In a venue that knows CIM/SB speed claims are contentious, presenting speed without wall-clock numbers is a serious gap.
-- **Four instances is thin for a domain generalization**, and three of them are sparse G-set graphs. The dense regime — where the paper's most interesting result lives — rests on a single instance (K2000). The "no single solver wins everywhere" narrative is largely "SB wins 3/4, PT-ICM wins G70," which is a weaker statement than the text's "the best single solver changes three times across four instances" (Results §5). That phrasing overstates the variability: SB is best-or-tied on G22, K2000, and G55, with a single handoff to PT-ICM on G70.
-- **The portfolio's headline advantage is razor-thin and instance-specific.** Portfolio mean gap 0.198% vs. SB 0.203% (Table 3) is a 0.005-point difference driven essentially only by G70 (portfolio 51 vs. SB 53). By construction the portfolio is the per-instance minimum, so this "win" is tautological and, given no dispersion estimate, indistinguishable from noise.
-- **Hardware reporting is insufficient for a hardware-adjacent claim.** Only `NUMBA_NUM_THREADS=4` is given — no CPU model, clock, RAM, or OS — yet the paper makes per-instance wall-clock and "under one second" claims.
+1. **The GA result is implausible for a "competitive classical opponent."** Being the worst solver on two of three G-set graphs contradicts the entire premise that this GA supplies "the strong missing classical baseline." Domain readers will immediately suspect under-tuning or an implementation defect (e.g., crossover/Tabu tenure not scaling to N=5000/10000). This must be diagnosed; otherwise the GA both over-claims (G22 zero gap headlined) and under-delivers (G55/G70).
+2. **K2000 is one instance, not a distribution.** Calling it "the dense weighted instance" and generalizing to "the dense Sherrington–Kirkpatrick regime" overreaches from a single graph. SK conclusions need several K-instances or several SK seeds.
+3. **PT-ICM's K2000 failure (gap 1702) is reported but quietly excused.** The paper attributes it to "low per-instance tuning budget." If the budget is too low to make PT-ICM competitive on dense instances, then the "parity" claim does not hold uniformly across solvers, and PT-ICM's number should not be presented as a fair representation of the method.
+4. **Single-instance generalizations elsewhere.** "Reaches the best-known cut exactly on a standard G-set instance" (Method, contributions) is true only for G22 and is cherry-picked given the G55/G70 results.
 
-### Actionable Revisions
-1. **Add timing tables (median time-to-target and time-to-plateau per solver per instance)** so the speed/anytime claims become checkable; report the full hardware spec.
-2. **Expand the dense/weighted coverage** with additional SK sizes and at least one more dense G-set instance, so the K2000 conclusion is not a single point.
-3. **Soften "changes three times"** to reflect that SB is dominant with one handoff; recompute and report whether the portfolio's edge over SB survives any plausible noise band.
-4. **Position the portfolio honestly** as an oracle-free envelope whose benefit over the best single solver (SB) is marginal on this instance set.
+### Actionable revisions
+- Investigate and report why the memetic GA underperforms on G55/G70; if it is budget, raise it and re-report; if implementation, fix and re-report. State the resolution explicitly.
+- Add at least 2–3 additional dense/SK instances (or SK seeds) before generalizing K2000 findings to "the dense regime."
+- Either bring PT-ICM to genuine parity on K2000 or annotate its row as budget-limited and exclude it from any "fair ranking" claim on dense instances.
+- Qualify the memetic-baseline contribution to match the data: lead on G22/K2000, weak on large sparse — and explain why.
 
 ---
 
 ## Reviewer C — Statistics / Rigor Expert
 
 ### Strengths
-- **Internal numerical consistency is excellent.** I recomputed Table 3 mean gaps from the per-instance percentages and all six solver means plus the portfolio match to three decimals (e.g., SB = (0.007+0.135+0.117+0.553)/4 = 0.203; portfolio = 0.198). The "≤0.2% gap" counts (SB 3/4, GA 2/4, portfolio 3/4) are all correct. Tables 4 and 5 match the JSON cell-for-cell, and the bolded best-refiner pattern in Table 5 is internally correct.
-- **The 85% reduction claim is accurate:** K2000 CIM 794 → CIM→TS 120 = 84.9%. The "within a single cut" G22 claim (gap 1) is also exactly supported.
-- **The Limitations section is honest** about the missing dispersion and explicitly declines p-values rather than fabricating them.
+- **Arithmetic is correct and reproducible from the evidence.** I verified every cell: Table 1 absolute gaps match all four JSON files exactly; mean relative gaps (CIM 1.042, CAC 1.086, SA 0.926, dSB 0.192, PT-ICM 1.474, GA 0.498, Portfolio 0.171) all recompute correctly; Table 2 sparse/dense splits, Table 3 head-to-head $\Delta$ values, and Table 4 hybrid gaps all check out. The ~85% rescue figure ((794−120)/794 = 84.9%) is accurate.
+- **The Limitations section is unusually candid** about the order-statistic issue and the absence of dispersion/significance tests, which is to the authors' credit.
 
 ### Weaknesses
-- **No measure of dispersion, so no inferential statistics are possible.** The released data records only the *best cut over each 16-trial batch* — an order statistic (maximum), not a sample with variance. Reporting `n=16` trials but retaining only the max means the effective reported quantity has `n=1` for purposes of interval estimation. The "95% CI" column in Table 3 is entirely "—".
-- **Headline comparisons therefore rest on uncontrolled effect sizes.** The portfolio-vs-SB difference (0.198 vs 0.203) and several hybrid-vs-baseline deltas are well within the plausible run-to-run variability of stochastic solvers, but this cannot be assessed. Single-best comparisons also **bias toward whichever method had more effective restarts**, an uncontrolled confound.
-- **The "0.01%" abstract claim is an overgeneralization.** "Tuned classical solvers reach within 0.01% of best-known cuts" holds only on G22 (SB/CAC = 0.007%); SA on G22 is already 0.037%, and on K2000/G55/G70 the best classical gaps are 0.135%/0.117%/0.553%. The claim is true for one instance and one-to-two solvers, not "classical solvers" generally.
-- **"Under one second" has zero supporting measurement** (see Reviewers A/B). Pairing a precise numeric speed claim with `elapsed_sec: null` evidence is the most serious rigor violation in the paper.
+1. **n = 1 per condition; no error bars, no CIs, no significance tests (CRITICAL).** Each (solver, instance) is a single reported value. The headline "GA reaches zero gap on G22" is a **1-cut** lead over CAC/SA/dSB (all gap 1), from a single run. On a near-saturated instance this is indistinguishable from noise. No "win" decided by 0–2 cuts (most of the G22 column; G55/G70 ties) is statistically defensible as stated.
+2. **"Best of 16-trial batch" (max) is the wrong summary statistic for fair comparison.** The maximum is an extreme-value statistic that rewards high-variance solvers and is highly sensitive to batch size — yet the batch size and per-seed spread are exactly what the evidence does not contain. Mean/median with a dispersion measure across multiple seeds is required for any ranking claim.
+3. **Significance tests are claimed-by-absence, not performed.** Table 3 explicitly says "p-values are not estimated." That is honest, but the Abstract/Discussion still use comparative verbs ("dominate," "leads," "most reliable") that imply established differences. Effect-size language without dispersion cannot license those verbs.
+4. **Reproducibility gaps.** "Fixed-seed" is stated but the actual seed values are not given; hardware is only "a multi-core CPU" (no model/clock/core count); resulting tuned hyperparameter **values** are absent (Table 1 lists *which* parameters, not their tuned settings); and compute time is unrecorded (`elapsed_sec: null`). A reader cannot reproduce these numbers from the paper.
 
-### Actionable Revisions
-1. **Retain per-trial cut values** (all 16 seeds × knob points) and report median ± IQR or bootstrap 95% CIs; fill the CI column. This is mandatory for a benchmark paper.
-2. **Add paired tests where a head-to-head claim is made** (e.g., warm vs. cold per seed → Wilcoxon signed-rank), or explicitly restrict claims to descriptive effect sizes and label them as such.
-3. **Replace "within 0.01%" with the instance-specific statement** ("SB and CAC reach within 0.01% on G22; best classical gaps elsewhere are 0.12–0.55%").
-4. **Either measure and report wall-clock with variance, or strike every absolute-time claim.**
-
----
-
-## Consolidated Checklist Verdict
-
-| # | Criterion | Verdict |
-|---|---|---|
-| 1 | **Topic alignment** | ✅ On-topic throughout. Minor concern: the "collapse without re-tuning" tuning artifact and CAC's internal unweighted counting are partly framed as findings/contributions; keep these in Limitations, not as results. |
-| 2 | **Claim–evidence alignment** | ⚠️ Supported: 85% reduction (794→120), G22 warm-start gap=1, Tables 3/4/5 arithmetic, "no single solver wins everywhere." **Unsupported:** "under one second" (no timing), "dominates cold-start at matched budget" (no cold-start data), "collapses when not re-tuned" (no experiment), "within 0.01%" (true only on G22). |
-| 3 | **Statistical validity** | ❌ No CIs/error bars (column all "—"); only best-of-batch retained, so effective `n=1` for dispersion; no significance tests; key margins (portfolio 0.198 vs SB 0.203) untestable. |
-| 4 | **Completeness** | ⚠️ All sections present. Estimated body length ≈ 4,500–5,200 words — at or below the 5,000-word floor. Results (§5) is thin relative to its centrality; expand with timing and cold-start data. |
-| 5 | **Reproducibility** | ⚠️ Datasets, BKS, tuning trial counts (1000/250 on G22, 25–30 elsewhere) given; exact hyperparameters deferred to an artifact. **Missing:** specific seed values, full hardware spec, and — critically — any wall-clock numbers. |
-| 6 | **Writing quality** | ⚠️ Mostly flowing prose (good — Method/Results/Discussion are not bulleted). **Flags:** Intro contributions are a bullet list (automated: 44% list density); 21 weasel words ("surprisingly little," "roughly," "essentially free," "sharply," "comfortably," "marginally"). Title = 9 words (✅ ≤14). |
-| 7 | **Figures** | ⚠️ Four figures referenced (≥2, not a desk reject), **but Figure 1 is an unfilled placeholder** ("will be generated separately"), and Figures 2–4 are time-series that the supplied evidence cannot produce (`elapsed_sec` null). |
-| 8 | **Citation distribution** | ✅ Strong. Citations appear in Method (Barahona, Lucas, Lam, Inoue & Yoshida, Leleu, Goto, Zhu, Glover, Wu & Hao, Benlic & Hao), Experiments (Akiba/Optuna, etc.), and Discussion (Egger, Xu, Gomes & Selman). |
+### Actionable revisions
+- Run each (solver, instance) for **≥10–20 independent seeds** and report mean ± std (or median + IQR) and a 95% CI; reserve "best" as a secondary line.
+- Apply paired nonparametric tests across seeds (Wilcoxon signed-rank per instance; Friedman + Nemenyi across instances for the ranking) and report effect sizes with the tests, not instead of them.
+- Until dispersion exists, demote all ≤2-cut differences to "tied within noise" and remove ranking verbs for them (especially the G22 GA "exact win" headline and the G55/G70 ties).
+- Add a reproducibility appendix: seed list, exact CPU, NUMBA thread count (stated: 4), Optuna sampler version, and the **tuned hyperparameter values** per (solver, instance).
 
 ---
 
-## Overall Recommendation
+## Consolidated checklist (the 8 required checks)
 
-**Major Revision (borderline reject in current form).** The conceptual contribution — uniform re-scoring and a budget-matched warm-start ablation — is valuable and the supported numbers are clean and correctly reported. However, the paper's identity is "anytime/wall-clock," and the supplied evidence contains **no timing data and no cold-start control numbers**, so the title claim, the abstract's "under one second," and the central "dominates cold-start" thesis are presently unverifiable. These are fixable with data the authors evidently can generate; until the timing traces, the cold-start baseline, and per-trial dispersion are reported, the paper's headline claims outrun its evidence.
+1. **Topic alignment — PASS.** The paper stays squarely on physics-inspired (CIM/CAC) vs. tuned classical (SA/SB/PT-ICM/memetic GA) fair Optuna comparison, warm-start hybrids, and parallel portfolio. No drift; environment/measurement gaps are placed in Limitations rather than dressed up as contributions — good.
 
-**Highest-priority fixes:** (1) report wall-clock time-series with variance and regenerate Figures 2–4 from them; (2) add the cold-start refiner numbers; (3) add CIs / per-trial data; (4) fill Figure 1 and reconcile the 16-trials-vs-4-runs description; (5) restrict the "0.01%" and "changes three times" claims to what the four instances actually show.
+2. **Claim–evidence alignment — MIXED, with critical gaps.** Supported: GA zero gap on G22 ✓; GA leads K2000 (33) ✓; dSB mean ≈0.192% ✓; ~85% CIM→TS rescue on K2000 ✓; hybrids never beat best single solver ✓; "no single winner" ✓. **Unsupported:** all *anytime/wall-clock* claims (no timing data); "16-trial batch / 25–1000 Optuna trials" (evidence = 4 runs, single values); contribution 4 "quantify advantage over single-core time-sharing" (no such measurement); "strong memetic baseline" partly contradicted by worst-on-G55/G70.
+
+3. **Statistical validity — FAIL.** n=1 per condition, no error bars/CIs, no significance tests, "best-of-batch" max as headline metric, and wins decided by 0–2 cuts. The paper acknowledges this but still uses ranking verbs.
+
+4. **Completeness — BELOW TARGET.** Conclusion 124 words (target 200–300, severely under); Introduction 754 (under 800–1000); Related Work 539 (under 600–800); Results 1094 (over 600–800); overall body likely below the 5,000–6,500-word NeurIPS expectation. Rebalance: trim Results prose, expand Conclusion, Intro, Related Work.
+
+5. **Reproducibility — INSUFFICIENT.** Threading (NUMBA=4) and sampler (TPE) given, but no seed values, no concrete hardware, no tuned hyperparameter values, no compute time. Add a reproducibility appendix.
+
+6. **Writing quality — NEEDS WORK.** Body sections (Method/Results/Discussion) are in flowing prose — good, no bullet lists there. However the Introduction "contributions" are a bullet list (acceptable at many venues but flag for conversion if the venue requires prose). **High weasel-word count (23):** "roughly," "about," "markedly," "materially," "sharply," "widely," "honest," "crushes" — replace with precise figures. Title = 9 words (≤14) ✓.
+
+7. **Figures — AT RISK.** Figure 1 is an explicit **placeholder** ("a detailed framework diagram will be generated separately"), so it is not actually present. Figure 2 (anytime) **cannot be produced** from the evidence (no timing). Only Figures 3 (relative gap) and 4 (warm-start rescue) are backed by data. You are at the 2-figure minimum only if 3 and 4 are real renders — verify they exist as files, replace the Figure 1 placeholder with an actual diagram, and either produce real timing for Figure 2 or remove it.
+
+8. **Citation distribution — PASS (strength).** Citations appear in Method (Inoue–Yoshida, McMahon, Leleu, Kirkpatrick, Goto, Zhu, Wu & Hao, Bergstra, Akiba), Experiments (Benlic & Hao, Goto, Akiba, Bergstra), and Discussion (Leleu, Hamerly, Goto, Gomes & Selman, Benlic & Hao, Aramon). Well distributed beyond Intro/Related Work.
+
+### Additional editorial errors to fix
+- **Cross-reference numbering is wrong throughout:** "the weighted cut … defined in Section 5" (it is in Method/Section 3); "every number reported in Section 6" (Results is Section 5); "C(s) defined in Section 5" in Evaluation metrics. Renumber all internal references.
+- **Two "Table 1"s:** the hyperparameter table (Experiments) and the main gap table (Results) are both labeled Table 1. Renumber.
+- **Solver-count inconsistencies:** Results says "All seven standalone methods" (there are six solvers; the portfolio is not standalone). The benchmark text ("Two are mid-size sparse G-set graphs … and two extend to large sparse graphs") implies five instances but only four exist; G55/G70 are described as both — fix the taxonomy to: one mid-size sparse (G22), one dense weighted (K2000), two large sparse (G55, G70).
+- **Prior-run lesson:** the earlier quality-gate block ("VerifiedRegistry has zero real experiment values") now appears addressed — the tables are grounded in the four JSON files — but the missing timing data means a verifier could still reject the anytime claims. Ground or remove them before re-submission.
