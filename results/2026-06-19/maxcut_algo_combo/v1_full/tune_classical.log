@@ -11,3 +11,6 @@
 [tune] best mean weighted cut = 10255.9 (bks=10299, gap_mean=43.1)
 [tune] saved → results\anytime_tuned_params.json
 ##### TUNE G70 SB (bud=2500 nt=8 tr=20) #####
+[tune] best mean weighted cut = 9514.4 (bks=9591, gap_mean=76.6)
+[tune] saved → results\anytime_tuned_params.json
+##### TUNE K2000 SB (bud=1500 nt=6 tr=18) #####
