@@ -4,3 +4,13 @@ GA(memetic): pop_size=10 ts_iters=80000 cr=3000 alpha_tenure=15 beta_quality=0.6
 
 [warmup] JIT コンパイル中 ...
 [run] 計測中 ...
+
+--- 結果(20 run, 42.8s 計, 2.1s/run) ---
+  best  cut =  13359   (gap +0)
+  mean  cut =  13346.45 (gap +12.55)
+  worst cut =  13322
+  std       = 14.36
+  BKS(13359) 到達率 = 5/20 = 25%
+  各 run best: [13322, 13324, 13327, 13327, 13330, 13330, 13335, 13344, 13347, 13358, 13358, 13358, 13358, 13358, 13358, 13359, 13359, 13359, 13359, 13359]
+
+saved → results\2026-06-19\ga_memetic_reproduce\v2_G22_nt20_gen300_extended
