@@ -99,3 +99,4 @@ datasets=['G22', 'K2000', 'G55', 'G70'] algos=['CIM', 'CAC', 'SA', 'SB', 'PT', '
     CAC  b=     1500 t=  0.25s  mean=  10169.3  max= 10215  gap=  84.0
     CAC  b=     4000 t=  0.67s  mean=  10204.0  max= 10237  gap=  62.0
     CAC  b=    12000 t=  2.14s  mean=  10231.5  max= 10246  gap=  53.0
+    CAC  b=    35000 t=  8.76s  mean=  10250.1  max= 10269  gap=  30.0
