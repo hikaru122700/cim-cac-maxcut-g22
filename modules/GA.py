@@ -203,17 +203,14 @@ def _tabu_search_one(
         else:
             no_improve += 1
             if no_improve >= cr:
-                # 摂動: gamma_pert 個ランダムにフリップして現在解を撹乱
+                # 摂動: gamma_pert 個ランダムにフリップして現在解を撹乱。
+                # _apply_flip が gains を増分維持するので、最後に cut のみ厳密再計算。
                 for _ in range(gamma_pert):
                     rv = np.random.randint(0, n)
                     _apply_flip(rv, s, gains, indptr, indices, data)
-                    cut += gains[rv] * 0.0  # gain は更新済み; cut は再計算が安全
-                # 摂動後は cut を厳密再計算(増分の積み重ね誤差回避)
-                _, cut = _init_gains(n, indptr, indices, data, s)
-                # gains も作り直し
-                gains2, _ = _init_gains(n, indptr, indices, data, s)
+                gains_new, cut = _init_gains(n, indptr, indices, data, s)
                 for i in range(n):
-                    gains[i] = gains2[i]
+                    gains[i] = gains_new[i]
                 no_improve = 0
 
     return best_s, best_cut
