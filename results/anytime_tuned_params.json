@@ -34,6 +34,13 @@
    "cr": 1770,
    "alpha_tenure": 25,
    "beta_quality": 0.3112738802618131
+  },
+  "PT": {
+   "num_temps": 21,
+   "t_min": 0.07418977999928053,
+   "t_max": 4.621205502737279,
+   "swap_interval": 4,
+   "icm_interval": 4
   }
  },
  "G55": {
