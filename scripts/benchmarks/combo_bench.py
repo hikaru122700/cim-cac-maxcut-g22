@@ -42,6 +42,7 @@ from modules.GA import tabu_refine_batch
 from modules.SA import simulate_sa_warm, simulate_sa_batch
 
 EXPERIMENT_KIND = "combo_hybrid"
+MAX_REFINE_SEC = 40.0   # 1 精錬バッチがこれを超えたら以後の大予算をスキップ
 
 # explorer の固定予算(短く回して良い初期解を得る)
 EXPLORER_BUDGET = {"CIM": 800, "CAC": 4000}
@@ -182,6 +183,9 @@ def main():
                              "cut_max": float(sc.max()), "cut_mean": float(sc.mean())})
             log(f"  {rf}-cold      b={b:>9} t={dt:6.2f}s max={int(sc.max()):6d} "
                 f"mean={sc.mean():9.1f} gap={bks - sc.max():.1f}")
+            if dt > MAX_REFINE_SEC:
+                log(f"  {rf}-cold batch>{MAX_REFINE_SEC}s → 以後スキップ")
+                break
         results["runs"][f"{rf}_cold"] = cold_pts
 
         # warm-start from each explorer
