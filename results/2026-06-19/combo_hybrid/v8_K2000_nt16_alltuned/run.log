@@ -7,3 +7,7 @@
   TS-cold      b=     8000 t=  0.58s max= 32927 mean=  32461.0 gap=410.0
   TS-cold      b=    30000 t=  1.18s max= 32963 mean=  32721.8 gap=374.0
   TS-cold      b=   100000 t=  3.67s max= 32984 mean=  32806.2 gap=353.0
+  TS-cold      b=   300000 t= 10.67s max= 33145 mean=  32900.2 gap=192.0
+  CIM→TS     b=     2000 t=  0.42s(+43.63) max= 33014 mean=  32781.1 gap=323.0
+  CIM→TS     b=     8000 t=  0.59s(+43.63) max= 33014 mean=  32790.8 gap=323.0
+  CIM→TS     b=    30000 t=  1.36s(+43.63) max= 33014 mean=  32820.2 gap=323.0
