@@ -17,3 +17,20 @@
   CAC→TS     b=     8000 t=  0.04s(+0.82) max= 13358 mean=  13342.2 gap=1.0
   CAC→TS     b=    30000 t=  0.14s(+0.82) max= 13358 mean=  13343.4 gap=1.0
   CAC→TS     b=   100000 t=  0.47s(+0.82) max= 13358 mean=  13348.1 gap=1.0
+  CAC→TS     b=   300000 t=  1.41s(+0.82) max= 13358 mean=  13349.7 gap=1.0
+
+[refiner] SA grid=[100000, 300000, 1000000, 3000000, 10000000]
+  SA-cold      b=   100000 t=  0.05s max= 13115 mean=  13071.1 gap=244.0
+  SA-cold      b=   300000 t=  0.13s max= 13221 mean=  13172.1 gap=138.0
+  SA-cold      b=  1000000 t=  0.33s max= 13312 mean=  13255.7 gap=47.0
+  SA-cold      b=  3000000 t=  0.81s max= 13314 mean=  13293.4 gap=45.0
+  SA-cold      b= 10000000 t=  2.46s max= 13354 mean=  13328.3 gap=5.0
+  CIM→SA     b=   100000 t=  0.04s(+0.26) max= 13335 mean=  13306.2 gap=24.0
+  CIM→SA     b=   300000 t=  0.09s(+0.26) max= 13334 mean=  13308.2 gap=25.0
+  CIM→SA     b=  1000000 t=  0.31s(+0.26) max= 13342 mean=  13311.8 gap=17.0
+  CIM→SA     b=  3000000 t=  0.80s(+0.26) max= 13351 mean=  13315.8 gap=8.0
+  CIM→SA     b= 10000000 t=  2.67s(+0.26) max= 13351 mean=  13320.9 gap=8.0
+  CAC→SA     b=   100000 t=  0.04s(+0.82) max= 13357 mean=  13340.4 gap=2.0
+  CAC→SA     b=   300000 t=  0.11s(+0.82) max= 13357 mean=  13340.9 gap=2.0
+  CAC→SA     b=  1000000 t=  0.37s(+0.82) max= 13357 mean=  13341.0 gap=2.0
+  CAC→SA     b=  3000000 t=  1.08s(+0.82) max= 13357 mean=  13341.8 gap=2.0
