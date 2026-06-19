@@ -22,3 +22,4 @@
 [refiner] SA grid=[100000, 300000, 1000000, 3000000, 10000000]
   SA-cold      b=   100000 t=  3.33s max= 31130 mean=  30375.4 gap=2207.0
   SA-cold      b=   300000 t=  6.19s max= 31306 mean=  30623.2 gap=2031.0
+  SA-cold      b=  1000000 t= 18.49s max= 31306 mean=  30873.4 gap=2031.0
