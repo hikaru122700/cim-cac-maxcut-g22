@@ -51,16 +51,18 @@ def setup_style():
     return plt
 
 
-def envelope(curves, n_algos_for_split=1):
+def envelope(curves, time_factor=1):
     """複数の (time,cut) 曲線から、各時刻の最良包絡線を作る。
 
     curves: list of (times[list], cuts[list])
+    time_factor: 各点の時間にかける係数。並列PF(Kコア)は 1(そのまま)、
+      時間分割PF(1コアをK分割)は K(各手法は総時間 K 倍かかる→右シフト)。
     返り値: (sorted_times, best_cut_at_or_before)
     """
     pts = []
     for times, cuts in curves:
         for t, c in zip(times, cuts):
-            pts.append((t / n_algos_for_split if n_algos_for_split > 1 else t, c))
+            pts.append((t * time_factor, c))
     if not pts:
         return [], []
     pts.sort()
@@ -155,7 +157,7 @@ def main():
                     label="並列ポートフォリオ包絡")
         if envs_t:
             ax.plot(envs_t, envs_c, "--", color="black", lw=1.4, alpha=0.7,
-                    label=f"時間分割PF(÷{K})")
+                    label=f"時間分割PF(1コア{K}分割)")
         # 最良ハイブリッド(到達カット最大のもの)
         if hyb_curves:
             best_name = max(hyb_curves, key=lambda k: max(hyb_curves[k][1]))
