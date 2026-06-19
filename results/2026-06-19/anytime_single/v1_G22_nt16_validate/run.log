@@ -37,3 +37,9 @@ datasets=['G22'] algos=['CIM', 'CAC', 'SA', 'SB', 'PT', 'GA'] num_trials=16
     PT   b=      200 t=  1.10s  mean=  13246.1  max= 13308  gap=  51.0
     PT   b=      600 t=  3.05s  mean=  13273.8  max= 13309  gap=  50.0
     PT   b=     1800 t=  8.97s  mean=  13302.9  max= 13323  gap=  36.0
+    PT   b=     5000 t= 24.94s  mean=  13314.1  max= 13339  gap=  20.0
+  --- GA ---
+    GA   b=        3 t=  0.29s  mean=  13276.4  max= 13329  gap=  30.0
+    GA   b=        8 t=  0.46s  mean=  13290.2  max= 13329  gap=  30.0
+    GA   b=       20 t=  0.90s  mean=  13313.8  max= 13334  gap=  25.0
+    GA   b=       50 t=  1.99s  mean=  13327.9  max= 13357  gap=   2.0
