@@ -20,8 +20,9 @@ from typing import Callable, Optional
 
 import numpy as np
 
-from modules.CIM import build_coupling_matrix, load_graph as cim_load_graph
+from modules.CIM import build_coupling_matrix
 from modules.CIM import simulate_cim_batch
+from modules.GA import load_graph as load_graph_3
 from modules.CAC import simulate_cac_batch, compute_gset_parameters
 from modules.SA import simulate_sa_batch
 from modules.SB import simulate_sb_batch, auto_c0
@@ -54,7 +55,7 @@ class GraphContext:
 
 def load_context(name: str) -> GraphContext:
     d = DATASETS[name]
-    n, edges, weights = cim_load_graph(d["path"], return_weights=True)
+    n, edges, weights = load_graph_3(d["path"], return_weights=True)
     if not d["weighted"]:
         weights = None  # 非重み(全辺 +1)。各モジュールは None で +1 を仮定。
     # CIM の結合: 非重み G-set は tuned/-0.03 系、K2000 は -1.0(J∈±1)
