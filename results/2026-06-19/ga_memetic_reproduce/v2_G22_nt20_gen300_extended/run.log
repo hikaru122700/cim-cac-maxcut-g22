@@ -1,0 +1,6 @@
+=== ga_memetic_reproduce G22 n=2000 edges=19990 bks=13359 ===
+GA(memetic): pop_size=10 ts_iters=80000 cr=3000 alpha_tenure=15 beta_quality=0.6 generations=300
+独立 run 数 num_trials=20
+
+[warmup] JIT コンパイル中 ...
+[run] 計測中 ...
