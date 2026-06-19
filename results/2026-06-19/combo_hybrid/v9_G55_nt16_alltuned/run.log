@@ -25,3 +25,15 @@
   SA-cold      b=  1000000 t=  0.23s max= 10126 mean=  10084.8 gap=173.0
   SA-cold      b=  3000000 t=  0.68s max= 10201 mean=  10174.8 gap=98.0
   SA-cold      b= 10000000 t=  2.35s max= 10237 mean=  10221.1 gap=62.0
+  CIM→SA     b=   100000 t=  0.04s(+0.42) max= 10224 mean=  10187.8 gap=75.0
+  CIM→SA     b=   300000 t=  0.09s(+0.42) max= 10229 mean=  10191.8 gap=70.0
+  CIM→SA     b=  1000000 t=  0.27s(+0.42) max= 10227 mean=  10195.5 gap=72.0
+  CIM→SA     b=  3000000 t=  0.79s(+0.42) max= 10234 mean=  10205.7 gap=65.0
+  CIM→SA     b= 10000000 t=  2.48s(+0.42) max= 10247 mean=  10224.5 gap=52.0
+  CAC→SA     b=   100000 t=  0.03s(+1.09) max= 10246 mean=  10216.7 gap=53.0
+  CAC→SA     b=   300000 t=  0.08s(+1.09) max= 10245 mean=  10217.1 gap=54.0
+  CAC→SA     b=  1000000 t=  0.22s(+1.09) max= 10248 mean=  10217.3 gap=51.0
+  CAC→SA     b=  3000000 t=  0.70s(+1.09) max= 10246 mean=  10222.8 gap=53.0
+  CAC→SA     b= 10000000 t=  2.50s(+1.09) max= 10253 mean=  10229.4 gap=46.0
+
+saved → results\2026-06-19\combo_hybrid\v9_G55_nt16_alltuned
