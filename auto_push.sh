@@ -25,7 +25,24 @@ BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)" || {
 
 log() { printf '[%s] %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*"; }
 
-trap 'printf "\nstopped\n"; exit 0' INT TERM
+# --- 単一インスタンス保証 ---
+# 同じリポジトリで auto_push.sh を二重起動すると、複数ループが 10 秒ごとに
+# 互いに pull/commit/push を競合させてしまう。.git 配下に PID ロックを取り、
+# 既に生きている実体があれば静かに終了する（stale lock は奪取）。
+LOCK_DIR="$(git rev-parse --git-dir)/auto_push.lock"
+if ! mkdir "$LOCK_DIR" 2>/dev/null; then
+  old_pid="$(cat "$LOCK_DIR/pid" 2>/dev/null || echo '')"
+  if [ -n "$old_pid" ] && kill -0 "$old_pid" 2>/dev/null; then
+    echo "auto_push already running (pid=$old_pid); exiting." >&2
+    exit 0
+  fi
+  # 死んだプロセスの残骸 → 奪取
+  rm -rf "$LOCK_DIR"
+  mkdir "$LOCK_DIR" 2>/dev/null || { echo "cannot acquire lock: $LOCK_DIR" >&2; exit 1; }
+fi
+echo "$$" > "$LOCK_DIR/pid"
+
+trap 'rm -rf "$LOCK_DIR"; printf "\nstopped\n"; exit 0' INT TERM EXIT
 
 while true; do
   # index.lock が残っていたら今回はスキップ（並行操作との競合回避）
