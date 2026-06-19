@@ -1,0 +1,19 @@
+=== combo_hybrid G22 n=2000 bks=13359 num_trials=16 ===
+[explorer] CIM b=800 t=0.26s cut_max=13308 mean=13283.3 gap=51.0
+[explorer] CAC b=4000 t=0.82s cut_max=13356 mean=13337.9 gap=3.0
+
+[refiner] TS grid=[2000, 8000, 30000, 100000, 300000]
+  TS-cold      b=     2000 t=  0.01s max= 13134 mean=  13055.4 gap=225.0
+  TS-cold      b=     8000 t=  0.04s max= 13231 mean=  13165.2 gap=128.0
+  TS-cold      b=    30000 t=  0.14s max= 13296 mean=  13227.5 gap=63.0
+  TS-cold      b=   100000 t=  0.41s max= 13320 mean=  13258.6 gap=39.0
+  TS-cold      b=   300000 t=  1.29s max= 13325 mean=  13282.1 gap=34.0
+  CIM→TS     b=     2000 t=  0.01s(+0.26) max= 13344 mean=  13311.1 gap=15.0
+  CIM→TS     b=     8000 t=  0.03s(+0.26) max= 13356 mean=  13315.8 gap=3.0
+  CIM→TS     b=    30000 t=  0.14s(+0.26) max= 13356 mean=  13323.4 gap=3.0
+  CIM→TS     b=   100000 t=  0.42s(+0.26) max= 13356 mean=  13327.1 gap=3.0
+  CIM→TS     b=   300000 t=  1.25s(+0.26) max= 13358 mean=  13331.7 gap=1.0
+  CAC→TS     b=     2000 t=  0.01s(+0.82) max= 13357 mean=  13341.4 gap=2.0
+  CAC→TS     b=     8000 t=  0.04s(+0.82) max= 13358 mean=  13342.2 gap=1.0
+  CAC→TS     b=    30000 t=  0.14s(+0.82) max= 13358 mean=  13343.4 gap=1.0
+  CAC→TS     b=   100000 t=  0.47s(+0.82) max= 13358 mean=  13348.1 gap=1.0

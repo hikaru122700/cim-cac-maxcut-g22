@@ -171,3 +171,7 @@ datasets=['G22', 'K2000', 'G55', 'G70'] algos=['CIM', 'CAC', 'SA', 'SB', 'PT', '
     GA   b=        8 t= 11.59s  mean=   9237.8  max=  9271  gap= 320.0
     GA   b=       20 t= 20.47s  mean=   9293.9  max=  9324  gap= 267.0
     GA   b=       50 t= 42.46s  mean=   9364.3  max=  9386  gap= 205.0
+    GA   b=      120 t= 90.86s  mean=   9449.0  max=  9482  gap= 109.0
+    GA   batch>45.0s → 以後の大予算スキップ
+
+saved → results\2026-06-19\anytime_single\v7_G22_K2000_G55_G70_nt16_alltuned
