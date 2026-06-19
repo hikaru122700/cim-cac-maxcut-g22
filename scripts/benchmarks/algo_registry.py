@@ -28,6 +28,7 @@ from modules.SA import simulate_sa_batch
 from modules.SB import simulate_sb_batch, auto_c0
 from modules.PT_ICM import simulate_pticm_batch
 from modules.GA import simulate_ga_batch, tabu_refine_batch
+from modules.GA import _build_csr as _ga_build_csr, _cut_batch as _ga_cut_batch
 
 
 # ============================================================

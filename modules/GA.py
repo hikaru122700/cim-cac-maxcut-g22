@@ -249,6 +249,25 @@ def _cut_of(n, indptr, indices, data, s):
     return cut * 0.5
 
 
+@njit(cache=True, parallel=True)
+def _cut_batch(n, indptr, indices, data, signs):
+    """signs (num,n) 各行の重み付きカット値を返す(全手法を統一採点する用)。
+
+    signs は 0/1 / ±1 / bool いずれでも可(side が一貫していれば != で判定可)。
+    """
+    num = signs.shape[0]
+    out = np.zeros(num, dtype=np.float64)
+    for t in prange(num):
+        cut = 0.0
+        for v in range(n):
+            sv = signs[t, v]
+            for p in range(indptr[v], indptr[v + 1]):
+                if signs[t, indices[p]] != sv:
+                    cut += data[p]
+        out[t] = cut * 0.5
+    return out
+
+
 @njit(cache=True)
 def _aligned_overlap(s1, s2, n):
     """ラベル対称性込みの一致サイズ s(I1,I2)=max(同ラベル一致, 反転一致)。"""
