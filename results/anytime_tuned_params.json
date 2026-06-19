@@ -125,6 +125,13 @@
    "cr": 521,
    "alpha_tenure": 11,
    "beta_quality": 0.6617624429773965
+  },
+  "PT": {
+   "num_temps": 24,
+   "t_min": 0.09356289164437716,
+   "t_max": 1.5195888983368662,
+   "swap_interval": 3,
+   "icm_interval": 1
   }
  },
  "G22": {
