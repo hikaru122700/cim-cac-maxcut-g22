@@ -29,3 +29,11 @@
   CIM→SA     b=   300000 t=  0.06s(+0.22) max= 13334 mean=  13308.2 gap=25.0
   CIM→SA     b=  1000000 t=  0.14s(+0.22) max= 13342 mean=  13311.8 gap=17.0
   CIM→SA     b=  3000000 t=  0.35s(+0.22) max= 13351 mean=  13315.8 gap=8.0
+  CIM→SA     b= 10000000 t=  1.11s(+0.22) max= 13351 mean=  13320.9 gap=8.0
+  CAC→SA     b=   100000 t=  0.03s(+0.43) max= 13357 mean=  13340.4 gap=2.0
+  CAC→SA     b=   300000 t=  0.06s(+0.43) max= 13357 mean=  13340.9 gap=2.0
+  CAC→SA     b=  1000000 t=  0.15s(+0.43) max= 13357 mean=  13341.0 gap=2.0
+  CAC→SA     b=  3000000 t=  0.35s(+0.43) max= 13357 mean=  13341.8 gap=2.0
+  CAC→SA     b= 10000000 t=  1.10s(+0.43) max= 13357 mean=  13342.1 gap=2.0
+
+saved → results\2026-06-19\combo_hybrid\v1_G22_nt16_tuned
