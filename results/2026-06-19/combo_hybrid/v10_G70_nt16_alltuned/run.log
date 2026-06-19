@@ -17,3 +17,23 @@
   CAC→TS     b=     8000 t=  0.16s(+2.41) max=  9480 mean=   9442.4 gap=111.0
   CAC→TS     b=    30000 t=  0.59s(+2.41) max=  9480 mean=   9442.4 gap=111.0
   CAC→TS     b=   100000 t=  1.74s(+2.41) max=  9480 mean=   9442.4 gap=111.0
+  CAC→TS     b=   300000 t=  5.96s(+2.41) max=  9480 mean=   9442.4 gap=111.0
+
+[refiner] SA grid=[100000, 300000, 1000000, 3000000, 10000000]
+  SA-cold      b=   100000 t=  0.04s max=  9049 mean=   9010.9 gap=542.0
+  SA-cold      b=   300000 t=  0.08s max=  9213 mean=   9172.2 gap=378.0
+  SA-cold      b=  1000000 t=  0.21s max=  9293 mean=   9264.9 gap=298.0
+  SA-cold      b=  3000000 t=  0.58s max=  9370 mean=   9345.4 gap=221.0
+  SA-cold      b= 10000000 t=  1.84s max=  9454 mean=   9432.9 gap=137.0
+  CIM→SA     b=   100000 t=  0.03s(+0.75) max=  9499 mean=   9475.6 gap=92.0
+  CIM→SA     b=   300000 t=  0.08s(+0.75) max=  9504 mean=   9478.9 gap=87.0
+  CIM→SA     b=  1000000 t=  0.22s(+0.75) max=  9501 mean=   9472.8 gap=90.0
+  CIM→SA     b=  3000000 t=  0.58s(+0.75) max=  9484 mean=   9466.9 gap=107.0
+  CIM→SA     b= 10000000 t=  1.57s(+0.75) max=  9506 mean=   9480.6 gap=85.0
+  CAC→SA     b=   100000 t=  0.03s(+2.41) max=  9480 mean=   9442.2 gap=111.0
+  CAC→SA     b=   300000 t=  0.05s(+2.41) max=  9480 mean=   9442.8 gap=111.0
+  CAC→SA     b=  1000000 t=  0.18s(+2.41) max=  9480 mean=   9442.1 gap=111.0
+  CAC→SA     b=  3000000 t=  0.53s(+2.41) max=  9480 mean=   9442.1 gap=111.0
+  CAC→SA     b= 10000000 t=  1.79s(+2.41) max=  9490 mean=   9452.5 gap=101.0
+
+saved → results\2026-06-19\combo_hybrid\v10_G70_nt16_alltuned
