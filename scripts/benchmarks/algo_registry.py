@@ -273,5 +273,5 @@ ALGOS = {
     "SA":  {"run": run_sa,  "label": "SA",       "color": "#2980b9"},
     "SB":  {"run": run_sb,  "label": "SB(dSB)",  "color": "#16a085"},
     "PT":  {"run": run_pt,  "label": "PT-ICM",   "color": "#8e44ad"},
-    "GA":  {"run": run_ga,  "label": "GA(memetic)", "color": "#27ae60"},
+    "GA":  {"run": run_ga,  "label": "GA(memetic)", "color": "#d81b9e"},
 }
