@@ -52,6 +52,18 @@ class GraphContext:
     J_cim: object = None   # csr_matrix (coupling for CIM)
     J_cac: object = None   # csr_matrix (coupling -1)
     J_sb: object = None    # csr_matrix (coupling -1)
+    _csr: object = None     # (indptr, indices, data) 真の重みでの CSR(統一採点用)
+
+    def score(self, signs):
+        """signs (num,n) を真の重み付きカットで統一採点(全手法で同一基準)。
+
+        各モジュールの内部 cut(CAC は非重みカウント等)に依らず、返り符号から
+        重み付きカットを再計算する。bool/0-1/±1 いずれでも可。
+        """
+        import numpy as _np
+        s = _np.ascontiguousarray((_np.asarray(signs) > 0).astype(_np.int8))
+        ip, ix, dt = self._csr
+        return _ga_cut_batch(self.n, ip, ix, dt, s)
 
 
 def load_context(name: str) -> GraphContext:
