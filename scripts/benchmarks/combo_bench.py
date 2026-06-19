@@ -146,8 +146,7 @@ def main():
     explorer_out = {}
     for ex in args.explorers:
         b = EXPLORER_BUDGET[ex]
-        EXPLORERS[ex](ctx, b, nt, seeds)  # warmup
-        (cuts, signs), = [ (EXPLORERS[ex](ctx, b, nt, seeds),) ][0],
+        EXPLORERS[ex](ctx, b, nt, seeds)  # warmup(JIT)
         # 計測
         t0 = time.perf_counter()
         _c, signs = EXPLORERS[ex](ctx, b, nt, seeds)
