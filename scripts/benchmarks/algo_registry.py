@@ -76,7 +76,13 @@ def load_context(name: str) -> GraphContext:
     J_cim = build_coupling_matrix(n, edges, cim_coupling, weights=weights)
     J_cac = build_coupling_matrix(n, edges, -1.0, weights=weights)
     J_sb = build_coupling_matrix(n, edges, -1.0, weights=weights)
-    return GraphContext(name, n, edges, weights, d["bks"], J_cim, J_cac, J_sb)
+    # 統一採点用の真の重み CSR(非重みなら全辺 +1)
+    ea = np.asarray([e[0] for e in edges], dtype=np.int64)
+    eb = np.asarray([e[1] for e in edges], dtype=np.int64)
+    ew = (np.ones(len(edges)) if weights is None
+          else np.asarray(weights, dtype=np.float64))
+    csr = _ga_build_csr(n, ea, eb, ew)
+    return GraphContext(name, n, edges, weights, d["bks"], J_cim, J_cac, J_sb, csr)
 
 
 # ============================================================
