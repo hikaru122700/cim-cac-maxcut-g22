@@ -7,3 +7,21 @@
   TS-cold      b=     8000 t=  0.09s max=  9634 mean=   9581.8 gap=665.0
   TS-cold      b=    30000 t=  0.33s max=  9726 mean=   9676.9 gap=573.0
   TS-cold      b=   100000 t=  1.00s max=  9889 mean=   9842.4 gap=410.0
+  TS-cold      b=   300000 t=  3.20s max= 10068 mean=  10003.0 gap=231.0
+  CIM→TS     b=     2000 t=  0.03s(+0.42) max= 10220 mean=  10180.3 gap=79.0
+  CIM→TS     b=     8000 t=  0.10s(+0.42) max= 10220 mean=  10181.5 gap=79.0
+  CIM→TS     b=    30000 t=  0.35s(+0.42) max= 10220 mean=  10181.8 gap=79.0
+  CIM→TS     b=   100000 t=  1.00s(+0.42) max= 10220 mean=  10182.0 gap=79.0
+  CIM→TS     b=   300000 t=  3.25s(+0.42) max= 10229 mean=  10186.3 gap=70.0
+  CAC→TS     b=     2000 t=  0.02s(+1.09) max= 10244 mean=  10213.1 gap=55.0
+  CAC→TS     b=     8000 t=  0.09s(+1.09) max= 10244 mean=  10213.9 gap=55.0
+  CAC→TS     b=    30000 t=  0.33s(+1.09) max= 10244 mean=  10214.2 gap=55.0
+  CAC→TS     b=   100000 t=  1.10s(+1.09) max= 10244 mean=  10214.3 gap=55.0
+  CAC→TS     b=   300000 t=  3.00s(+1.09) max= 10244 mean=  10215.4 gap=55.0
+
+[refiner] SA grid=[100000, 300000, 1000000, 3000000, 10000000]
+  SA-cold      b=   100000 t=  0.04s max=  9905 mean=   9871.6 gap=394.0
+  SA-cold      b=   300000 t=  0.08s max= 10032 mean=   9993.7 gap=267.0
+  SA-cold      b=  1000000 t=  0.23s max= 10126 mean=  10084.8 gap=173.0
+  SA-cold      b=  3000000 t=  0.68s max= 10201 mean=  10174.8 gap=98.0
+  SA-cold      b= 10000000 t=  2.35s max= 10237 mean=  10221.1 gap=62.0
