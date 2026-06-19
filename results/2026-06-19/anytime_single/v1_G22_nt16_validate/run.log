@@ -43,3 +43,6 @@ datasets=['G22'] algos=['CIM', 'CAC', 'SA', 'SB', 'PT', 'GA'] num_trials=16
     GA   b=        8 t=  0.46s  mean=  13290.2  max= 13329  gap=  30.0
     GA   b=       20 t=  0.90s  mean=  13313.8  max= 13334  gap=  25.0
     GA   b=       50 t=  1.99s  mean=  13327.9  max= 13357  gap=   2.0
+    GA   b=      120 t=  4.46s  mean=  13332.2  max= 13358  gap=   1.0
+
+saved → results\2026-06-19\anytime_single\v1_G22_nt16_validate

@@ -114,6 +114,126 @@ def _simulate_sa_batch_weighted(
     return best_cuts_out, best_signs_out
 
 
+@njit(cache=True, fastmath=True, parallel=True)
+def _simulate_sa_batch_warm(
+    n: int,
+    num_iters: int,
+    num_trials: int,
+    adj_indptr: np.ndarray,
+    adj_indices: np.ndarray,
+    adj_weights: np.ndarray,
+    t_start: float,
+    t_end: float,
+    init_signs: np.ndarray,   # (num_trials, n) の ±1 初期解(warm-start)
+    seeds: np.ndarray,
+):
+    """warm-start 版 SA。init_signs を初期解にして冷却する(ハイブリッド用)。
+
+    _simulate_sa_batch_weighted と同一だが、初期解をランダムでなく
+    init_signs[trial_idx] から取る点だけが異なる。
+    """
+    best_cuts_out = np.zeros(num_trials, dtype=np.float64)
+    best_signs_out = np.zeros((num_trials, n), dtype=np.int8)
+    log_ratio = np.log(t_end / t_start)
+
+    for trial_idx in prange(num_trials):
+        np.random.seed(seeds[trial_idx])
+        x = np.empty(n, dtype=np.int8)
+        for i in range(n):
+            x[i] = init_signs[trial_idx, i]
+
+        cur_cut = 0.0
+        for i in range(n):
+            for k in range(adj_indptr[i], adj_indptr[i + 1]):
+                j = adj_indices[k]
+                if j > i and x[i] != x[j]:
+                    cur_cut += adj_weights[k]
+
+        best_cut = cur_cut
+        best_x = x.copy()
+
+        for it in range(num_iters):
+            progress = it / num_iters
+            T = t_start * np.exp(log_ratio * progress)
+            v = np.random.randint(0, n)
+            delta = 0.0
+            for k in range(adj_indptr[v], adj_indptr[v + 1]):
+                u = adj_indices[k]
+                w = adj_weights[k]
+                if x[v] == x[u]:
+                    delta += w
+                else:
+                    delta -= w
+            if delta > 0:
+                x[v] = -x[v]
+                cur_cut += delta
+            elif T > 0:
+                if np.random.random() < np.exp(delta / T):
+                    x[v] = -x[v]
+                    cur_cut += delta
+            if cur_cut > best_cut:
+                best_cut = cur_cut
+                for i in range(n):
+                    best_x[i] = x[i]
+
+        best_cuts_out[trial_idx] = best_cut
+        for i in range(n):
+            best_signs_out[trial_idx, i] = best_x[i]
+    return best_cuts_out, best_signs_out
+
+
+def _build_csr_sa(n, edges, weights):
+    """SA 用 CSR(indptr, indices, weights)を構築。"""
+    if weights is None:
+        weights = [1.0] * len(edges)
+    deg = [0] * n
+    for a, b in edges:
+        deg[a] += 1
+        deg[b] += 1
+    indptr = np.zeros(n + 1, dtype=np.int64)
+    for i in range(n):
+        indptr[i + 1] = indptr[i] + deg[i]
+    indices = np.zeros(int(indptr[-1]), dtype=np.int64)
+    adj_w = np.zeros(int(indptr[-1]), dtype=np.float64)
+    cursor = indptr[:-1].copy()
+    for (a, b), w in zip(edges, weights):
+        indices[cursor[a]] = b; adj_w[cursor[a]] = w; cursor[a] += 1
+        indices[cursor[b]] = a; adj_w[cursor[b]] = w; cursor[b] += 1
+    return indptr, indices, adj_w
+
+
+def simulate_sa_warm(
+    n: int,
+    edges: list,
+    weights: list | None,
+    init_signs: np.ndarray,
+    num_iters: int,
+    *,
+    t_start: float = 0.5,
+    t_end: float = 0.001,
+    seeds: np.ndarray | None = None,
+):
+    """warm-start SA(初期解 init_signs から冷却)。ハイブリッド CIM→SA 用。
+
+    init_signs は (num_trials, n) の bool / 0-1 / ±1。±1 に正規化して投入。
+    既定の t_start=0.5 は warm-start 向けに低め(良い解を壊しすぎない)。
+    """
+    num = init_signs.shape[0]
+    if seeds is None:
+        seeds = np.arange(num, dtype=np.int64)
+    seeds = np.ascontiguousarray(np.asarray(seeds, dtype=np.int64))
+    indptr, indices, adj_w = _build_csr_sa(n, edges, weights)
+
+    warm = np.asarray(init_signs)
+    signs = np.where(warm > 0, 1, -1).astype(np.int8)
+    signs = np.ascontiguousarray(signs)
+
+    return _simulate_sa_batch_warm(
+        n, num_iters, num, indptr, indices, adj_w,
+        float(t_start), float(t_end), signs, seeds,
+    )
+
+
 def simulate_sa_batch(
     n: int,
     edges: list[tuple[int, int]],
