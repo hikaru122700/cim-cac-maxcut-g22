@@ -1,0 +1,14 @@
+=== anytime_single v2 ===
+datasets=['G22', 'K2000', 'G55', 'G70'] algos=['CIM', 'CAC', 'SA', 'SB', 'PT', 'GA'] num_trials=16
+
+[G22] loading...
+[G22] n=2000 edges=19990 bks=13359
+  --- CIM ---
+    CIM  b=      150 t=  0.05s  mean=  11481.7  max= 11838  gap=1521.0
+    CIM  b=      300 t=  0.09s  mean=  13059.4  max= 13113  gap= 246.0
+    CIM  b=      600 t=  0.15s  mean=  13247.5  max= 13270  gap=  89.0
+    CIM  b=     1200 t=  0.25s  mean=  13307.6  max= 13341  gap=  18.0
+    CIM  b=     2400 t=  0.36s  mean=  13309.4  max= 13342  gap=  17.0
+    CIM  b=     4800 t=  0.72s  mean=  13309.4  max= 13342  gap=  17.0
+  --- CAC ---
+    CAC  b=      500 t=  0.11s  mean=  13284.8  max= 13308  gap=  51.0
