@@ -373,6 +373,7 @@ def simulate_ga_batch(
     time_budget: Optional[float] = None,
     init_signs: Optional[np.ndarray] = None,
     seeds: Optional[np.ndarray] = None,
+    return_history: bool = False,
 ):
     """メメティックアルゴリズムを num_trials 個、独立に実行。
 
@@ -387,10 +388,13 @@ def simulate_ga_batch(
         init_signs      : (num_trials, n) or (n,) の warm-start 初期解(±1 or 0/1)。
                           各 run の集団 1 個体目に投入。ハイブリッド用。
         seeds           : (num_trials,) 乱数シード
+        return_history  : True なら各世代終了時の best_cuts 履歴も返す(収束曲線用)。
 
     Returns:
         best_cuts  : (num_trials,)
         best_signs : (num_trials, n) bool
+        history    : (return_history=True のとき) (n_gen+1, num_trials)。
+                     行 0 は初期集団磨き後、行 g は第 g 世代終了後の各 run best。
     """
     edges_np = np.asarray(edges, dtype=np.int64)
     edge_a = np.ascontiguousarray(edges_np[:, 0])
@@ -439,6 +443,8 @@ def simulate_ga_batch(
     best_signs = np.zeros((num_trials, n), dtype=np.int8)
     for t in range(num_trials):
         best_signs[t] = pops[t, int(np.argmax(fits[t]))]
+
+    history = [best_cuts.copy()] if return_history else None
 
     t0 = time.perf_counter()
     gen = 0
