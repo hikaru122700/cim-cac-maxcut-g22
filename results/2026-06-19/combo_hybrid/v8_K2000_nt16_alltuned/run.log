@@ -1,2 +1,9 @@
 === combo_hybrid K2000 n=2000 bks=33337 num_trials=16 ===
 [explorer] CIM b=800 t=43.63s cut_max=32514 mean=32360.3 gap=823.0
+[explorer] CAC b=4000 t=168.83s cut_max=32364 mean=27338.0 gap=973.0
+
+[refiner] TS grid=[2000, 8000, 30000, 100000, 300000]
+  TS-cold      b=     2000 t=  0.44s max= 32135 mean=  31710.7 gap=1202.0
+  TS-cold      b=     8000 t=  0.58s max= 32927 mean=  32461.0 gap=410.0
+  TS-cold      b=    30000 t=  1.18s max= 32963 mean=  32721.8 gap=374.0
+  TS-cold      b=   100000 t=  3.67s max= 32984 mean=  32806.2 gap=353.0
