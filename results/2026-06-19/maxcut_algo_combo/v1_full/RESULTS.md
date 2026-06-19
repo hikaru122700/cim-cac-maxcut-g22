@@ -61,22 +61,22 @@ MAX-CUT 問題に対して、ハイパーパラメータを調整した 6 つの
   移動利得 $\Delta_v=\sum_{u\in N(v),\,s_u=s_v}w_{vu}-\sum_{u\in N(v),\,s_u\neq s_v}w_{vu}$ の
   O(deg) 増分更新で高速化。回帰テスト `tests/test_ga.py`（3 件）通過、G22 で max 13358 を確認。
 
-## 4. ハイパーパラメータ調整
+## 4. ハイパーパラメータ調整（全6手法 × 全4データセットを Optuna 調整）
 
-- **G22**: CIM・CAC は既存 Optuna 探索結果（CIM 1000 trial: best 13307、CAC 250 trial: best 13336）を使用。
-- **K2000・G55・G70**: G22 の物理パラメータは転移しない（特に CIM は K2000 で max≈4287/BKS33337 と破綻）。
-  各データセットで CIM・CAC を Optuna（TPESampler, 25–30 trial、目的=統一重み付き平均カット）で再調整。
-  調整後の単体平均カット（参考）:
+公平性のため **6 手法すべてを各データセットで Optuna（TPESampler）で調整**した
+（`scripts/tuning/tune_anytime_params.py`、目的=統一重み付き平均カットの最大化、
+結果は `results/anytime_tuned_params.json`）。
 
-  | | CIM(gap) | CAC(gap) |
-  |---|---|---|
-  | G55 | 10179 (120) | 10234 (65) |
-  | G70 | 9482 (109) | 9448 (143) |
-  | K2000 | 32350 (987) | 31558 (1779) |
-
-  CIM は再調整で K2000 でも 4287→32350 まで回復。CAC は密 K2000 で内部選択が非重みのため平均が伸び悩む。
-- SA・SB・PT-ICM・GA は全データセットで頑健に動くため、文献推奨のインスタンス適応設定
-  （SB の auto_c0、PT の幾何温度ラダー等）を共通使用。
+- **CIM・CAC**: G22 は既存の長期探索（CIM 1000 trial、CAC 250 trial）、
+  K2000・G55・G70 は各 25–30 trial で再調整。G22 物理パラメータは転移しない
+  （未調整 CIM は K2000 で max≈4287/BKS33337 と破綻）ため per-dataset 調整が必須。
+- **SA・SB・PT-ICM・GA**: 当初は文献推奨の固定値だったが、固定値では SA・PT-ICM が
+  不当に弱く出る（例: G22 で PT gap36、SA gap5）ことが判明したため、
+  **これらも Optuna 調整**（SA=冷却温度、SB=variant/dt/a0、PT=温度ラダー本数・範囲・swap/ICM間隔、
+  GA=集団サイズ・TS反復・cr・tenure・β）。G22 で SA gap5→1、PT gap36→2、GA gap1→0 と改善し、
+  公平な比較になった。
+- 調整時の予算と試行数: 古典4種は K2000(密)で予算・試行を抑制（PT は budget 150・12 trial 等）。
+  この低予算調整のため **K2000 の PT-ICM だけは調整後やや悪化**（密 SK での PT は予算敏感）。
 
 ## 5. 評価プロトコル
 
