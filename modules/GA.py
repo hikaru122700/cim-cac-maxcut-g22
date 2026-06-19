@@ -467,9 +467,13 @@ def simulate_ga_batch(
                 best_cuts[t] = cc[t]
                 best_signs[t] = cs[t]
         gen += 1
+        if return_history:
+            history.append(best_cuts.copy())
         if time_budget is not None and (time.perf_counter() - t0) >= time_budget:
             break
 
+    if return_history:
+        return best_cuts, best_signs.astype(bool), np.asarray(history)
     return best_cuts, best_signs.astype(bool)
 
 
