@@ -12,3 +12,7 @@ datasets=['G22'] algos=['CIM', 'CAC', 'SA', 'SB', 'PT', 'GA'] num_trials=16
     CIM  b=     4800 t=  0.68s  mean=  13309.4  max= 13342  gap=  17.0
   --- CAC ---
     CAC  b=      500 t=  0.09s  mean=  13284.8  max= 13308  gap=  51.0
+    CAC  b=     1500 t=  0.19s  mean=  13318.0  max= 13342  gap=  17.0
+    CAC  b=     4000 t=  0.77s  mean=  13337.9  max= 13356  gap=   3.0
+    CAC  b=    12000 t=  1.94s  mean=  13343.4  max= 13356  gap=   3.0
+    CAC  b=    35000 t=  5.53s  mean=  13346.9  max= 13357  gap=   2.0
