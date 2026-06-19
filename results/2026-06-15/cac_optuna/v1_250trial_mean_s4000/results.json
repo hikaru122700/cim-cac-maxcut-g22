@@ -1,0 +1,85 @@
+{
+  "graph": "G22.txt",
+  "N": 2000,
+  "K": 19990,
+  "objective": "mean",
+  "optuna_trials": 250,
+  "screen_steps": 4000,
+  "screen_trials": 20,
+  "final_steps": 50000,
+  "final_trials": 100,
+  "d_0": 19.99,
+  "d_1": 19.99,
+  "search_space": {
+    "p": [
+      0.3,
+      0.99
+    ],
+    "alpha": [
+      0.3,
+      10.0
+    ],
+    "rho": [
+      0.05,
+      5.0
+    ],
+    "delta": [
+      6.5e-05,
+      0.026
+    ],
+    "beta0_error": [
+      0.015007503751875938,
+      1.500750375187594
+    ],
+    "gamma_growth": [
+      5e-05,
+      0.02
+    ],
+    "tau": [
+      360.0,
+      54000.0
+    ]
+  },
+  "baseline_params": {
+    "p": 0.7761134489993449,
+    "alpha": 3.0,
+    "rho": 1.0,
+    "delta": 0.0013,
+    "beta0_error": 0.1500750375187594,
+    "gamma_growth": 0.001,
+    "tau": 18000.0
+  },
+  "best_params": {
+    "p": 0.41472107374160905,
+    "alpha": 4.861264995684808,
+    "rho": 1.7876032341307913,
+    "delta": 0.000322786869687264,
+    "beta0_error": 0.11589142280016017,
+    "gamma_growth": 0.019844099082253593,
+    "tau": 27544.79095737492
+  },
+  "best_screen_value": 13336.45,
+  "best_screen_attrs": {
+    "max_cut": 13356,
+    "mean_cut": 13336.45,
+    "min_cut": 13307,
+    "num_optimal": 0,
+    "std_cut": 13.021040665015988
+  },
+  "baseline_final": {
+    "mean": 13278.78,
+    "max": 13358,
+    "min": 13210,
+    "std": 28.223954365042477,
+    "num_optimal": 0
+  },
+  "tuned_final": {
+    "mean": 13349.99,
+    "max": 13359,
+    "min": 13318,
+    "std": 11.493907081580222,
+    "num_optimal": 1
+  },
+  "known_best": 13359,
+  "elapsed_sec": 127.46781516075134
+}
