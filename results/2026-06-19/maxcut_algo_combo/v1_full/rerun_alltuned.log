@@ -305,3 +305,14 @@ OUT_DIR=results\2026-06-19\combo_hybrid\v9_G55_nt16_alltuned
 ===== COMBO G70 =====
 === combo_hybrid G70 n=10000 bks=9591 num_trials=16 ===
 [explorer] CIM b=800 t=0.75s cut_max=9394 mean=9371.1 gap=197.0
+[explorer] CAC b=4000 t=2.41s cut_max=9480 mean=9442.0 gap=111.0
+
+[refiner] TS grid=[2000, 8000, 30000, 100000, 300000]
+  TS-cold      b=     2000 t=  0.05s max=  8491 mean=   8400.6 gap=1100.0
+  TS-cold      b=     8000 t=  0.16s max=  8678 mean=   8622.1 gap=913.0
+  TS-cold      b=    30000 t=  0.63s max=  8847 mean=   8806.9 gap=744.0
+  TS-cold      b=   100000 t=  1.95s max=  9050 mean=   9030.2 gap=541.0
+  TS-cold      b=   300000 t=  5.45s max=  9215 mean=   9186.3 gap=376.0
+  CIM→TS     b=     2000 t=  0.05s(+0.75) max=  9499 mean=   9474.8 gap=92.0
+  CIM→TS     b=     8000 t=  0.14s(+0.75) max=  9499 mean=   9474.8 gap=92.0
+  CIM→TS     b=    30000 t=  0.56s(+0.75) max=  9499 mean=   9474.8 gap=92.0

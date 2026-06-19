@@ -11,3 +11,9 @@
   CIM→TS     b=     2000 t=  0.05s(+0.75) max=  9499 mean=   9474.8 gap=92.0
   CIM→TS     b=     8000 t=  0.14s(+0.75) max=  9499 mean=   9474.8 gap=92.0
   CIM→TS     b=    30000 t=  0.56s(+0.75) max=  9499 mean=   9474.8 gap=92.0
+  CIM→TS     b=   100000 t=  2.10s(+0.75) max=  9499 mean=   9474.8 gap=92.0
+  CIM→TS     b=   300000 t=  5.60s(+0.75) max=  9499 mean=   9474.8 gap=92.0
+  CAC→TS     b=     2000 t=  0.04s(+2.41) max=  9480 mean=   9442.4 gap=111.0
+  CAC→TS     b=     8000 t=  0.16s(+2.41) max=  9480 mean=   9442.4 gap=111.0
+  CAC→TS     b=    30000 t=  0.59s(+2.41) max=  9480 mean=   9442.4 gap=111.0
+  CAC→TS     b=   100000 t=  1.74s(+2.41) max=  9480 mean=   9442.4 gap=111.0
