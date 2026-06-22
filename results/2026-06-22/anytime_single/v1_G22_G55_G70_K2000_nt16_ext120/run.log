@@ -47,3 +47,6 @@ datasets=['G22', 'G55', 'G70', 'K2000'] algos=['CIM', 'CAC', 'SA', 'SB', 'PT', '
     PT   b=     5000 t=142.71s  mean=  13356.8  max= 13358  gap=   1.0
     PT   batch>120.0s → 以後の大予算スキップ
   --- GA ---
+    GA   b=        3 t=  3.22s  mean=  13334.5  max= 13357  gap=   2.0
+    GA   b=        8 t=  3.67s  mean=  13344.9  max= 13357  gap=   2.0
+    GA   b=       20 t=  5.93s  mean=  13350.2  max= 13358  gap=   1.0
