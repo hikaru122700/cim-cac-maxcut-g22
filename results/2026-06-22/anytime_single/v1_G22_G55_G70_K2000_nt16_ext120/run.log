@@ -83,3 +83,11 @@ datasets=['G22', 'G55', 'G70', 'K2000'] algos=['CIM', 'CAC', 'SA', 'SB', 'PT', '
     SA   b=  3000000 t=  0.50s  mean=  10204.9  max= 10232  gap=  67.0
     SA   b= 10000000 t=  1.62s  mean=  10244.2  max= 10256  gap=  43.0
     SA   b= 30000000 t=  5.04s  mean=  10267.8  max= 10281  gap=  18.0
+    SA   b=100000000 t= 18.77s  mean=  10279.3  max= 10289  gap=  10.0
+  --- SB ---
+    SB   b=      150 t=  0.04s  mean=  10157.6  max= 10178  gap= 121.0
+    SB   b=      400 t=  0.15s  mean=  10210.9  max= 10238  gap=  61.0
+    SB   b=     1000 t=  0.29s  mean=  10238.5  max= 10253  gap=  46.0
+    SB   b=     2500 t=  0.69s  mean=  10256.5  max= 10273  gap=  26.0
+    SB   b=     6000 t=  1.50s  mean=  10266.2  max= 10277  gap=  22.0
+    SB   b=    15000 t=  3.23s  mean=  10272.2  max= 10284  gap=  15.0
