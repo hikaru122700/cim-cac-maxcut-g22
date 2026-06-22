@@ -53,3 +53,14 @@ datasets=['G22', 'G55', 'G70', 'K2000'] algos=['CIM', 'CAC', 'SA', 'SB', 'PT', '
     GA   b=       50 t= 10.33s  mean=  13357.9  max= 13359  gap=   0.0
     GA   b=      120 t= 21.57s  mean=  13358.2  max= 13359  gap=   0.0
     GA   b=      300 t= 51.31s  mean=  13358.2  max= 13359  gap=   0.0
+    GA   b=      800 t=135.48s  mean=  13358.3  max= 13359  gap=   0.0
+    GA   batch>120.0s → 以後の大予算スキップ
+
+[G55] loading...
+[G55] n=5000 edges=12498 bks=10299
+  --- CIM ---
+    CIM  b=      150 t=  0.08s  mean=   9787.1  max=  9833  gap= 466.0
+    CIM  b=      300 t=  0.15s  mean=  10014.3  max= 10049  gap= 250.0
+    CIM  b=      600 t=  0.31s  mean=  10133.8  max= 10179  gap= 120.0
+    CIM  b=     1200 t=  0.60s  mean=  10180.9  max= 10220  gap=  79.0
+    CIM  b=     2400 t=  1.21s  mean=  10186.2  max= 10225  gap=  74.0
