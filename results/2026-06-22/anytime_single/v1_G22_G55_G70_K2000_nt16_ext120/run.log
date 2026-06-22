@@ -171,3 +171,4 @@ datasets=['G22', 'G55', 'G70', 'K2000'] algos=['CIM', 'CAC', 'SA', 'SB', 'PT', '
     CIM  b=      600 t= 15.76s  mean=  32335.1  max= 32514  gap= 823.0
     CIM  b=     1200 t= 29.95s  mean=  32372.1  max= 32525  gap= 812.0
     CIM  b=     2400 t= 60.97s  mean=  32377.8  max= 32543  gap= 794.0
+    CIM  b=     4800 t=118.55s  mean=  32385.2  max= 32569  gap= 768.0
