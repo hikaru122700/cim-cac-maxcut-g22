@@ -166,3 +166,5 @@ datasets=['G22', 'G55', 'G70', 'K2000'] algos=['CIM', 'CAC', 'SA', 'SB', 'PT', '
 [K2000] loading...
 [K2000] n=2000 edges=1999000 bks=33337
   --- CIM ---
+    CIM  b=      150 t=  4.48s  mean=  32097.8  max= 32338  gap= 999.0
+    CIM  b=      300 t=  7.89s  mean=  32254.8  max= 32446  gap= 891.0
