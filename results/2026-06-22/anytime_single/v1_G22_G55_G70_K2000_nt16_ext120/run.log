@@ -127,3 +127,13 @@ datasets=['G22', 'G55', 'G70', 'K2000'] algos=['CIM', 'CAC', 'SA', 'SB', 'PT', '
     CAC  b=     4000 t=  1.96s  mean=   9442.0  max=  9480  gap= 111.0
     CAC  b=    12000 t= 12.43s  mean=   9448.8  max=  9480  gap= 111.0
     CAC  b=    35000 t= 71.49s  mean=   9452.2  max=  9483  gap= 108.0
+    CAC  b=    80000 t=181.04s  mean=   9453.4  max=  9485  gap= 106.0
+    CAC  batch>120.0s → 以後の大予算スキップ
+  --- SA ---
+    SA   b=    30000 t=  0.01s  mean=   8213.2  max=  8285  gap=1306.0
+    SA   b=   100000 t=  0.02s  mean=   8905.2  max=  8941  gap= 650.0
+    SA   b=   300000 t=  0.05s  mean=   9167.6  max=  9193  gap= 398.0
+    SA   b=  1000000 t=  0.16s  mean=   9314.2  max=  9342  gap= 249.0
+    SA   b=  3000000 t=  0.45s  mean=   9398.2  max=  9419  gap= 172.0
+    SA   b= 10000000 t=  1.42s  mean=   9469.0  max=  9494  gap=  97.0
+    SA   b= 30000000 t=  4.33s  mean=   9517.6  max=  9532  gap=  59.0
