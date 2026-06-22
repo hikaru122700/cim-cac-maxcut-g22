@@ -144,6 +144,7 @@ def plot_dataset(plt, ds, data, out_dir):
     ax.axhline(0.0, color="k", ls=":", lw=1.2)
     ax.set_xscale("log")
     ax.set_yscale("symlog", linthresh=0.05)
+    ax.set_ylim(bottom=0.0)  # gap<0 はあり得ないので 0 始まりに
     ax.set_xlabel("実時間 [秒]（バッチ, log）")
     ax.set_ylabel("BKS への gap [%]（最良解, 小さいほど良い）")
     ax.set_title(f"{ds}: BKS への到達 gap の時間推移")
@@ -224,6 +225,7 @@ def main():
             ax.axhline(0.0, color="k", ls=":", lw=1.0)
             ax.set_xscale("log")
             ax.set_yscale("symlog", linthresh=0.05)
+            ax.set_ylim(bottom=0.0)  # gap<0 はあり得ないので 0 始まりに
             ax.set_title(f"{ds} (BKS={bks})")
             ax.set_xlabel("実時間 [秒]")
             ax.set_ylabel("BKS gap [%]")
