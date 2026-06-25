@@ -32,7 +32,7 @@ from scripts.benchmarks.algo_registry import (
 )
 
 EXPERIMENT_KIND = "anytime_single"
-MAX_BATCH_SEC_DEFAULT = 45.0   # 1 バッチがこれを超えたら以後の大予算をスキップ
+MAX_BATCH_SEC_DEFAULT = 120.0   # 1 バッチがこれを超えたら以後の大予算をスキップ
 
 
 def get_kind_root() -> Path:

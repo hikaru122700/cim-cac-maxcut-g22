@@ -42,7 +42,7 @@ from modules.GA import tabu_refine_batch
 from modules.SA import simulate_sa_warm, simulate_sa_batch
 
 EXPERIMENT_KIND = "combo_hybrid"
-MAX_REFINE_SEC = 40.0   # 1 精錬バッチがこれを超えたら以後の大予算をスキップ
+MAX_REFINE_SEC = 120.0   # 1 精錬バッチがこれを超えたら以後の大予算をスキップ
 
 # explorer の固定予算(短く回して良い初期解を得る)
 EXPLORER_BUDGET = {"CIM": 800, "CAC": 4000}

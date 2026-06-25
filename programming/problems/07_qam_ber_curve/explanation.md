@@ -88,6 +88,54 @@ PAM (pulse amplitude modulation) は振幅だけで値を表す変調で、方�
 これを整理すると上式になる。共通ライブラリの `comm.ber_theory_qam` がこの計算をしている。
 4QAM(=QPSK)では $\sqrt M = 2$、$M-1 = 3$ を代入すると $\mathrm{BER} = Q(\sqrt{\gamma_s})$ となり、近似でなく厳密解に一致する。
 
+### 計算例:16QAM・SNR = 15 dB を手で追う
+
+抽象的な式のままだと実感が湧きにくいので、代表点の 16QAM・$\mathrm{SNR}=15$ dB を実際に数字で追ってみる。
+$M = 16$ なので $k = \log_2 16 = 4$、$\sqrt M = 4$、$M-1 = 15$ になる。
+
+1. **線形 SNR に直す**:$\;\gamma_s = 10^{15/10} = 10^{1.5} \approx 31.62$。
+2. **$Q$ の中身**:$\;\dfrac{3}{M-1}\gamma_s = \dfrac{3}{15}\times 31.62 = 0.2\times 31.62 = 6.325$。その平方根は $\sqrt{6.325}\approx 2.515$。
+3. **$Q$ の値**:$\;Q(2.515) = \tfrac12\,\mathrm{erfc}\!\left(\tfrac{2.515}{\sqrt2}\right) = \tfrac12\,\mathrm{erfc}(1.778) = \tfrac12\times 0.01191 \approx 5.95\times 10^{-3}$。
+4. **前係数**:$\;\dfrac{4}{k}\left(1-\dfrac{1}{\sqrt M}\right) = \dfrac{4}{4}\left(1-\dfrac14\right) = 1\times 0.75 = 0.75$。
+5. **BER**:$\;0.75 \times 5.95\times 10^{-3} \approx 4.47\times 10^{-3}$。
+
+$$ \mathrm{BER}_{16\mathrm{QAM}}(15\,\mathrm{dB}) = 0.75\,Q(2.515) \approx 4.5\times 10^{-3}. $$
+
+`comm.py` の自己テストが「16QAM SNR=15dB」で実測 BER と突き合わせているのもこの点で、
+実測がこの $4.5\times 10^{-3}$ 付近に乗っていればシミュレーションは正しい。
+同じ手順で 4QAM・$\mathrm{SNR}=10$ dB を計算すると、前係数が $\tfrac42(1-\tfrac12)=1$、
+中身が $\sqrt{\tfrac33\times 10}=\sqrt{10}\approx 3.162$ なので $\mathrm{BER}=Q(3.162)\approx 7.8\times 10^{-4}$ となる。
+
+### 代表点の (SNR, 理論 BER) 早見表
+
+上の手計算と同じ式を各方式・各 SNR で評価すると次のようになる(`comm.ber_theory_qam` の出力)。
+SNR が 5 dB 上がるごとに BER が何桁も落ちること、同じ SNR では高次ほど BER が大きいことが数字で読み取れる。
+
+| SNR $E_s/N_0$ [dB] | 4QAM | 16QAM | 64QAM | 256QAM |
+| ---- | ---- | ---- | ---- | ---- |
+| 10 | $7.8\times10^{-4}$ | $5.9\times10^{-2}$ | $1.4\times10^{-1}$ | $1.7\times10^{-1}$ |
+| 15 | $9.4\times10^{-9}$ | $4.5\times10^{-3}$ | $6.4\times10^{-2}$ | $1.3\times10^{-1}$ |
+| 20 | $7.6\times10^{-24}$ | $2.9\times10^{-6}$ | $8.5\times10^{-3}$ | $6.5\times10^{-2}$ |
+| 25 | $4.8\times10^{-71}$ | $6.8\times10^{-16}$ | $3.0\times10^{-5}$ | $1.3\times10^{-2}$ |
+
+4QAM・20 dB のように BER が極端に小さい点は、モンテカルロ(下限 $\sim 10^{-6}$)では測れない。
+解析解はこういう領域でも数値が出せるのが強みで、図の実線が実測点より下まで伸びているのはこのためになる。
+
+### シンボルあたり SNR とビットあたり SNR($E_b/N_0$)の換算
+
+この問題の横軸は 1 シンボルあたりの SNR $E_s/N_0$ だが、方式どうしを公平に比べるときは
+1 ビットあたりの SNR $E_b/N_0$(Eb/N0)を使うこともある。1 シンボルが $k=\log_2 M$ ビットを運ぶので、
+両者は
+
+$$ E_s/N_0 = k\,\cdot\,E_b/N_0, \qquad \text{dB では}\quad (E_s/N_0)_{\mathrm{dB}} = (E_b/N_0)_{\mathrm{dB}} + 10\log_{10}k $$
+
+の関係にある。たとえば 16QAM($k=4$)で $E_s/N_0 = 15$ dB のとき、$10\log_{10}4 \approx 6.02$ dB なので
+
+$$ E_b/N_0 = 15 - 10\log_{10}4 \approx 15 - 6.02 = 8.98\,\mathrm{dB}. $$
+
+逆に $E_b/N_0 = 12$ dB を基準にしたければ $E_s/N_0 = 12 + 6.02 = 18.02$ dB を式に入れればよい。
+`comm.ber_theory_qam` の引数 `snr_per="bit"` を使うと、内部で $\gamma_s = k\,\gamma_b$ と読み替えてこの換算を済ませてくれる。
+
 ---
 
 ## 3. QAM 次数を上げるほど SNR ペナルティが要る

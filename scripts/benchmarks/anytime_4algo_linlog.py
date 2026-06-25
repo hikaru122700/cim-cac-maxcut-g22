@@ -29,7 +29,7 @@ from scripts.benchmarks.anytime_bench import run_algo_sweep, setup_style
 
 EXPERIMENT_KIND = "anytime_linlog"
 ALGO_ORDER = ["CIM", "SA", "GA", "CAC"]   # 対象 4 手法
-MAX_BATCH_SEC_DEFAULT = 45.0
+MAX_BATCH_SEC_DEFAULT = 120.0
 
 
 def get_out_dir(desc: str) -> Path:
