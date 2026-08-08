@@ -32,3 +32,9 @@ tools/
 # Local temp / backup files
 *.tmp
 input/K2000_numpy_seed0_backup.txt
+
+# Tool caches / Claude Code worktrees (regenerable, 追跡不要)
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.claude/worktrees/

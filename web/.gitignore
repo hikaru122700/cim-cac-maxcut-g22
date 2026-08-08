@@ -8,3 +8,8 @@ dist-ssr
 .env
 .env.local
 .vercel
+
+# Build artifacts (TypeScript ソースから再生成されるので追跡しない)
+*.tsbuildinfo
+vite.config.js
+vite.config.d.ts
