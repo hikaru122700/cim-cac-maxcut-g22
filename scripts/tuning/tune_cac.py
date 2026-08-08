@@ -22,7 +22,7 @@ Method B の 2 段構成:
     uv run python -m scripts.tune_cac
 
 出力:
-    - phase1 / phase2 の各評価結果を標準出力 + results/tune_cac_log.csv に保存
+    - phase1 / phase2 の各評価結果を標準出力 + results/<実行日>/v<N>_tune_cac_log.csv に保存
     - 最終的な best config での 100 trial 再評価結果
 
 本実装のスコープ:
@@ -37,6 +37,7 @@ from __future__ import annotations
 import csv
 import time
 from dataclasses import asdict, dataclass, fields, replace
+from datetime import date
 from pathlib import Path
 from typing import Callable, Literal, Mapping, Sequence
 
@@ -382,6 +383,20 @@ def _print_config(label: str, cfg: CACConfig) -> None:
     ))
 
 
+def default_log_path() -> Path:
+    """既定のログ出力先 results/<実行日>/v<N>_tune_cac_log.csv を返す。
+
+    CLAUDE.md の results/ レイアウト規約 (日付フォルダ × v{N} 採番) に従い、
+    results/ 直下を汚さず過去ログも上書きしない。
+    """
+    out_dir = Path(f"results/{date.today().isoformat()}")
+    out_dir.mkdir(parents=True, exist_ok=True)
+    existing = [int(p.name.split("_")[0][1:]) for p in out_dir.iterdir()
+                if p.name.startswith("v") and p.name.endswith("_tune_cac_log.csv")
+                and p.name.split("_")[0][1:].isdigit()]
+    return out_dir / f"v{(max(existing) if existing else 0) + 1}_tune_cac_log.csv"
+
+
 def main(
     graph_path: str = "input/G22.txt",
     screen_outer_steps: int = 20000,
@@ -389,7 +404,7 @@ def main(
     final_outer_steps: int = 50000,
     final_trials: int = 100,
     seed_base: int = 0,
-    output_csv: str = "results/tune_cac_log.csv",
+    output_csv: str | None = None,
     objective: Objective = "lex",
     tau_expanded: bool = True,
 ) -> CACConfig:
@@ -434,7 +449,7 @@ def main(
 
     grids = default_grids(tau_expanded=tau_expanded)
 
-    csv_path = Path(output_csv)
+    csv_path = Path(output_csv) if output_csv else default_log_path()
     csv_path.parent.mkdir(parents=True, exist_ok=True)
     # 新規作成 (既存は上書き)
     if csv_path.exists():
@@ -571,8 +586,8 @@ def _parse_args() -> "argparse.Namespace":
         help="シード基点 (既定: 0)",
     )
     parser.add_argument(
-        "--output-csv", default="results/tune_cac_log.csv",
-        help="ログ出力パス (既定: results/tune_cac_log.csv)",
+        "--output-csv", default=None,
+        help="ログ出力パス (既定: results/<実行日>/v<N>_tune_cac_log.csv)",
     )
     return parser.parse_args()
 

@@ -9,9 +9,9 @@ CAC の実行 + HTML ビジュアライザ生成 CLI。
 
     uv run python -m scripts.run_cac_viz
     uv run python -m scripts.run_cac_viz --num-trials 50 --outer-steps 20000
-    uv run python -m scripts.run_cac_viz --output results/viz/my_run.html
+    uv run python -m scripts.run_cac_viz --output results/2026-04-18/my_run.html
 
-出力: results/viz/cac_<timestamp>.html (または --output で指定)
+出力: results/<実行日>/v<N>_cac_viz.html (または --output で指定)
       ブラウザで開けば全チャートが見える。
 """
 from __future__ import annotations
@@ -22,13 +22,22 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 import argparse
 import time
-from datetime import datetime
+from datetime import date, datetime
 from pathlib import Path
 
 import numpy as np
 
 from scripts.plotting.trace_cac import trace_cac_single_trial
 from scripts.plotting.visualize import RunRecord, write_html
+
+
+def next_version(out_dir: Path, base: str) -> int:
+    """out_dir 内の v{N}_{base}.html の次の版番号を返す (CLAUDE.md の採番規約)。"""
+    out_dir.mkdir(parents=True, exist_ok=True)
+    existing = [int(p.name.split("_")[0][1:]) for p in out_dir.iterdir()
+                if p.name.startswith("v") and p.name.endswith(f"_{base}.html")
+                and p.name.split("_")[0][1:].isdigit()]
+    return (max(existing) if existing else 0) + 1
 
 
 def main(
@@ -153,11 +162,11 @@ def main(
         target_cut=target_cut,
     )
 
-    # 出力先
+    # 出力先: 日付フォルダ × v{N} 採番 (CLAUDE.md の results/ レイアウト規約)
     if output is None:
-        out_path = Path("results/viz") / (
-            f"cac_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html"
-        )
+        out_dir = Path(f"results/{date.today().isoformat()}")
+        out_dir.mkdir(parents=True, exist_ok=True)
+        out_path = out_dir / f"v{next_version(out_dir, 'cac_viz')}_cac_viz.html"
     else:
         out_path = Path(output)
 
@@ -187,7 +196,7 @@ def _parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--output", default=None,
-        help="HTML 出力先 (既定: results/viz/cac_<timestamp>.html)",
+        help="HTML 出力先 (既定: results/<実行日>/v<N>_cac_viz.html)",
     )
     parser.add_argument("--target-cut", type=int, default=13359)
     return parser.parse_args()

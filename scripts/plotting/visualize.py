@@ -24,7 +24,7 @@ Canvas2D ベースの自己完結 HTML ファイルを生成する。
         wall_time_sec=12.3, timestamp="2026-04-18T12:34:56",
         target_cut=13359,
     )
-    path = write_html(record, Path("results/viz/cac_run.html"))
+    path = write_html(record, Path("results/2026-04-18/v1_cac_run.html"))
 """
 from __future__ import annotations
 

@@ -161,9 +161,9 @@ CLI フラグ:
 | `--final-trials N` | 100 | Final 評価の trial 数 |
 | `--final-steps N` | 50000 | Final 評価の外ループ step 数 |
 | `--seed-base N` | 0 | シード基点 |
-| `--output-csv PATH` | `results/tune_cac_log.csv` | ログ出力先 |
+| `--output-csv PATH` | `results/<実行日>/v<N>_tune_cac_log.csv` | ログ出力先 |
 
-ログは `results/tune_cac_log.csv` に phase 付きで書き出されます。
+ログは `results/<実行日>/v<N>_tune_cac_log.csv` に phase 付きで書き出されます。
 
 単体テスト (numba を起動せず純粋ロジックのみ):
 
@@ -185,10 +185,10 @@ uv run python -m scripts.plotting.run_cac_viz
 uv run python -m scripts.plotting.run_cac_viz --num-trials 10 --outer-steps 5000
 
 # 出力先指定
-uv run python -m scripts.plotting.run_cac_viz --output results/viz/my_run.html
+uv run python -m scripts.plotting.run_cac_viz --output results/2026-04-18/my_run.html
 ```
 
-出力先 (既定): `results/viz/cac_<timestamp>.html`
+出力先 (既定): `results/<実行日>/v<N>_cac_viz.html`
 
 実装構成:
 
@@ -233,7 +233,7 @@ CLI フラグ:
 | `--seed-base N` | 0 | シード基点 |
 | `--snapshot-interval N` | 100 | 集計スナップショット周期 |
 | `--spin-frame-interval N` | 500 | AHC プレーヤー用 per-spin フレーム周期 (小さすぎると HTML 肥大化) |
-| `--output PATH` | `results/viz/cac_<ts>.html` | HTML 出力先 |
+| `--output PATH` | `results/<実行日>/v<N>_cac_viz.html` | HTML 出力先 |
 | `--target-cut N` | 13359 | 目標 cut (既知最良解) |
 
 単体テスト (純粋ロジックのみ, numba 不要):
@@ -326,9 +326,8 @@ Inoue & Yoshida 2022 の Eq.(6) は真空ゆらぎ分散 `σ² = (2-η)·G/4·BW
 ├── papers/                           # 参照論文 PDF (SB 系)
 ├── results/                          # 日付サブフォルダ管理 (CLAUDE.md 参照)
 │   ├── YYYY-MM-DD/                   # 日付ごとに v{N}_*.png でバージョン採番
-│   ├── benchmark_gset.csv            # 全期間共通の集計マスタ
-│   ├── tune_cac_log.csv
-│   └── viz/                          # ビジュアライザ HTML 出力
+│   │                                 #   (チューニングログ・ビジュアライザ HTML もここ)
+│   └── benchmark_gset.csv            # 全期間共通の集計マスタ
 ├── CLAUDE.md                         # プロジェクト共通ルール
 ├── README.md
 ├── LICENSE                           # MIT
