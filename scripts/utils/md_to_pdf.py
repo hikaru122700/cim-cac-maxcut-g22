@@ -10,6 +10,7 @@ output 省略時は入力と同じ場所に拡張子 .pdf で出力する。
 from __future__ import annotations
 
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -113,25 +114,46 @@ def md_to_html(md_path: Path) -> str:
 
 
 def html_to_pdf(html: str, pdf_path: Path) -> None:
+    """Chrome ヘッドレスで PDF を書き出す。
+
+    直接 pdf_path へ吐かせると、Chrome が書き出しに失敗しても
+    「前回の PDF がそこに在る」だけで成功に見えてしまう(実際に、既存 PDF を
+    ビューアで開いたままだと上書きできず、古いままなのに saved と表示された)。
+    そこで **必ず一時ファイルへ書かせ、生成を確認してから差し替える**。
+    """
     chrome = find_chrome()
     with tempfile.TemporaryDirectory() as tmp:
         html_file = Path(tmp) / "doc.html"
         html_file.write_text(html, encoding="utf-8")
+        out_tmp = Path(tmp) / "out.pdf"
         cmd = [
             chrome,
             "--headless=new",
             "--disable-gpu",
             "--no-pdf-header-footer",
+            # 起動中の Chrome に相乗りすると印刷せず即 exit 0 することがあるため、
+            # 使い捨てのプロファイルで独立したインスタンスを立てる
+            f"--user-data-dir={Path(tmp) / 'profile'}",
+            "--no-first-run",
             "--virtual-time-budget=20000",  # MathJax の描画完了を待つ
-            f"--print-to-pdf={pdf_path}",
+            f"--print-to-pdf={out_tmp}",
             html_file.as_uri(),
         ]
-        subprocess.run(cmd, check=True, capture_output=True, timeout=120)
+        proc = subprocess.run(cmd, capture_output=True, timeout=180)
         # Chrome が書き出すまで僅かに待つ
-        for _ in range(20):
-            if pdf_path.exists() and pdf_path.stat().st_size > 0:
+        for _ in range(30):
+            if out_tmp.exists() and out_tmp.stat().st_size > 0:
                 break
             time.sleep(0.2)
+        if not (out_tmp.exists() and out_tmp.stat().st_size > 0):
+            err = proc.stderr.decode("utf-8", "replace")[-800:]
+            raise RuntimeError(
+                f"Chrome が PDF を生成しませんでした (exit={proc.returncode})\n{err}")
+        try:
+            shutil.copyfile(out_tmp, pdf_path)
+        except PermissionError as e:
+            raise RuntimeError(
+                f"{pdf_path} を書き換えられません。PDF ビューアで開いていませんか?") from e
 
 
 def main() -> None:
@@ -147,7 +169,8 @@ def main() -> None:
     html = md_to_html(md_path)
     html_to_pdf(html, pdf_path)
     size = pdf_path.stat().st_size if pdf_path.exists() else 0
-    print(f"saved: {pdf_path}  ({size/1024:.1f} KB)")
+    mtime = time.strftime("%H:%M:%S", time.localtime(pdf_path.stat().st_mtime))
+    print(f"saved: {pdf_path}  ({size/1024:.1f} KB, mtime {mtime})")
 
 
 if __name__ == "__main__":
