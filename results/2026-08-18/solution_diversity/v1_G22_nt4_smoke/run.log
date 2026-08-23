@@ -1,0 +1,29 @@
+out_dir = results\2026-08-18\solution_diversity\v1_G22_nt4_smoke
+datasets=['G22'] algos=['CIM', 'SA', 'SB', 'GA'] num_trials=4
+
+=== G22 (BKS=13359, 目標 0s/バッチ) ===
+    CIM  b=      150 t=   0.02s  mean=  11232.5 max=  11708
+    CIM  b=      300 t=   0.03s  mean=  13083.5 max=  13113
+    CIM  b=      600 t=   0.17s  mean=  13258.5 max=  13262
+    CIM  b=     1200 t=   0.15s  mean=  13316.5 max=  13330
+    CIM  b=     2400 t=   0.27s  mean=  13317.0 max=  13331
+    CIM  b=     4800 t=   0.70s  mean=  13317.0 max=  13331
+  -> CIM  採用 b=2400 t=0.27s  gap平均=0.314% 平均距離=0.2429 相異なる解=4/4 固定頂点=55.4% エントロピー=0.384bit
+    SA   b=    30000 t=   0.01s  mean=  13004.0 max=  13060
+    SA   b=   100000 t=   0.02s  mean=  13140.2 max=  13176
+    SA   b=   300000 t=   0.04s  mean=  13222.0 max=  13238
+    SA   b=  1000000 t=   0.08s  mean=  13301.5 max=  13314
+    SA   b=  3000000 t=   0.20s  mean=  13338.8 max=  13354
+    SA   b= 10000000 t=   0.66s  mean=  13342.0 max=  13356
+  -> SA   採用 b=3000000 t=0.20s  gap平均=0.152% 平均距離=0.2972 相異なる解=4/4 固定頂点=41.2% エントロピー=0.492bit
+    SB   b=      150 t=   0.04s  mean=  13252.0 max=  13274
+    SB   b=      400 t=   0.10s  mean=  13292.8 max=  13302
+    SB   b=     1000 t=   0.07s  mean=  13318.8 max=  13338
+    SB   b=     2500 t=   0.18s  mean=  13353.5 max=  13356
+    SB   b=     6000 t=   0.39s  mean=  13353.0 max=  13356
+    SB   b=    15000 t=   1.17s  mean=  13355.0 max=  13357
+  -> SB   採用 b=6000 t=0.39s  gap平均=0.045% 平均距離=0.0950 相異なる解=4/4 固定頂点=82.6% エントロピー=0.150bit
+    GA   b=        3 t=   0.77s  mean=  13336.2 max=  13357
+  -> GA   採用 b=3 t=0.77s  gap平均=0.170% 平均距離=0.3237 相異なる解=4/4 固定頂点=39.5% エントロピー=0.515bit
+
+saved -> results\2026-08-18\solution_diversity\v1_G22_nt4_smoke
