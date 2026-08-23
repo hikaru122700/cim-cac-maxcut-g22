@@ -1,0 +1,172 @@
+{
+ "meta": {
+  "datasets": [
+   "G22",
+   "G55",
+   "G70"
+  ],
+  "num_trials": 32,
+  "algos": [
+   "baseline"
+  ],
+  "experiments": [
+   0
+  ],
+  "near_gap_pct": 0.5,
+  "tag": "seedcheck",
+  "seed_offset": 200,
+  "base_rounds": {
+   "G22": 4800,
+   "G55": 9600,
+   "G70": 4800
+  },
+  "bks": {
+   "G22": 13359,
+   "G55": 10299,
+   "G70": 9591
+  },
+  "cim_params": {
+   "G22": {
+    "kappa": 253.83145431791291,
+    "L": 0.027829145901910754,
+    "gamma": 7.2102623149028435,
+    "eta": 0.09184765832117335,
+    "bandwidth": 1640034004.7080789,
+    "photon_energy": 6.335180067425749e-20,
+    "dP_per_round": 1.553743564765986e-05,
+    "coupling": -0.04942805518421356
+   },
+   "G55": {
+    "kappa": 86.54504094458456,
+    "L": 0.045036675902014246,
+    "gamma": 15.086957274979966,
+    "eta": 0.09759208743976601,
+    "bandwidth": 1000000000.0,
+    "photon_energy": 6.6e-20,
+    "dP_per_round": 2.520304854118271e-05,
+    "coupling": -0.13023104321365392
+   },
+   "G70": {
+    "kappa": 304.1244860964944,
+    "L": 0.04117594017246169,
+    "gamma": 0.7903860211132121,
+    "eta": 0.00713940380565564,
+    "bandwidth": 1000000000.0,
+    "photon_energy": 6.6e-20,
+    "dP_per_round": 8.842480587996874e-06,
+    "coupling": -0.1528924544494965
+   }
+  },
+  "configs": [
+   {
+    "exp": 0,
+    "key": "baseline",
+    "label": "baseline",
+    "knobs": {},
+    "dp_mult": 1.0,
+    "rounds_mult": 1.0
+   }
+  ]
+ },
+ "results": {
+  "G22": {
+   "baseline": {
+    "num_trials": 32,
+    "n": 2000,
+    "cut_mean": 13295.34375,
+    "cut_max": 13328.0,
+    "cut_min": 13275.0,
+    "cut_std": 14.277625360594808,
+    "gap_pct_mean": 0.47650460363799685,
+    "gap_pct_best": 0.2320532974025002,
+    "mean_pairwise": 0.34459375,
+    "median_pairwise": 0.369,
+    "min_pairwise": 0.0285,
+    "max_pairwise": 0.5,
+    "n_distinct": 32,
+    "n_distinct_cuts": 20,
+    "frozen_frac": 0.01,
+    "entropy_bits": 0.8326596529777842,
+    "near_gap_pct": 0.5,
+    "n_near": 14,
+    "near_mean_pairwise": 0.3064945054945055,
+    "near_n_distinct": 14,
+    "exp": 0,
+    "config": "baseline",
+    "label": "baseline",
+    "rounds": 4800,
+    "budget": 4800.0,
+    "dP_per_round": 1.553743564765986e-05,
+    "time": 3.736218999954872,
+    "threshold_round": 1838.2386447641302,
+    "threshold_frac": 0.38296638432586044
+   }
+  },
+  "G55": {
+   "baseline": {
+    "num_trials": 32,
+    "n": 5000,
+    "cut_mean": 10178.34375,
+    "cut_max": 10205.0,
+    "cut_min": 10147.0,
+    "cut_std": 15.51331962983745,
+    "gap_pct_mean": 1.171533644043111,
+    "gap_pct_best": 0.9127099718419265,
+    "mean_pairwise": 0.38126330645161294,
+    "median_pairwise": 0.3931,
+    "min_pairwise": 0.1166,
+    "max_pairwise": 0.4998,
+    "n_distinct": 32,
+    "n_distinct_cuts": 26,
+    "frozen_frac": 0.0008,
+    "entropy_bits": 0.9128613045796025,
+    "near_gap_pct": 0.5,
+    "n_near": 0,
+    "near_mean_pairwise": NaN,
+    "near_n_distinct": 0,
+    "exp": 0,
+    "config": "baseline",
+    "label": "baseline",
+    "rounds": 9600,
+    "budget": 9600.0,
+    "dP_per_round": 2.520304854118271e-05,
+    "time": 11.205589800025336,
+    "threshold_round": 3535.4712588045695,
+    "threshold_frac": 0.368278256125476
+   }
+  },
+  "G70": {
+   "baseline": {
+    "num_trials": 32,
+    "n": 10000,
+    "cut_mean": 9476.90625,
+    "cut_max": 9507.0,
+    "cut_min": 9452.0,
+    "cut_std": 11.530826550490646,
+    "gap_pct_mean": 1.1895918048170162,
+    "gap_pct_best": 0.8758210822646231,
+    "mean_pairwise": 0.3743461693548387,
+    "median_pairwise": 0.3829,
+    "min_pairwise": 0.1164,
+    "max_pairwise": 0.4983,
+    "n_distinct": 32,
+    "n_distinct_cuts": 25,
+    "frozen_frac": 0.0717,
+    "entropy_bits": 0.7952251681901747,
+    "near_gap_pct": 0.5,
+    "n_near": 0,
+    "near_mean_pairwise": NaN,
+    "near_n_distinct": 0,
+    "exp": 0,
+    "config": "baseline",
+    "label": "baseline",
+    "rounds": 4800,
+    "budget": 4800.0,
+    "dP_per_round": 8.842480587996874e-06,
+    "time": 9.720045699970797,
+    "threshold_round": 4403.557761416315,
+    "threshold_frac": 0.9174078669617323
+   }
+  }
+ }
+}

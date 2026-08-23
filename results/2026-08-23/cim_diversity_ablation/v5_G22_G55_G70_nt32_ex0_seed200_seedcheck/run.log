@@ -1,0 +1,13 @@
+out_dir = C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-08-23\cim_diversity_ablation\v5_G22_G55_G70_nt32_ex0_seed200_seedcheck
+datasets=['G22', 'G55', 'G70'] num_trials=32 experiments=[0] 条件数=1
+
+=== G22 (n=2000, BKS=13359, baseline 4800 rounds) ===
+  ex0 baseline       rounds=  4800 t=   3.7s  gap平均=  0.477%  平均距離=0.3446  相異なる解=32/32  固定頂点= 1.00%  エントロピー=0.833bit  しきい値round=1838(38%)
+
+=== G55 (n=5000, BKS=10299, baseline 9600 rounds) ===
+  ex0 baseline       rounds=  9600 t=  11.2s  gap平均=  1.172%  平均距離=0.3813  相異なる解=32/32  固定頂点= 0.08%  エントロピー=0.913bit  しきい値round=3535(37%)
+
+=== G70 (n=10000, BKS=9591, baseline 4800 rounds) ===
+  ex0 baseline       rounds=  4800 t=   9.7s  gap平均=  1.190%  平均距離=0.3743  相異なる解=32/32  固定頂点= 7.17%  エントロピー=0.795bit  しきい値round=4404(92%)
+
+saved -> C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-08-23\cim_diversity_ablation\v5_G22_G55_G70_nt32_ex0_seed200_seedcheck

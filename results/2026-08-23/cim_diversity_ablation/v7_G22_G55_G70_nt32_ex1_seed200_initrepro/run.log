@@ -1,0 +1,22 @@
+out_dir = C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-08-23\cim_diversity_ablation\v7_G22_G55_G70_nt32_ex1_seed200_initrepro
+datasets=['G22', 'G55', 'G70'] num_trials=32 experiments=[1] 条件数=4
+
+=== G22 (n=2000, BKS=13359, baseline 4800 rounds) ===
+  ex0 baseline       rounds=  4800 t=   3.7s  gap平均=  0.477%  平均距離=0.3446  相異なる解=32/32  固定頂点= 1.00%  エントロピー=0.833bit  しきい値round=1838(38%)
+  ex1 init1e-05      rounds=  4800 t=   3.7s  gap平均=  0.467%  平均距離=0.3500  相異なる解=31/32  固定頂点= 1.80%  エントロピー=0.807bit  しきい値round=1838(38%)
+  ex1 init0.001      rounds=  4800 t=   3.7s  gap平均=  0.462%  平均距離=0.3500  相異なる解=31/32  固定頂点= 1.75%  エントロピー=0.807bit  しきい値round=1838(38%)
+  ex1 init0.1        rounds=  4800 t=   3.6s  gap平均=  0.454%  平均距離=0.3528  相異なる解=30/32  固定頂点= 1.25%  エントロピー=0.818bit  しきい値round=1838(38%)
+
+=== G55 (n=5000, BKS=10299, baseline 9600 rounds) ===
+  ex0 baseline       rounds=  9600 t=  11.0s  gap平均=  1.172%  平均距離=0.3813  相異なる解=32/32  固定頂点= 0.08%  エントロピー=0.913bit  しきい値round=3535(37%)
+  ex1 init1e-05      rounds=  9600 t=  10.9s  gap平均=  1.151%  平均距離=0.3816  相異なる解=32/32  固定頂点= 0.14%  エントロピー=0.865bit  しきい値round=3535(37%)
+  ex1 init0.001      rounds=  9600 t=  10.9s  gap平均=  1.175%  平均距離=0.3894  相異なる解=32/32  固定頂点= 0.00%  エントロピー=0.943bit  しきい値round=3535(37%)
+  ex1 init0.1        rounds=  9600 t=  13.2s  gap平均=  1.165%  平均距離=0.4175  相異なる解=32/32  固定頂点= 0.00%  エントロピー=0.925bit  しきい値round=3535(37%)
+
+=== G70 (n=10000, BKS=9591, baseline 4800 rounds) ===
+  ex0 baseline       rounds=  4800 t=  16.8s  gap平均=  1.190%  平均距離=0.3743  相異なる解=32/32  固定頂点= 7.17%  エントロピー=0.795bit  しきい値round=4404(92%)
+  ex1 init1e-05      rounds=  4800 t=  16.7s  gap平均=  1.194%  平均距離=0.3865  相異なる解=32/32  固定頂点= 0.03%  エントロピー=0.862bit  しきい値round=4404(92%)
+  ex1 init0.001      rounds=  4800 t=  17.3s  gap平均=  1.194%  平均距離=0.3865  相異なる解=32/32  固定頂点= 0.03%  エントロピー=0.862bit  しきい値round=4404(92%)
+  ex1 init0.1        rounds=  4800 t=  17.2s  gap平均=  1.194%  平均距離=0.3865  相異なる解=32/32  固定頂点= 0.03%  エントロピー=0.862bit  しきい値round=4404(92%)
+
+saved -> C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-08-23\cim_diversity_ablation\v7_G22_G55_G70_nt32_ex1_seed200_initrepro

@@ -1,0 +1,21 @@
+out_dir = C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-08-23\cim_diversity_ablation\v2_G22_nt4_ex1234_r400_smoke
+datasets=['G22'] num_trials=4 experiments=[1, 2, 3, 4] 条件数=15
+
+=== G22 (n=2000, BKS=13359, baseline 400 rounds) ===
+  ex0 baseline       rounds=   400 t=   0.0s  gap平均=  1.368%  平均距離=0.2162  相異なる解= 4/4  固定頂点=60.20%  エントロピー=0.342bit  しきい値round=1838(100%)
+  ex1 init1e-05      rounds=   400 t=   0.0s  gap平均=  1.570%  平均距離=0.3488  相異なる解= 4/4  固定頂点=37.80%  エントロピー=0.547bit  しきい値round=1838(100%)
+  ex1 init0.001      rounds=   400 t=   0.0s  gap平均=  1.566%  平均距離=0.3487  相異なる解= 4/4  固定頂点=37.80%  エントロピー=0.547bit  しきい値round=1838(100%)
+  ex1 init0.1        rounds=   400 t=   0.0s  gap平均=  1.490%  平均距離=0.3273  相異なる解= 4/4  固定頂点=41.95%  エントロピー=0.513bit  しきい値round=1838(100%)
+  ex2 dp0.25x        rounds=   400 t=   0.0s  gap平均= 18.149%  平均距離=0.4919  相異なる解= 4/4  固定頂点=13.55%  エントロピー=0.772bit  しきい値round=7353(100%)
+  ex2 dp4x           rounds=   400 t=   0.0s  gap平均=  5.081%  平均距離=0.4403  相異なる解= 4/4  固定頂点=20.65%  エントロピー=0.699bit  しきい値round=460(100%)
+  ex2 dp16x          rounds=   400 t=   0.0s  gap平均=  1.246%  平均距離=0.4372  相異なる解= 4/4  固定頂点=21.05%  エントロピー=0.692bit  しきい値round=115(29%)
+  ex2 dp64x          rounds=   400 t=   0.0s  gap平均=  2.015%  平均距離=0.4743  相異なる解= 4/4  固定頂点=17.30%  エントロピー=0.740bit  しきい値round=29(7%)
+  ex3 noise10x       rounds=   400 t=   0.0s  gap平均=  1.347%  平均距離=0.2171  相異なる解= 4/4  固定頂点=59.95%  エントロピー=0.344bit  しきい値round=1838(100%)
+  ex3 noise100x      rounds=   400 t=   0.0s  gap平均=  1.319%  平均距離=0.2135  相異なる解= 4/4  固定頂点=60.60%  エントロピー=0.338bit  しきい値round=1838(100%)
+  ex3 noise1000x     rounds=   400 t=   0.0s  gap平均=  1.347%  平均距離=0.1914  相異なる解= 4/4  固定頂点=64.75%  エントロピー=0.303bit  しきい値round=1838(100%)
+  ex4 async0.5par    rounds=   800 t=   0.1s  gap平均=  1.411%  平均距離=0.3502  相異なる解= 4/4  固定頂点=25.40%  エントロピー=0.641bit  しきい値round=3676(100%)
+  ex4 async0.25par   rounds=  1600 t=   0.1s  gap平均=  1.643%  平均距離=0.3553  相異なる解= 4/4  固定頂点=32.30%  エントロピー=0.603bit  しきい値round=7353(100%)
+  ex4 async0.5seq    rounds=   800 t=   0.1s  gap平均=  1.443%  平均距離=0.3046  相異なる解= 4/4  固定頂点=50.55%  エントロピー=0.466bit  しきい値round=3676(100%)
+  ex4 async0.25seq   rounds=  1600 t=   0.2s  gap平均=  1.568%  平均距離=0.3298  相異なる解= 4/4  固定頂点=39.05%  エントロピー=0.523bit  しきい値round=7353(100%)
+
+saved -> C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-08-23\cim_diversity_ablation\v2_G22_nt4_ex1234_r400_smoke
