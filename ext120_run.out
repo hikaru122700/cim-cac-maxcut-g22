@@ -1,0 +1,205 @@
+=== anytime_single v1 ===
+datasets=['G22', 'K2000', 'G55', 'G70'] algos=['CIM', 'CAC', 'SA', 'SB', 'PT', 'GA'] num_trials=16
+
+[G22] loading...
+[G22] n=2000 edges=19990 bks=13359
+  --- CIM ---
+    CIM  b=      150 t=  0.18s  mean=  11481.7  max= 11838  gap=1521.0
+    CIM  b=      300 t=  0.36s  mean=  13059.4  max= 13113  gap= 246.0
+    CIM  b=      600 t=  0.71s  mean=  13247.5  max= 13270  gap=  89.0
+    CIM  b=     1200 t=  1.43s  mean=  13307.6  max= 13341  gap=  18.0
+    CIM  b=     2400 t=  2.86s  mean=  13309.4  max= 13342  gap=  17.0
+    CIM  b=     4800 t=  5.68s  mean=  13309.4  max= 13342  gap=  17.0
+    CIM  b=     9600 t= 11.36s  mean=  13309.4  max= 13342  gap=  17.0
+    CIM  b=    19200 t= 22.72s  mean=  13309.4  max= 13342  gap=  17.0
+  --- CAC ---
+    CAC  b=      500 t=  0.47s  mean=  13284.8  max= 13308  gap=  51.0
+    CAC  b=     1500 t=  1.42s  mean=  13318.0  max= 13342  gap=  17.0
+    CAC  b=     4000 t=  3.77s  mean=  13337.9  max= 13356  gap=   3.0
+    CAC  b=    12000 t= 11.33s  mean=  13343.4  max= 13356  gap=   3.0
+    CAC  b=    35000 t= 33.10s  mean=  13346.9  max= 13357  gap=   2.0
+    CAC  b=    80000 t= 75.73s  mean=  13353.6  max= 13358  gap=   1.0
+    CAC  b=   200000 t=189.03s  mean=  13357.2  max= 13358  gap=   1.0
+    CAC  batch>120.0s → 以後の大予算スキップ
+  --- SA ---
+    SA   b=    30000 t=  0.03s  mean=  13017.1  max= 13093  gap= 266.0
+    SA   b=   100000 t=  0.07s  mean=  13140.1  max= 13232  gap= 127.0
+    SA   b=   300000 t=  0.16s  mean=  13230.2  max= 13269  gap=  90.0
+    SA   b=  1000000 t=  0.48s  mean=  13293.7  max= 13327  gap=  32.0
+    SA   b=  3000000 t=  1.39s  mean=  13326.4  max= 13354  gap=   5.0
+    SA   b= 10000000 t=  4.61s  mean=  13342.5  max= 13358  gap=   1.0
+    SA   b= 30000000 t= 13.77s  mean=  13351.5  max= 13358  gap=   1.0
+    SA   b=100000000 t= 45.88s  mean=  13357.1  max= 13359  gap=   0.0
+  --- SB ---
+    SB   b=      150 t=  0.16s  mean=  13256.7  max= 13299  gap=  60.0
+    SB   b=      400 t=  0.40s  mean=  13301.1  max= 13320  gap=  39.0
+    SB   b=     1000 t=  0.99s  mean=  13330.9  max= 13354  gap=   5.0
+    SB   b=     2500 t=  2.46s  mean=  13350.4  max= 13357  gap=   2.0
+    SB   b=     6000 t=  5.94s  mean=  13348.9  max= 13358  gap=   1.0
+    SB   b=    15000 t= 14.75s  mean=  13355.5  max= 13358  gap=   1.0
+    SB   b=    40000 t= 39.24s  mean=  13354.4  max= 13358  gap=   1.0
+    SB   b=   100000 t= 98.05s  mean=  13356.7  max= 13359  gap=   0.0
+  --- PT ---
+    PT   b=       30 t=  1.74s  mean=  13157.7  max= 13192  gap= 167.0
+    PT   b=       80 t=  4.52s  mean=  13249.4  max= 13288  gap=  71.0
+    PT   b=      200 t= 11.18s  mean=  13297.3  max= 13313  gap=  46.0
+    PT   b=      600 t= 33.32s  mean=  13338.4  max= 13351  gap=   8.0
+    PT   b=     1800 t= 99.27s  mean=  13355.0  max= 13357  gap=   2.0
+    PT   b=     5000 t=270.51s  mean=  13356.8  max= 13358  gap=   1.0
+    PT   batch>120.0s → 以後の大予算スキップ
+  --- GA ---
+    GA   b=        3 t=  3.87s  mean=  13334.5  max= 13357  gap=   2.0
+    GA   b=        8 t=  5.02s  mean=  13344.9  max= 13357  gap=   2.0
+    GA   b=       20 t=  7.59s  mean=  13350.2  max= 13358  gap=   1.0
+    GA   b=       50 t= 14.16s  mean=  13357.9  max= 13359  gap=   0.0
+    GA   b=      120 t= 29.62s  mean=  13358.2  max= 13359  gap=   0.0
+    GA   b=      300 t= 69.32s  mean=  13358.2  max= 13359  gap=   0.0
+    GA   b=      800 t=181.36s  mean=  13358.3  max= 13359  gap=   0.0
+    GA   batch>120.0s → 以後の大予算スキップ
+
+[K2000] loading...
+[K2000] n=2000 edges=1999000 bks=33337
+  --- CIM ---
+    CIM  b=      150 t= 15.26s  mean=  32097.8  max= 32338  gap= 999.0
+    CIM  b=      300 t= 30.08s  mean=  32254.8  max= 32446  gap= 891.0
+    CIM  b=      600 t= 59.80s  mean=  32335.1  max= 32514  gap= 823.0
+    CIM  b=     1200 t=118.83s  mean=  32372.1  max= 32525  gap= 812.0
+    CIM  b=     2400 t=237.81s  mean=  32377.8  max= 32543  gap= 794.0
+    CIM  batch>120.0s → 以後の大予算スキップ
+  --- CAC ---
+    CAC  b=      500 t= 49.20s  mean=  26211.4  max= 31862  gap=1475.0
+    CAC  b=     1500 t=145.60s  mean=  26617.1  max= 32364  gap= 973.0
+    CAC  batch>120.0s → 以後の大予算スキップ
+  --- SA ---
+    SA   b=    30000 t=  2.92s  mean=  29699.6  max= 30646  gap=2691.0
+    SA   b=   100000 t=  4.96s  mean=  30695.4  max= 31092  gap=2245.0
+    SA   b=   300000 t= 10.57s  mean=  31128.9  max= 31510  gap=1827.0
+    SA   b=  1000000 t= 30.43s  mean=  31628.5  max= 32084  gap=1253.0
+    SA   b=  3000000 t= 87.03s  mean=  31922.1  max= 32304  gap=1033.0
+    SA   b= 10000000 t=285.43s  mean=  32231.8  max= 32581  gap= 756.0
+    SA   batch>120.0s → 以後の大予算スキップ
+  --- SB ---
+    SB   b=      150 t= 15.38s  mean=  32907.7  max= 33129  gap= 208.0
+    SB   b=      400 t= 40.07s  mean=  33170.3  max= 33278  gap=  59.0
+    SB   b=     1000 t= 99.06s  mean=  33208.3  max= 33221  gap= 116.0
+    SB   b=     2500 t=247.42s  mean=  33208.9  max= 33209  gap= 128.0
+    SB   batch>120.0s → 以後の大予算スキップ
+  --- PT ---
+    PT   b=       30 t= 75.64s  mean=  31110.1  max= 31366  gap=1971.0
+    PT   b=       80 t=200.25s  mean=  31386.1  max= 31635  gap=1702.0
+    PT   batch>120.0s → 以後の大予算スキップ
+  --- GA ---
+    GA   b=        3 t= 19.78s  mean=  33101.8  max= 33247  gap=  90.0
+    GA   b=        8 t= 28.35s  mean=  33164.2  max= 33250  gap=  87.0
+    GA   b=       20 t= 49.14s  mean=  33203.6  max= 33267  gap=  70.0
+    GA   b=       50 t=102.28s  mean=  33261.5  max= 33304  gap=  33.0
+    GA   b=      120 t=223.20s  mean=  33276.9  max= 33308  gap=  29.0
+    GA   batch>120.0s → 以後の大予算スキップ
+
+[G55] loading...
+[G55] n=5000 edges=12498 bks=10299
+  --- CIM ---
+    CIM  b=      150 t=  0.18s  mean=   9787.1  max=  9833  gap= 466.0
+    CIM  b=      300 t=  0.34s  mean=  10014.3  max= 10049  gap= 250.0
+    CIM  b=      600 t=  0.69s  mean=  10133.8  max= 10179  gap= 120.0
+    CIM  b=     1200 t=  1.38s  mean=  10180.9  max= 10220  gap=  79.0
+    CIM  b=     2400 t=  2.76s  mean=  10186.2  max= 10225  gap=  74.0
+    CIM  b=     4800 t=  5.58s  mean=  10186.4  max= 10225  gap=  74.0
+    CIM  b=     9600 t= 11.01s  mean=  10186.4  max= 10225  gap=  74.0
+    CIM  b=    19200 t= 22.04s  mean=  10186.4  max= 10225  gap=  74.0
+  --- CAC ---
+    CAC  b=      500 t=  0.27s  mean=  10119.6  max= 10179  gap= 120.0
+    CAC  b=     1500 t=  0.81s  mean=  10169.3  max= 10215  gap=  84.0
+    CAC  b=     4000 t=  2.18s  mean=  10204.0  max= 10237  gap=  62.0
+    CAC  b=    12000 t=  6.96s  mean=  10231.5  max= 10246  gap=  53.0
+    CAC  b=    35000 t= 23.63s  mean=  10250.1  max= 10269  gap=  30.0
+    CAC  b=    80000 t= 56.14s  mean=  10260.4  max= 10269  gap=  30.0
+    CAC  b=   200000 t=143.21s  mean=  10263.9  max= 10272  gap=  27.0
+    CAC  batch>120.0s → 以後の大予算スキップ
+  --- SA ---
+    SA   b=    30000 t=  0.02s  mean=   9604.2  max=  9670  gap= 629.0
+    SA   b=   100000 t=  0.04s  mean=   9916.2  max=  9956  gap= 343.0
+    SA   b=   300000 t=  0.10s  mean=  10063.9  max= 10098  gap= 201.0
+    SA   b=  1000000 t=  0.29s  mean=  10157.4  max= 10187  gap= 112.0
+    SA   b=  3000000 t=  0.83s  mean=  10204.9  max= 10232  gap=  67.0
+    SA   b= 10000000 t=  2.72s  mean=  10244.2  max= 10256  gap=  43.0
+    SA   b= 30000000 t=  8.13s  mean=  10267.8  max= 10281  gap=  18.0
+    SA   b=100000000 t= 27.15s  mean=  10279.3  max= 10289  gap=  10.0
+  --- SB ---
+    SB   b=      150 t=  0.09s  mean=  10157.6  max= 10178  gap= 121.0
+    SB   b=      400 t=  0.23s  mean=  10210.9  max= 10238  gap=  61.0
+    SB   b=     1000 t=  0.56s  mean=  10238.5  max= 10253  gap=  46.0
+    SB   b=     2500 t=  1.39s  mean=  10256.5  max= 10273  gap=  26.0
+    SB   b=     6000 t=  3.36s  mean=  10266.2  max= 10277  gap=  22.0
+    SB   b=    15000 t=  8.40s  mean=  10272.2  max= 10284  gap=  15.0
+    SB   b=    40000 t= 22.31s  mean=  10273.8  max= 10286  gap=  13.0
+    SB   b=   100000 t= 55.33s  mean=  10279.3  max= 10288  gap=  11.0
+  --- PT ---
+    PT   b=       30 t=  2.22s  mean=   9997.5  max= 10032  gap= 267.0
+    PT   b=       80 t=  5.83s  mean=  10128.2  max= 10150  gap= 149.0
+    PT   b=      200 t= 14.47s  mean=  10185.7  max= 10205  gap=  94.0
+    PT   b=      600 t= 43.25s  mean=  10231.5  max= 10243  gap=  56.0
+    PT   b=     1800 t=129.54s  mean=  10261.1  max= 10274  gap=  25.0
+    PT   batch>120.0s → 以後の大予算スキップ
+  --- GA ---
+    GA   b=        3 t=  6.92s  mean=  10035.4  max= 10087  gap= 212.0
+    GA   b=        8 t= 10.73s  mean=  10078.8  max= 10111  gap= 188.0
+    GA   b=       20 t= 20.25s  mean=  10137.0  max= 10177  gap= 122.0
+    GA   b=       50 t= 43.56s  mean=  10171.4  max= 10196  gap= 103.0
+    GA   b=      120 t=100.33s  mean=  10200.9  max= 10221  gap=  78.0
+    GA   b=      300 t=242.50s  mean=  10221.0  max= 10233  gap=  66.0
+    GA   batch>120.0s → 以後の大予算スキップ
+
+[G70] loading...
+[G70] n=10000 edges=9999 bks=9591
+  --- CIM ---
+    CIM  b=      150 t=  0.29s  mean=   5495.8  max=  5544  gap=4047.0
+    CIM  b=      300 t=  0.57s  mean=   9071.6  max=  9111  gap= 480.0
+    CIM  b=      600 t=  1.12s  mean=   9316.8  max=  9343  gap= 248.0
+    CIM  b=     1200 t=  2.27s  mean=   9436.7  max=  9459  gap= 132.0
+    CIM  b=     2400 t=  4.51s  mean=   9478.3  max=  9501  gap=  90.0
+    CIM  b=     4800 t=  9.01s  mean=   9478.3  max=  9501  gap=  90.0
+    CIM  b=     9600 t= 17.99s  mean=   9478.3  max=  9501  gap=  90.0
+    CIM  b=    19200 t= 36.04s  mean=   9478.3  max=  9501  gap=  90.0
+  --- CAC ---
+    CAC  b=      500 t=  0.35s  mean=   9391.1  max=  9424  gap= 167.0
+    CAC  b=     1500 t=  1.03s  mean=   9430.6  max=  9470  gap= 121.0
+    CAC  b=     4000 t=  2.76s  mean=   9442.0  max=  9480  gap= 111.0
+    CAC  b=    12000 t= 30.24s  mean=   9448.8  max=  9480  gap= 111.0
+    CAC  b=    35000 t=216.93s  mean=   9452.2  max=  9483  gap= 108.0
+    CAC  batch>120.0s → 以後の大予算スキップ
+  --- SA ---
+    SA   b=    30000 t=  0.02s  mean=   8213.2  max=  8285  gap=1306.0
+    SA   b=   100000 t=  0.04s  mean=   8905.2  max=  8941  gap= 650.0
+    SA   b=   300000 t=  0.09s  mean=   9167.6  max=  9193  gap= 398.0
+    SA   b=  1000000 t=  0.24s  mean=   9314.2  max=  9342  gap= 249.0
+    SA   b=  3000000 t=  0.71s  mean=   9398.2  max=  9419  gap= 172.0
+    SA   b= 10000000 t=  2.27s  mean=   9469.0  max=  9494  gap=  97.0
+    SA   b= 30000000 t=  6.76s  mean=   9517.6  max=  9532  gap=  59.0
+    SA   b=100000000 t= 22.72s  mean=   9545.8  max=  9561  gap=  30.0
+  --- SB ---
+    SB   b=      150 t=  0.10s  mean=   9381.2  max=  9396  gap= 195.0
+    SB   b=      400 t=  0.27s  mean=   9441.0  max=  9457  gap= 134.0
+    SB   b=     1000 t=  0.65s  mean=   9487.8  max=  9504  gap=  87.0
+    SB   b=     2500 t=  1.62s  mean=   9511.4  max=  9531  gap=  60.0
+    SB   b=     6000 t=  3.90s  mean=   9530.3  max=  9549  gap=  42.0
+    SB   b=    15000 t=  9.75s  mean=   9537.3  max=  9546  gap=  45.0
+    SB   b=    40000 t= 26.07s  mean=   9540.9  max=  9552  gap=  39.0
+    SB   b=   100000 t= 64.77s  mean=   9543.7  max=  9555  gap=  36.0
+  --- PT ---
+    PT   b=       30 t=  3.37s  mean=   9314.9  max=  9340  gap= 251.0
+    PT   b=       80 t=  8.75s  mean=   9397.9  max=  9415  gap= 176.0
+    PT   b=      200 t= 21.88s  mean=   9444.9  max=  9468  gap= 123.0
+    PT   b=      600 t= 65.61s  mean=   9499.4  max=  9516  gap=  75.0
+    PT   b=     1800 t=196.44s  mean=   9527.3  max=  9540  gap=  51.0
+    PT   batch>120.0s → 以後の大予算スキップ
+  --- GA ---
+    GA   b=        3 t= 11.92s  mean=   9205.3  max=  9244  gap= 347.0
+    GA   b=        8 t= 18.15s  mean=   9237.8  max=  9271  gap= 320.0
+    GA   b=       20 t= 30.48s  mean=   9293.9  max=  9324  gap= 267.0
+    GA   b=       50 t= 64.31s  mean=   9364.3  max=  9386  gap= 205.0
+    GA   b=      120 t=137.65s  mean=   9449.0  max=  9482  gap= 109.0
+    GA   batch>120.0s → 以後の大予算スキップ
+
+saved → results\2026-06-22\anytime_single\v1_G22_K2000_G55_G70_nt16_ext120
+OUT_DIR=results\2026-06-22\anytime_single\v1_G22_K2000_G55_G70_nt16_ext120

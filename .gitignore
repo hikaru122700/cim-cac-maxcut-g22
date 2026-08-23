@@ -53,3 +53,6 @@ AutoResearchClaw/**/*.log
 AutoResearchClaw/pipeline_run_*.log
 AutoResearchClaw/.serena/
 AutoResearchClaw/records/
+
+# Claude Code のワークツリー(リポジトリの複製なのでコミットしない)
+.claude/worktrees/
