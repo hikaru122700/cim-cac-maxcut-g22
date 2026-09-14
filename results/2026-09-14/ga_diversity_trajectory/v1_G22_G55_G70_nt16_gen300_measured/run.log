@@ -1,0 +1,57 @@
+OUTPUT=C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-09-14\ga_diversity_trajectory\v1_G22_G55_G70_nt16_gen300_measured
+G22 CIM: 240 independent solutions, 4800 rounds
+G22 random: gen=0, D=0.4345, pool_best_gap=26.438, elapsed=2.7s
+G22 random: gen=131, D=0.0231, pool_best_gap=0.812, elapsed=27.8s
+G22 random: gen=262, D=0.0140, pool_best_gap=0.688, elapsed=52.8s
+G22 random: gen=300, D=0.0138, pool_best_gap=0.688, elapsed=60.0s
+G22 cim: gen=0, D=0.3632, pool_best_gap=10.812, elapsed=2.7s
+G22 cim: gen=133, D=0.0236, pool_best_gap=0.875, elapsed=27.9s
+G22 cim: gen=265, D=0.0197, pool_best_gap=0.875, elapsed=53.0s
+G22 cim: gen=300, D=0.0207, pool_best_gap=0.875, elapsed=59.7s
+G55 CIM: 96 independent solutions, 9600 rounds
+G55 random: gen=0, D=0.4813, pool_best_gap=330.250, elapsed=2.9s
+G55 random: gen=44, D=0.2306, pool_best_gap=122.375, elapsed=27.9s
+G55 random: gen=79, D=0.1957, pool_best_gap=103.812, elapsed=52.9s
+G55 random: gen=109, D=0.1630, pool_best_gap=94.688, elapsed=78.2s
+G55 random: gen=152, D=0.1415, pool_best_gap=84.438, elapsed=103.4s
+G55 random: gen=182, D=0.1294, pool_best_gap=79.625, elapsed=128.9s
+G55 random: gen=212, D=0.1200, pool_best_gap=77.250, elapsed=154.6s
+G55 random: gen=241, D=0.1127, pool_best_gap=73.562, elapsed=179.7s
+G55 random: gen=271, D=0.1081, pool_best_gap=71.500, elapsed=205.4s
+G55 random: gen=300, D=0.1024, pool_best_gap=70.750, elapsed=222.2s
+G55 cim: gen=0, D=0.3645, pool_best_gap=97.938, elapsed=3.1s
+G55 cim: gen=37, D=0.3609, pool_best_gap=97.250, elapsed=28.5s
+G55 cim: gen=76, D=0.3568, pool_best_gap=95.938, elapsed=53.9s
+G55 cim: gen=116, D=0.3607, pool_best_gap=95.438, elapsed=79.4s
+G55 cim: gen=155, D=0.3538, pool_best_gap=95.062, elapsed=104.4s
+G55 cim: gen=194, D=0.3503, pool_best_gap=93.875, elapsed=130.0s
+G55 cim: gen=230, D=0.3428, pool_best_gap=91.062, elapsed=155.0s
+G55 cim: gen=267, D=0.3462, pool_best_gap=89.875, elapsed=180.7s
+G55 cim: gen=300, D=0.3380, pool_best_gap=87.000, elapsed=203.5s
+G70 CIM: 128 independent solutions, 4800 rounds
+G70 random: gen=0, D=0.4895, pool_best_gap=459.500, elapsed=7.1s
+G70 random: gen=27, D=0.3110, pool_best_gap=274.375, elapsed=32.4s
+G70 random: gen=54, D=0.2190, pool_best_gap=220.375, elapsed=57.7s
+G70 random: gen=81, D=0.1478, pool_best_gap=184.250, elapsed=83.0s
+G70 random: gen=108, D=0.0593, pool_best_gap=152.875, elapsed=108.2s
+G70 random: gen=135, D=0.0202, pool_best_gap=138.500, elapsed=133.7s
+G70 random: gen=162, D=0.0097, pool_best_gap=134.562, elapsed=159.1s
+G70 random: gen=189, D=0.0070, pool_best_gap=133.750, elapsed=184.7s
+G70 random: gen=216, D=0.0055, pool_best_gap=132.812, elapsed=210.1s
+G70 random: gen=243, D=0.0041, pool_best_gap=132.312, elapsed=235.4s
+G70 random: gen=270, D=0.0036, pool_best_gap=132.062, elapsed=260.6s
+G70 random: gen=297, D=0.0028, pool_best_gap=132.062, elapsed=286.1s
+G70 random: gen=300, D=0.0026, pool_best_gap=132.062, elapsed=288.9s
+G70 cim: gen=0, D=0.3755, pool_best_gap=95.812, elapsed=7.4s
+G70 cim: gen=27, D=0.3755, pool_best_gap=95.812, elapsed=32.8s
+G70 cim: gen=54, D=0.3755, pool_best_gap=95.812, elapsed=58.8s
+G70 cim: gen=79, D=0.3755, pool_best_gap=95.812, elapsed=83.8s
+G70 cim: gen=108, D=0.3755, pool_best_gap=95.812, elapsed=108.8s
+G70 cim: gen=137, D=0.3755, pool_best_gap=95.812, elapsed=133.9s
+G70 cim: gen=167, D=0.3755, pool_best_gap=95.812, elapsed=159.6s
+G70 cim: gen=195, D=0.3755, pool_best_gap=95.812, elapsed=185.3s
+G70 cim: gen=222, D=0.3755, pool_best_gap=95.812, elapsed=210.6s
+G70 cim: gen=249, D=0.3755, pool_best_gap=95.812, elapsed=235.9s
+G70 cim: gen=276, D=0.3755, pool_best_gap=95.812, elapsed=261.4s
+G70 cim: gen=300, D=0.3755, pool_best_gap=95.812, elapsed=283.8s
+COMPLETE: all snapshot scores and final scores verified; plots saved

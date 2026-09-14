@@ -1,0 +1,38 @@
+{
+  "created": "2026-09-14",
+  "source": "C:\\Users\\owner\\igarashi\\cim-cac-maxcut-g22\\results\\2026-08-23\\cim_diversity_ablation\\v3_G22_G55_G70_nt32_ex1234_main",
+  "selection_repeats": 1000,
+  "selection_seed": 1907,
+  "solver_experiments_run": false,
+  "screenshot_digitized": false,
+  "files": [
+    {
+      "path": "C:\\Users\\owner\\igarashi\\cim-cac-maxcut-g22\\results\\2026-08-23\\cim_diversity_ablation\\v3_G22_G55_G70_nt32_ex1234_main\\results_ref20k.json",
+      "sha256": "5ae1167208aaafd62998d15cfeb68900c781e69a0979b7765fc30e319eafe826"
+    },
+    {
+      "path": "C:\\Users\\owner\\igarashi\\cim-cac-maxcut-g22\\results\\2026-08-23\\cim_diversity_ablation\\v3_G22_G55_G70_nt32_ex1234_main\\signs_ref20k.npz",
+      "sha256": "dcae4d84fb091fa8f13e18ba5923823a139fcc62509f463f9553476d6c024317"
+    },
+    {
+      "path": "C:\\Users\\owner\\igarashi\\cim-cac-maxcut-g22\\scripts\\plotting\\plot_cim_diversity_evidence.py",
+      "sha256": "07b529f70e2eb2a9e1c1641acb9b20c52ff688eb4243e5277429879a9e6b8124"
+    },
+    {
+      "path": "C:\\Users\\owner\\OneDrive\\画像\\Screenshots\\スクリーンショット 2026-09-13 235615.png",
+      "sha256": "a88d93cc4a4dd8030b437503b185b5c572657cf339f6c8a97aa0d40a47e6592d"
+    },
+    {
+      "path": "C:\\Users\\owner\\igarashi\\cim-cac-maxcut-g22\\input\\G22.txt",
+      "sha256": "1b100420195c44c62da2543f404d2b1e620b31cd09074c4e52985d0a6d9f41a2"
+    },
+    {
+      "path": "C:\\Users\\owner\\igarashi\\cim-cac-maxcut-g22\\input\\G55.txt",
+      "sha256": "6cc641c62bdda9985281acfb63b0bf624a0ff002a4c34c8633c10d988e9386f5"
+    },
+    {
+      "path": "C:\\Users\\owner\\igarashi\\cim-cac-maxcut-g22\\input\\G70.txt",
+      "sha256": "4a8c1e4019b0cbfb40ad553dcee525cb373d68804f2617f239fb209cd8e51071"
+    }
+  ]
+}
