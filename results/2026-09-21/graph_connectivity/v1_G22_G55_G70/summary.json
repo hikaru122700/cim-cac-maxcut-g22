@@ -1,0 +1,73 @@
+{
+  "method": "BFS on supplied undirected input graphs",
+  "graphs": [
+    {
+      "graph": "G22",
+      "input": "input/G22.txt",
+      "sha256": "1b100420195c44c62da2543f404d2b1e620b31cd09074c4e52985d0a6d9f41a2",
+      "vertices": 2000,
+      "edges": 19990,
+      "mean_degree": 19.99,
+      "connected_components": 1,
+      "largest_component": 2000,
+      "isolated_vertices": 0,
+      "degree_one_vertices": 0,
+      "max_degree": 37,
+      "edge_weight_counts": {
+        "1": 19990
+      },
+      "component_size_histogram": {
+        "2000": 1
+      }
+    },
+    {
+      "graph": "G55",
+      "input": "input/G55.txt",
+      "sha256": "6cc641c62bdda9985281acfb63b0bf624a0ff002a4c34c8633c10d988e9386f5",
+      "vertices": 5000,
+      "edges": 12498,
+      "mean_degree": 4.9992,
+      "connected_components": 32,
+      "largest_component": 4969,
+      "isolated_vertices": 31,
+      "degree_one_vertices": 174,
+      "max_degree": 15,
+      "edge_weight_counts": {
+        "1": 12498
+      },
+      "component_size_histogram": {
+        "1": 31,
+        "4969": 1
+      }
+    },
+    {
+      "graph": "G70",
+      "input": "input/G70.txt",
+      "sha256": "4a8c1e4019b0cbfb40ad553dcee525cb373d68804f2617f239fb209cd8e51071",
+      "vertices": 10000,
+      "edges": 9999,
+      "mean_degree": 1.9998,
+      "connected_components": 1598,
+      "largest_component": 8013,
+      "isolated_vertices": 1354,
+      "degree_one_vertices": 2673,
+      "max_degree": 9,
+      "edge_weight_counts": {
+        "1": 9999
+      },
+      "component_size_histogram": {
+        "1": 1354,
+        "2": 173,
+        "3": 42,
+        "4": 12,
+        "5": 4,
+        "6": 5,
+        "7": 3,
+        "8": 1,
+        "9": 2,
+        "16": 1,
+        "8013": 1
+      }
+    }
+  ]
+}
