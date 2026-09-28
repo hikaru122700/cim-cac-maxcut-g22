@@ -1,0 +1,10 @@
+K2000 CIM population: 82.17s, 144 solutions, diversity=0.441
+K2000 gen=1: gap mean cold=268.4, warm=251.6, gain=+16.8, p=0.8603, time=4.5/87.1s
+K2000 gen=3: gap mean cold=235.2, warm=224.9, gain=+10.3, p=0.9399, time=5.5/87.9s
+K2000 gen=8: gap mean cold=172.8, warm=172.1, gain=+0.8, p=0.8971, time=7.6/90.3s
+K2000 gen=20: gap mean cold=133.4, warm=124.2, gain=+9.2, p=0.8647, time=13.2/95.8s
+K2000 gen=50: gap mean cold=75.5, warm=82.2, gain=-6.8, p=0.6322, time=22.7/103.2s
+K2000 gen=120: gap mean cold=60.1, warm=56.2, gain=+3.8, p=0.7982, time=46.1/128.5s
+K2000 gen=300: gap mean cold=33.3, warm=37.4, gain=-4.1, p=0.594, time=132.4/222.0s
+K2000 gen=800: gap mean cold=19.9, warm=26.2, gain=-6.3, p=0.4098, time=364.5/443.5s
+C:\Users\hikar\igarashi\cim-cac-maxcut-g22\results\2026-07-26\cim_warmstart\ga_full_population_until_nonsig_G22_G55_G70_K2000_nt16

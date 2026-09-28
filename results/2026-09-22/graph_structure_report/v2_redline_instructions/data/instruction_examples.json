@@ -1,0 +1,6 @@
+{
+  "shared_triangles_edges": 5,
+  "shared_triangles_maxcut": 4,
+  "immediate_gain_before": 1,
+  "immediate_gain_after": 3
+}

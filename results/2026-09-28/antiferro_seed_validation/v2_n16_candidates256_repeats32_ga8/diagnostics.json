@@ -1,0 +1,156 @@
+{
+  "holdout_repeats": 256,
+  "seed_start": 2000000,
+  "sweeps": 10,
+  "temperature": [
+    0.5,
+    0.01
+  ],
+  "groups": [
+    {
+      "distance": 1,
+      "candidates": 6,
+      "success": 0.5279947916666666,
+      "successes": 811,
+      "attempts": 1536
+    },
+    {
+      "distance": 2,
+      "candidates": 12,
+      "success": 0.3111979166666667,
+      "successes": 956,
+      "attempts": 3072
+    },
+    {
+      "distance": 3,
+      "candidates": 16,
+      "success": 0.216796875,
+      "successes": 888,
+      "attempts": 4096
+    },
+    {
+      "distance": 4,
+      "candidates": 20,
+      "success": 0.1697265625,
+      "successes": 869,
+      "attempts": 5120
+    },
+    {
+      "distance": 5,
+      "candidates": 42,
+      "success": 0.12788318452380953,
+      "successes": 1375,
+      "attempts": 10752
+    },
+    {
+      "distance": 6,
+      "candidates": 60,
+      "success": 0.10911458333333333,
+      "successes": 1676,
+      "attempts": 15360
+    },
+    {
+      "distance": 7,
+      "candidates": 48,
+      "success": 0.1025390625,
+      "successes": 1260,
+      "attempts": 12288
+    },
+    {
+      "distance": 8,
+      "candidates": 29,
+      "success": 0.10048491379310345,
+      "successes": 746,
+      "attempts": 7424
+    }
+  ],
+  "examples": [
+    {
+      "cim_seed": 30,
+      "distance": 1,
+      "success": 0.49609375,
+      "successes": 127,
+      "attempts": 256,
+      "state_id": 42404,
+      "route_ids": [
+        42404,
+        42405
+      ],
+      "route_cuts": [
+        23,
+        24
+      ],
+      "flip_vertices": [
+        0
+      ]
+    },
+    {
+      "cim_seed": 8,
+      "distance": 8,
+      "success": 0.10546875,
+      "successes": 27,
+      "attempts": 256,
+      "state_id": 46290,
+      "route_ids": [
+        46290,
+        46802,
+        38610,
+        37586,
+        53970,
+        53978,
+        53850,
+        55898,
+        23130
+      ],
+      "route_cuts": [
+        23,
+        23,
+        23,
+        23,
+        23,
+        23,
+        23,
+        23,
+        24
+      ],
+      "flip_vertices": [
+        9,
+        13,
+        10,
+        14,
+        3,
+        7,
+        11,
+        15
+      ]
+    }
+  ],
+  "crossover": {
+    "square": {
+      "pairs": 128,
+      "repeats": 32,
+      "parent_mean": 19.0,
+      "raw_child_mean": 18.10888671875,
+      "child_ts_mean": 22.85302734375,
+      "parent_ts_mean": 23.0234375,
+      "raw_child_improvement": 0.236328125,
+      "child_ts_improvement": 0.984130859375,
+      "parent_ts_improvement": 0.98828125,
+      "child_minus_parent_ts": -0.17041015625
+    },
+    "triangular": {
+      "pairs": 128,
+      "repeats": 32,
+      "parent_mean": 22.234375,
+      "raw_child_mean": 21.203125,
+      "child_ts_mean": 22.49169921875,
+      "parent_ts_mean": 22.59765625,
+      "raw_child_improvement": 0.013671875,
+      "child_ts_improvement": 0.27880859375,
+      "parent_ts_improvement": 0.3359375,
+      "child_minus_parent_ts": -0.10595703125
+    }
+  },
+  "source_sha256": "f10bd2227914241e8602a5ab7b134d1e67100174188bc5577e49fc6932feab4a",
+  "interpretation": "Exploratory feature chosen using primary run; holdout repeats validate SA probabilities for the same fixed states, not unseen graphs."
+}

@@ -1,0 +1,78 @@
+{
+  "meta": {
+    "datasets": [
+      "G22"
+    ],
+    "candidate_budgets": [
+      1
+    ],
+    "num_trials": 2,
+    "cim_budget": 20,
+    "warm_mode": "ladder",
+    "perturb_max": 0.5,
+    "stop_rule": "first tested sweep budget with paired two-sided Wilcoxon p >= 0.05",
+    "note": "each sweep budget is an independent run; CIM generation time is measured once per dataset"
+  },
+  "datasets": {
+    "G22": {
+      "bks": 13359,
+      "n": 2000,
+      "edges": 19990,
+      "pt_params": {
+        "num_temps": 28,
+        "t_min": 0.39864834666902677,
+        "t_max": 3.137133516578398,
+        "swap_interval": 2,
+        "icm_interval": 5
+      },
+      "cim": {
+        "time": 0.0034884000197052956,
+        "cut_best": 10551.0,
+        "cut_mean": 10512.0,
+        "gap_best": 2808.0
+      },
+      "points": [
+        {
+          "sweeps": 1,
+          "cold": {
+            "cut_best": 11865.0,
+            "cut_mean": 11820.0,
+            "gap_best": 1494.0,
+            "gap_mean": 1539.0,
+            "gap_median": 1539.0,
+            "gap_std": 45.0,
+            "solver_time": 0.014438500045798719,
+            "cim_time": 0.0,
+            "total_time": 0.014438500045798719
+          },
+          "warm": {
+            "cut_best": 11911.0,
+            "cut_mean": 11877.5,
+            "gap_best": 1448.0,
+            "gap_mean": 1481.5,
+            "gap_median": 1481.5,
+            "gap_std": 33.5,
+            "solver_time": 0.013836099999025464,
+            "cim_time": 0.0034884000197052956,
+            "total_time": 0.01732450001873076
+          },
+          "paired": {
+            "delta_mean": 57.5,
+            "delta_median": 57.5,
+            "delta_mean_ci95": [
+              46.0,
+              69.0
+            ],
+            "wins": 2,
+            "ties": 0,
+            "losses": 0,
+            "wilcoxon_p": 0.5,
+            "significant_0_05": false
+          }
+        }
+      ],
+      "stop_reached": true,
+      "stop_sweeps": 1
+    }
+  }
+}

@@ -1,0 +1,36 @@
+% LuaLaTeX, Windows. Revised against the handwritten review on 2026-09-22.
+\documentclass[a4paper,11pt]{ltjsarticle}
+\usepackage[top=19mm,bottom=19mm,left=20mm,right=20mm,headheight=16pt,headsep=6mm]{geometry}
+\usepackage{luatexja-fontspec}
+\setmainfont[Path=C:/Windows/Fonts/,BoldFont=timesbd.ttf,ItalicFont=timesi.ttf,BoldItalicFont=timesbi.ttf]{times.ttf}
+\setsansfont[Path=C:/Windows/Fonts/,BoldFont=arialbd.ttf]{arial.ttf}
+\setmainjfont[Path=C:/Windows/Fonts/,BoldFont=yumindb.ttf]{yumin.ttf}
+\setsansjfont[Path=C:/Windows/Fonts/,BoldFont=YuGothB.ttc]{YuGothM.ttc}
+\usepackage{amsmath,amssymb,graphicx,booktabs,tabularx,array}
+\usepackage{xcolor,tikz,tcolorbox,fancyhdr,enumitem}
+\usetikzlibrary{arrows.meta,positioning,calc}
+\definecolor{navy}{HTML}{203C55}\definecolor{teal}{HTML}{138B86}
+\definecolor{orange}{HTML}{D77932}\definecolor{pale}{HTML}{F0F6F7}
+\definecolor{muted}{HTML}{657987}\definecolor{light}{HTML}{D6E1E5}
+\usepackage[unicode,colorlinks=true,linkcolor=teal,urlcolor=teal,citecolor=teal]{hyperref}
+\hypersetup{pdftitle={G22・G55・G70の構造からCIMの解をどう理解するか・第2回改訂版},pdfauthor={研究調査資料}}
+\graphicspath{{figures/}}
+\pagestyle{fancy}\fancyhf{}
+\fancyhead[L]{\small\sffamily\color{muted}グラフ構造・Max-Cut・CIM}
+\fancyhead[R]{\small\sffamily\color{muted}第2回改訂版 / 2026.09.22}
+\fancyfoot[L]{\footnotesize\color{muted}構造の理解と先行研究の精読}
+\fancyfoot[R]{\sffamily\color{navy}\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+\setlength{\parindent}{1em}\setlength{\parskip}{3pt}
+\renewcommand{\baselinestretch}{1.06}
+\renewenvironment{center}{\par\vspace{2pt}\centering}{\par\vspace{2pt}}
+\setlist[itemize]{leftmargin=1.5em,itemsep=3pt,topsep=4pt}
+\setlist[enumerate]{leftmargin=1.8em,itemsep=4pt,topsep=4pt}
+\newcommand{\pagehead}[3]{\pdfbookmark[0]{#2}{p\thepage}\noindent{\sffamily\small\color{teal}#1}\par\vspace{1mm}\noindent{\sffamily\bfseries\LARGE\color{navy}#2}\par\vspace{1mm}\noindent{\color{muted}#3}\par\vspace{2mm}}
+\newcommand{\sub}[1]{\par\vspace{2mm}\noindent{\sffamily\bfseries\large\color{navy}#1}\par}
+\newcommand{\figcap}[2]{\par\vspace{1mm}\noindent{\small\sffamily\color{teal}図#1}\quad{\small #2}\par\vspace{2mm}}
+\newcommand{\source}[1]{\par\noindent{\footnotesize\color{muted}出典・根拠：#1}\par}
+\newcommand{\pic}[2]{\begin{center}\includegraphics[width=\textwidth,height=#2,keepaspectratio]{#1}\end{center}}
+\newtcolorbox{point}[1]{colback=pale,colframe=teal,boxrule=.5pt,arc=1.5mm,left=3mm,right=3mm,top=2mm,bottom=2mm,title=#1,coltitle=white,fonttitle=\sffamily\bfseries}
+\newtcolorbox{caution}[1]{colback=orange!5,colframe=orange!70,boxrule=.4pt,arc=1.5mm,left=3mm,right=3mm,top=2mm,bottom=2mm,title=#1,coltitle=navy,colbacktitle=orange!16,fonttitle=\sffamily\bfseries}
+\tikzset{box/.style={draw=light,fill=pale,rounded corners=2mm,align=center,font=\sffamily\small,text=navy,minimum height=14mm,text width=33mm,inner sep=3mm},flow/.style={-{Stealth[length=2.5mm]},thick,draw=teal},dot/.style={circle,fill=teal,inner sep=0pt,minimum size=3mm}}

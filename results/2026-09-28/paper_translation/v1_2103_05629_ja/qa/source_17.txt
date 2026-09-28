@@ -1,0 +1,232 @@
+[17.0] [552.1320190429688, 28.347885131835938, 562.0946655273438, 38.31048583984375]
+17
+
+
+[17.1] [156.52708435058594, 204.58547973632812, 298.71783447265625, 225.05245971679688]
+20
+40
+60
+80
+100
+Problem size N
+
+
+[17.2] [119.26276397705078, 196.97543334960938, 130.9585418701172, 208.5471649169922]
+102
+
+
+[17.3] [119.26276397705078, 175.0767364501953, 130.9585418701172, 186.64846801757812]
+103
+
+
+[17.4] [119.26276397705078, 153.45733642578125, 130.9585418701172, 165.02906799316406]
+104
+
+
+[17.5] [119.26276397705078, 131.5586395263672, 130.9585418701172, 143.13037109375]
+105
+
+
+[17.6] [119.26276397705078, 109.38060760498047, 130.9585418701172, 120.95233917236328]
+106
+
+
+[17.7] [119.26276397705078, 87.76122283935547, 130.9585418701172, 99.33295440673828]
+107
+
+
+[17.8] [119.26276397705078, 65.58318328857422, 130.9585418701172, 77.15491485595703]
+108
+
+
+[17.9] [105.89856719970703, 72.80328369140625, 117.5532455444336, 202.36192321777344]
+Median sampling time Tall (roundtrips)
+
+
+[17.10] [179.43931579589844, 180.98419189453125, 237.76278686523438, 190.4013214111328]
+No nonlinearity 
+= 0
+
+
+[17.11] [179.43931579589844, 189.81239318847656, 209.7980194091797, 199.22952270507812]
+Pump r > 0
+
+
+[17.12] [265.0027160644531, 181.56610107421875, 295.3614501953125, 199.22952270507812]
+Pump r = 0
+Pump r < 0
+
+
+[17.13] [370.09112548828125, 204.58547973632812, 512.2819213867188, 225.05245971679688]
+20
+40
+60
+80
+100
+Problem size N
+
+
+[17.14] [332.82684326171875, 196.97543334960938, 344.5226135253906, 208.5471649169922]
+102
+
+
+[17.15] [332.82684326171875, 175.0767364501953, 344.5226135253906, 186.64846801757812]
+103
+
+
+[17.16] [332.82684326171875, 153.45733642578125, 344.5226135253906, 165.02906799316406]
+104
+
+
+[17.17] [332.82684326171875, 131.5586395263672, 344.5226135253906, 143.13037109375]
+105
+
+
+[17.18] [332.82684326171875, 109.38060760498047, 344.5226135253906, 120.95233917236328]
+106
+
+
+[17.19] [332.82684326171875, 87.76122283935547, 344.5226135253906, 99.33295440673828]
+107
+
+
+[17.20] [332.82684326171875, 65.58318328857422, 344.5226135253906, 77.15491485595703]
+108
+
+
+[17.21] [318.7855224609375, 71.32071685791016, 330.440185546875, 204.0547637939453]
+Median sampling time Tany (roundtrips)
+
+
+[17.22] [102.06340789794922, 53.10942459106445, 328.07916259765625, 66.89057922363281]
+(a)
+(b)
+
+
+[17.23] [393.00335693359375, 180.98419189453125, 451.32684326171875, 190.4013214111328]
+No nonlinearity 
+= 0
+
+
+[17.24] [393.00335693359375, 189.81239318847656, 423.3620910644531, 199.22952270507812]
+Pump r > 0
+
+
+[17.25] [478.5667724609375, 181.56610107421875, 508.9255065917969, 199.22952270507812]
+Pump r = 0
+Pump r < 0
+
+
+[17.26] [53.999969482421875, 241.89048767089844, 562.1886596679688, 292.70086669921875]
+FIG. 9. Sampling performance with various alternative CIM-sampling schemes, as described in Sec. III C. (a) Median time to
+sample all the ground and ﬁrst-excited conﬁgurations as a function of problem size N. (b) Median time to sample any one of
+the ground or ﬁrst-excited conﬁgurations as a function of problem size N. For each N, 50 SK1 problem instances are used
+considered to compute the medians, as done in Fig. 8. In both panels, the dotted lines represent least-squares ﬁts of the median
+sampling times with respect to problem size. The parameters for each model are speciﬁed in Table I.
+
+
+[17.27] [53.99994659423828, 316.57891845703125, 299.1296691894531, 614.7115478515625]
+formed with negative pump parameter (r < 0) since this
+regime was found to perform robustly for the N = 16
+instance studied in Sec. III C. Additional details about
+the various model parameters used are shown in Table I.
+As stated in the table, the key parameters of r and α
+are stochastically varied from trajectory to trajectory in
+order to account for problem-dependent variations in the
+dynamical threshold of the MFB-CIM, which can lead
+to some problem instances being stuck (an issue easy
+to detect and correct experimentally).
+Analogously to
+Fig. 8(c), Fig. 8(d) shows the distribution of the sam-
+pling time Tany, and we note the exponential scaling is
+consistent with prior results for the time required in Ising
+optimization [7]. On the other hand, studying the scal-
+ing of Tany against that of Tall provides insight into the
+overhead needed to sample many conﬁgurations: the dif-
+ference in the base of the exponent (1.05 vs 1.08) sug-
+gests that while the overhead scales exponentially, the
+penalty (with a base ≈1.03) is not especially high. Fi-
+nally, in Fig. 8(e), we show the scaling of the normalized
+sampling time eTall (speciﬁcally, normalized by the me-
+dian Tall at each N) with respect to Nconf. We see that
+there is correlation between the two quantities and that,
+for a ﬁxed problem size, the sampling time scales ap-
+proximately quadratically with respect to the number of
+conﬁgurations.
+
+
+[17.28] [53.99995422363281, 622.1219482421875, 299.12969970703125, 723.7405395507812]
+To put these results into experimental context, the
+sampling time in roundtrips can also be converted into
+wall-clock time by multiplying by the roundtrip time of
+the cavity, which, for a time-multiplexed MFB-CIM, is
+∼N/frep. Thus, for a problem size of N = 100 and as-
+suming a source laser with a repetition rate of 10 GHz,
+Fig. 8(c) indicates that all conﬁgurations can be sampled
+within a median wall-clock time of 60 ms. As a subject
+for future work, it would be interesting to perform more
+
+
+[17.29] [322.9909973144531, 314.71746826171875, 559.3666381835938, 365.9258728027344]
+Ndecay
+α
+r
+ηesc
+Positive pump
+4
+40 + 10z
+−0.8 + 0.08z
+0.2
+No pump
+4
+30 + 5z
+0
+0.5
+Negative pump
+1
+4 + 0.6z
+0.8 + 0.05z
+0.5
+No nonlinearity
+2
+10 + 2z
+–
+0.5
+
+
+[17.30] [317.01397705078125, 381.5174865722656, 562.129150390625, 463.7088623046875]
+TABLE I. Model parameters used in Sec. IV for simulating the
+MFB-CIM across diﬀerent operational modes (see Sec. III C)
+in studying the large-N scaling of sampling performance. For
+all simulations, Tsim = 50Ndecay, and nsat = 200 for all simu-
+lations except the case of ϵ = 0, where it is undeﬁned. Here,
+z ∼N(0, 1) denotes a standard-normal random variable that
+perturbs the associated parameter from one trajectory to the
+next according to the given formula.
+
+
+[17.31] [317.01397705078125, 493.2589111328125, 562.1041259765625, 526.135498046875]
+thorough benchmark studies to see how these wall-clock
+times compare to those attained by contemporary algo-
+rithms running on conventional digital hardware.
+
+
+[17.32] [317.01397705078125, 530.4658813476562, 562.143798828125, 723.740478515625]
+Lastly, we also examine how some alternative modes
+of operation in the MFB-CIM perform relative to each
+other.
+Figure 9 shows, for the models considered in
+Sec. III C [49], how the medians of the time Tall to sam-
+ple all conﬁgurations or Tany to sample any conﬁgura-
+tion scales with problem size N. The parameters used
+for each model are listed in Table I; due to the large
+parameter space, the parameters have been heuristically
+chosen by optimizing over a small set (of size ∼10), con-
+sisting of variations around the optimal parameters found
+in Sec. III C for N = 16. The results show that despite
+its decent sampling performance in the N = 16 case, the
+coherent-state model scales very poorly, indicating that
+a linear measurement-feedback protocol in the absence of
+nonlinearity cannot adequately explain the sampling per-
+formance of the MFB-CIM; these results are consistent,
+for example, with the ﬁndings of Ref. [46]. We also ob-

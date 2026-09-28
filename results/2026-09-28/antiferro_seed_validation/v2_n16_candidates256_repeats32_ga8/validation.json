@@ -1,0 +1,16 @@
+{
+  "python": "3.13.13",
+  "numpy": "2.4.4",
+  "numba": "0.65.0",
+  "scipy": "1.17.1",
+  "matplotlib": "3.10.8",
+  "regression_tests": "7 passed: tests/test_ga.py tests/test_sa_warm.py",
+  "checks": [
+    "all returned solver cuts recounted from edges",
+    "exact optimum crosschecked for all 65536 configurations against adjacency-matrix computation",
+    "no output exceeds exact optimum",
+    "GA population observer matches best-history means",
+    "all six PDF pages visually inspected"
+  ],
+  "report_revision": "v2 expresses GA change as exact run counts instead of inconsistent tie rounding"
+}

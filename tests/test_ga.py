@@ -55,3 +55,93 @@ def test_warm_start_improves_random():
         seeds=np.arange(2, 4),
     )
     assert c_warm.max() >= c_rand.max()
+
+
+def test_ga_matched_rng_alignment_changes_only_first_individual():
+    """coldの第1個体をwarmに渡せば、aligned実行はcoldと完全一致する。"""
+    n = 10
+    edges = [(i, (i + 1) % n) for i in range(n)]
+    weights = [1.0] * len(edges)
+    seeds = np.arange(3, dtype=np.int64)
+    warm = np.empty((len(seeds), n), dtype=np.int8)
+    for t, seed in enumerate(seeds):
+        rng = np.random.default_rng(int(seed))
+        warm[t] = (rng.random(n) < 0.5).astype(np.int8)
+
+    kwargs = dict(
+        n=n,
+        edges=edges,
+        weights=weights,
+        num_trials=len(seeds),
+        pop_size=4,
+        max_generations=3,
+        ts_iters=200,
+        cr=50,
+        gamma_pert=2,
+        alpha_tenure=2,
+        beta_quality=0.6,
+        seeds=seeds,
+    )
+    cold_cuts, cold_signs = simulate_ga_batch(**kwargs)
+    warm_cuts, warm_signs = simulate_ga_batch(
+        **kwargs,
+        init_signs=warm,
+        align_rng_with_cold=True,
+    )
+    np.testing.assert_array_equal(warm_cuts, cold_cuts)
+    np.testing.assert_array_equal(warm_signs, cold_signs)
+
+
+def test_ga_full_population_alignment_matches_cold_population():
+    """cold生成と同じ全初期集団を渡せば、aligned実行は完全一致する。"""
+    n = 10
+    pop_size = 4
+    edges = [(i, (i + 1) % n) for i in range(n)]
+    weights = [1.0] * len(edges)
+    seeds = np.arange(3, dtype=np.int64)
+    population = np.empty((len(seeds), pop_size, n), dtype=np.int8)
+    for t, seed in enumerate(seeds):
+        rng = np.random.default_rng(int(seed))
+        for j in range(pop_size):
+            population[t, j] = (rng.random(n) < 0.5).astype(np.int8)
+
+    kwargs = dict(
+        n=n,
+        edges=edges,
+        weights=weights,
+        num_trials=len(seeds),
+        pop_size=pop_size,
+        max_generations=3,
+        ts_iters=200,
+        cr=50,
+        gamma_pert=2,
+        alpha_tenure=2,
+        beta_quality=0.6,
+        seeds=seeds,
+    )
+    cold_cuts, cold_signs = simulate_ga_batch(**kwargs)
+    full_cuts, full_signs = simulate_ga_batch(
+        **kwargs,
+        init_population=population,
+        align_rng_with_cold=True,
+    )
+    np.testing.assert_array_equal(full_cuts, cold_cuts)
+    np.testing.assert_array_equal(full_signs, cold_signs)
+
+
+def test_ga_rejects_conflicting_warm_inputs():
+    n = 4
+    edges = [(0, 1), (1, 2), (2, 3), (3, 0)]
+    with np.testing.assert_raises(ValueError):
+        simulate_ga_batch(
+            n,
+            edges,
+            [1.0] * len(edges),
+            1,
+            pop_size=2,
+            max_generations=0,
+            ts_iters=10,
+            init_signs=np.ones((1, n), dtype=np.int8),
+            init_population=np.ones((1, 2, n), dtype=np.int8),
+            seeds=np.array([0]),
+        )

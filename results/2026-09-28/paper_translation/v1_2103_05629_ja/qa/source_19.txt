@@ -1,0 +1,231 @@
+[19.0] [552.1320190429688, 28.347885131835938, 562.0946655273438, 38.31048583984375]
+19
+
+
+[19.1] [58.608001708984375, 85.04246520996094, 299.1227722167969, 94.00886535644531]
+[1] A. Lucas, Ising formulations of many NP problems,
+
+
+[19.2] [58.607994079589844, 95.50346374511719, 299.1317138671875, 114.92988586425781]
+Front. Phys. 2, 5 (2014).
+[2] S. G. Brush, History of the Lenz-Ising Model, Rev. Mod.
+
+
+[19.3] [58.60799026489258, 116.42448425292969, 299.140625, 135.8518829345703]
+Phys. 39, 883 (1967).
+[3] F. Barahona, On the computational complexity of Ising
+
+
+[19.4] [58.60797882080078, 137.3464813232422, 299.1496276855469, 282.30291748046875]
+spin glass models, J. Phys. A 15, 3241 (1982).
+[4] M.
+Johnson,
+M.
+Amin,
+S.
+Gildert,
+T.
+Lanting,
+F. Hamze, N. Dickson, R. Harris, A. Berkley, J. Jo-
+hansson, P. Bunyk, E. Chapple, C. Enderud, J. Hilton,
+K. Karimi, E. Ladizinsky, N. Ladizinsky, T. Oh, I. Per-
+minov, C. Rich, M. Thom, E. Tolkacheva, C. Truncik,
+S. Uchaikin, J. Wang, B. Wilson, and G. Rose, Quan-
+tum annealing with manufactured spins, Nature 473, 194
+(2011).
+[5] S. Boixo,
+T. F. Rønnow,
+S. V. Isakov,
+Z. Wang,
+D. Wecker, D. A. Lidar, J. M. Martinis, and M. Troyer,
+Evidence for quantum annealing with more than one hun-
+dred qubits, Nat. Phys. 10, 218 (2014).
+[6] A. Marandi, Z. Wang, K. Takata, R. L. Byer, and Y. Ya-
+
+
+[19.5] [58.60796356201172, 283.7975158691406, 299.15863037109375, 324.1459045410156]
+mamoto, Network of time-multiplexed optical parametric
+oscillators as a coherent Ising machine, Nat. Photon. 8,
+937 (2014).
+[7] P. L. McMahon, A. Marandi, Y. Haribara, R. Hamerly,
+
+
+[19.6] [58.607948303222656, 325.6405029296875, 299.1520080566406, 386.910888671875]
+C. Langrock,
+S. Tamate,
+T. Inagaki,
+H. Takesue,
+S. Utsunomiya, K. Aihara, R. L. Byer, M. M. Fejer,
+H. Mabuchi, and Y. Yamamoto, A fully programmable
+100-spin coherent Ising machine with all-to-all connec-
+tions, Science 354, 614 (2016).
+[8] T. Inagaki, Y. Haribara, K. Igarashi, T. Sonobe, S. Ta-
+
+
+[19.7] [58.607940673828125, 388.40447998046875, 299.14959716796875, 449.67486572265625]
+mate, T. Honjo, A. Marandi, P. L. McMahon, T. Umeki,
+K. Enbutsu, O. Tadanaga, H. Takenouchi, K. Aihara, K.-
+i. Kawarabayashi, K. Inoue, S. Utsunomiya, and H. Take-
+sue, A coherent Ising machine for 2000-node optimization
+problems, Science 354, 603 (2016).
+[9] T. Inagaki, K. Inaba, R. Hamerly, K. Inoue, Y. Ya-
+
+
+[19.8] [53.999942779541016, 451.1694641113281, 299.1593017578125, 491.5178527832031]
+mamoto, and H. Takesue, Large-scale Ising spin network
+based on degenerate optical parametric oscillators, Nat.
+Photon. 10, 415 (2016).
+[10] I. Mahboob, H. Okamoto, and H. Yamaguchi, An elec-
+
+
+[19.9] [53.99994659423828, 493.012451171875, 299.1144104003906, 522.90087890625]
+tromechanical Ising Hamiltonian, Sci. Adv. 2, e1600236
+(2016).
+[11] T. Wang and J. Roychowdhury, OIM: Oscillator-Based
+
+
+[19.10] [53.99995422363281, 524.3944702148438, 299.150390625, 575.204833984375]
+Ising Machines for Solving Combinatorial Optimisation
+Problems, in Unconventional Computation and Natural
+Computation (Springer International Publishing, Cham,
+2019) pp. 232–256.
+[12] D. Pierangeli, G. Marcucci, and C. Conti, Large-Scale
+
+
+[19.11] [53.99995422363281, 576.698486328125, 299.1682434082031, 606.5868530273438]
+Photonic Ising Machine by Spatial Light Modulation,
+Phys. Rev. Lett. 122, 213902 (2019).
+[13] Y. Okawachi, M. Yu, J. K. Jang, X. Ji, Y. Zhao, B. Kim,
+
+
+[19.12] [53.99993133544922, 608.0814819335938, 299.141357421875, 658.890869140625]
+M. Lipson, and A. Gaeta, Demonstration of chip-based
+coupled degenerate optical parametric oscillators for real-
+izing a nanophotonic spin-glass, Nat. Commun. 11, 4119
+(2020).
+[14] J. Chou, S. Bramhavar, S. Ghosh, and W. Herzog, Analog
+
+
+[19.13] [53.99992752075195, 660.3854370117188, 299.15032958984375, 690.2728271484375]
+Coupled Oscillator Based Weighted Ising Machine, Sci.
+Rep. 9, 14786 (2019).
+[15] F. Cai, S. Kumar, T. Van Vaerenbergh, X. Sheng, R. Liu,
+
+
+[19.14] [72.31993103027344, 691.7674560546875, 299.16094970703125, 721.6548461914062]
+C. Li, Z. Liu, M. Foltin, S. Yu, Q. Xia, J. J. Yang,
+R. Beausoleil, W. D. Lu, and J. P. Strachan, Power-
+eﬃcient combinatorial optimization using intrinsic noise
+
+
+[19.15] [317.013916015625, 85.04246520996094, 562.1642456054688, 114.93086242675781]
+in memristor Hopﬁeld neural networks, Nat. Electron. 3,
+409 (2020).
+[16] Z. Zhu, A. J. Ochoa, and H. G. Katzgraber, Fair sam-
+
+
+[19.16] [317.013916015625, 116.42448425292969, 562.14794921875, 146.31288146972656]
+pling of ground-state conﬁgurations of binary optimiza-
+tion problems, Phys. Rev. E 99, 063314 (2019).
+[17] G. E. Hinton, Training Products of Experts by Minimiz-
+
+
+[19.17] [317.013916015625, 147.80747985839844, 562.1732788085938, 177.6949005126953]
+ing Contrastive Divergence, Neural Comput. 14, 1771
+(2002).
+[18] R. Salakhutdinov, A. Mnih, and G. Hinton, Restricted
+
+
+[19.18] [317.013916015625, 179.1894989013672, 562.17333984375, 229.99891662597656]
+Boltzmann machines for collaborative ﬁltering, in ICML
+’07: Proceedings of the 24th international conference on
+Machine learning, Vol. 227 (ACM Press, New York, New
+York, USA, 2007) pp. 791–798.
+[19] A. Perdomo-Ortiz, M. Benedetti, J. Realpe-G´omez, and
+
+
+[19.19] [317.013916015625, 231.49351501464844, 562.1553344726562, 271.8419189453125]
+R. Biswas, Opportunities and challenges for quantum-
+assisted machine learning in near-term quantum comput-
+ers, Quantum Sci. Technol. 3, 030502 (2018).
+[20] R. S. Bohacek, C. McMartin, and W. C. Guida, The art
+
+
+[19.20] [317.013916015625, 273.3365173339844, 562.1732788085938, 303.22491455078125]
+and practice of structure-based drug design: A molecular
+modeling perspective, Med. Res. Rev. 16, 3 (1996).
+[21] V. Lounnas, T. Ritschel, J. Kelder, R. McGuire, R. P.
+
+
+[19.21] [317.013916015625, 304.718505859375, 562.164306640625, 355.5289001464844]
+Bywater, and N. Foloppe, Current progress in structure-
+based rational drug design marks a new mindset in drug
+discovery, Comput. Struct. Biotechnol. J. 5, e201302011
+(2013).
+[22] K. Ogata, T. Isomura, S. Kawata, H. Yamashita, H. Ku-
+
+
+[19.22] [317.013916015625, 357.0224914550781, 562.1553344726562, 397.37188720703125]
+bodera, and S. J. Wodak, Lead Generation and Op-
+timization Based on Protein-Ligand Complementarity,
+Molecules 15, 4382 (2010).
+[23] H. Sakaguchi, K. Ogata, T. Isomura, S. Utsunomiya,
+
+
+[19.23] [317.0138854980469, 398.865478515625, 562.1748657226562, 491.51885986328125]
+Y. Yamamoto, and K. Aihara, Boltzmann Sampling
+by Degenerate Optical Parametric Oscillator Network
+for Structure-Based Virtual Screening, Entropy 18, 365
+(2016).
+[24] Z. Bian,
+F. Chudak,
+R. Israel,
+B. Lackey,
+W. G.
+Macready, and A. Roy, Discrete optimization using quan-
+tum annealing on sparse Ising models, Front. Phys. 2, 56
+(2014).
+[25] Z. Bian, F. Chudak, R. B. Israel, B. Lackey, W. G.
+
+
+[19.24] [317.0138854980469, 493.012451171875, 562.173095703125, 533.36181640625]
+Macready, and A. Roy, Mapping Constrained Optimiza-
+tion Problems to Quantum Annealing with Application
+to Fault Diagnosis, Front. ICT 3, 14 (2016).
+[26] Y. Matsuda, H. Nishimori, and H. G. Katzgraber, Quan-
+
+
+[19.25] [317.013916015625, 534.8565063476562, 562.1552734375, 564.7438354492188]
+tum annealing for problems with ground-state degener-
+acy, J. Phys. Conf. Ser. 143, 012003 (2009).
+[27] S. Mandr`a, Z. Zhu, and H. G. Katzgraber, Exponentially
+
+
+[19.26] [317.0139465332031, 566.2384643554688, 562.18212890625, 606.5868530273438]
+Biased Ground-State Sampling of Quantum Annealing
+Machines with Transverse-Field Driving Hamiltonians,
+Phys. Rev. Lett. 118, 070502 (2017).
+[28] M. S. K¨onz, G. Mazzola, A. J. Ochoa, H. G. Katzgraber,
+
+
+[19.27] [317.01397705078125, 608.0814819335938, 562.1823120117188, 637.9698486328125]
+and M. Troyer, Uncertain fate of fair sampling in quan-
+tum annealing, Phys. Rev. A 100, 030303(R) (2019).
+[29] Y. Yamamoto, T. Leleu, S. Ganguli, and H. Mabuchi, Co-
+
+
+[19.28] [317.01397705078125, 639.4635009765625, 562.137451171875, 669.3518676757812]
+herent Ising machines—Quantum optics and neural net-
+work Perspectives, Appl. Phys. Lett. 117, 160501 (2020).
+[30] S. L. Braunstein and P. van Loock, Quantum informa-
+
+
+[19.29] [317.01397705078125, 670.8464965820312, 562.164306640625, 700.7338256835938]
+tion with continuous variables, Rev. Mod. Phys. 77, 513
+(2005).
+[31] C. Weedbrook, S. Pirandola, R. Garc´ıa-Patr´on, N. J.
+
+
+[19.30] [335.333984375, 702.2284545898438, 562.1480102539062, 721.6558227539062]
+Cerf, T. C. Ralph, J. H. Shapiro, and S. Lloyd, Gaussian
+quantum information, Rev. Mod. Phys. 84, 621 (2012).

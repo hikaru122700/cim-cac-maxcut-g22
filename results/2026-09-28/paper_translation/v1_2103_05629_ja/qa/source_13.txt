@@ -1,0 +1,108 @@
+[13.0] [552.1320190429688, 28.347885131835938, 562.0946655273438, 38.31048583984375]
+13
+
+
+[13.1] [54.0, 223.16148376464844, 562.1796264648438, 295.95587158203125]
+FIG. 6. Time Tsamp(σ) required to sample a speciﬁed Ising ground-state conﬁguration σ as a function of the cavity decay time
+Tdecay for a set of 50 N = 16 SK1 problems. For concreteness, we choose σ as the ﬁrst lexicographic ground-state conﬁguration
+each problem (up to an overall sign ﬂip). Each vertical histogram shows the distribution of Tsamp(σ) as deﬁned by (33) over the
+diﬀerent problem instances. Diamond markers indicate the median of the distribution while squares indicate the mean. Note
+that when the required sampling time becomes large, the mean may not be deﬁned due to some problem instances requiring
+more trajectories to sample than were performed. For these simulations, we take r = 0.8, α = 4, ηesc = 0.2, and nsat = 200; we
+run Ntraj = 1000 trajectories for 100Tdecay roundtrips.
+
+
+[13.2] [54.00007629394531, 319.2529602050781, 299.1099548339844, 375.0445556640625]
+system parameters precludes any additional signiﬁcant
+gains in reducing the sampling time. The fact that the
+sampling performance continues to improve into the low-
+ﬁnesse regime is a key motivation for the development of
+our discrete-time Gaussian-state model.
+
+
+[13.3] [61.136077880859375, 402.59649658203125, 291.9581604003906, 411.5628967285156]
+C.
+Sampling in alternative models of MFB-CIM
+
+
+[13.4] [54.00007629394531, 428.1259765625, 299.1398010253906, 621.401611328125]
+Although our focus thus far has been on developing
+a general model for the MFB-CIM in the Gaussian-
+state approximation and studying the dynamical role of
+quantum noise in its conventional operation (with para-
+metric gain, homodyne measurement/feedback, measure-
+ment backaction, and gain saturation), it is also use-
+ful to consider alternative models or modes of opera-
+tion, which may be conceptually simpler or easier to
+implement experimentally.
+Of particular interest is to
+relate our quantum-based model to established classical
+analogs or formulations of CIMs, such as those based
+on coherent-state feedback networks without nonlinear-
+ity [37], or those based on deterministic nonlinear dy-
+namics (with no quantum noise and only a random ini-
+tial condition), which have proven to be fruitful models
+in which to study the roles of feedback and nonlinearity
+for CIM combinatorial optimization [44–46].
+
+
+[13.5] [63.963077545166016, 623.573974609375, 250.30357360839844, 633.5365600585938]
+In this subsection, we consider three cases:
+
+
+[13.6] [67.17308044433594, 645.0360107421875, 299.1105041503906, 723.7406005859375]
+1. MFB-CIM with zero or negative parametric gain:
+Conventionally, the MFB-CIM is operated with
+parametric gain, i.e., the pump parameter r > 0.
+However, we can also explore its sampling perfor-
+mance for r ≤0, with the case of r = 0 being es-
+pecially experimentally interesting as it does not
+require a pump source.
+Such modiﬁcations are
+
+
+[13.7] [341.92010498046875, 319.25299072265625, 562.143310546875, 363.58758544921875]
+straightforward within our general Gaussian model,
+so we can directly compare these cases against the
+conventional r > 0 case while keeping gain satura-
+tion, quantum noise, and so on ﬁxed.
+
+
+[13.8] [330.1871032714844, 373.3030090332031, 562.133544921875, 532.2066040039062]
+2. MFB-CIM without nonlinear crystal: We can also
+go one step further and consider a MFB-CIM
+without any parametric interaction (i.e., no opti-
+cal nonlinearity) by setting ϵτnl = 0, resulting in
+a “coherent-state” MFB-CIM, where the internal
+ﬁeld is only excited through external coherent-state
+injection.
+This model has previously been stud-
+ied in Ref. [37] in the context of combinatorial op-
+timization (also via a discrete-time formulation),
+whereas we investigate here its potential for sam-
+pling.
+Since the resulting system has linear dy-
+namics, the Gaussian formalism applies exactly and
+is an eﬃcient representation of the quantum state
+throughout the dynamics.
+
+
+[13.9] [330.18609619140625, 541.9230346679688, 562.1333618164062, 723.7406005859375]
+3. Mean-ﬁeld MFB-CIM with injected measurement
+noise:
+A common approach to studying open-
+dissipative optical systems with weak single-photon
+nonlinearities is to neglect quantum noise alto-
+gether by taking a mean-ﬁeld or classical limit,
+resulting in deterministic c-number EOMs.
+We
+describe how such a limit can be taken for our
+Gaussian MFB-CIM model, producing not only the
+usual continuous-time mean-ﬁeld models for the
+MFB-CIM [44, 45] but also a discrete-time mean-
+ﬁeld model similar to that of Ref. [36] as well.
+However, to study sampling performance in this
+limit, we need an alternative noise source in the
+mean-ﬁeld model. For this purpose, we supplement
+the model by injecting ﬁxed-variance Gaussian-
+distributed noise (limiting to white noise at the

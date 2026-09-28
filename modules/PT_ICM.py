@@ -67,6 +67,9 @@ def _simulate_pticm_batch(
     sample_interval: int,         # この sweep ごとに best-so-far を記録(>=1)
     num_samples: int,             # = num_sweeps // sample_interval
     seeds: np.ndarray,
+    init_signs: np.ndarray,
+    init_mode: int,               # 0=random, 1=lowest-temperature only, 2=perturbed ladder
+    perturb_max: float,
 ):
     """PT-ICM を num_trials 並列実行する内部ルーチン。
 
@@ -94,6 +97,23 @@ def _simulate_pticm_batch(
             for i in range(n):
                 s_A[k, i] = 1 if np.random.random() < 0.5 else -1
                 s_B[k, i] = 1 if np.random.random() < 0.5 else -1
+
+        # Optional CIM warm start.  Only the A family is seeded; B remains
+        # random so that the A/B overlap still contains clusters for ICM.
+        if init_mode == 1:
+            for i in range(n):
+                s_A[0, i] = init_signs[trial_idx, i]
+        elif init_mode == 2:
+            for k in range(NT):
+                if NT > 1:
+                    flip_prob = perturb_max * k / (NT - 1)
+                else:
+                    flip_prob = 0.0
+                for i in range(n):
+                    value = init_signs[trial_idx, i]
+                    if np.random.random() < flip_prob:
+                        value = -value
+                    s_A[k, i] = value
 
         # 初期 cut 値
         for k in range(NT):
@@ -347,6 +367,9 @@ def simulate_pticm_batch(
     icm_interval: int = 5,
     sample_interval: int | None = None,
     seeds: np.ndarray | None = None,
+    init_signs: np.ndarray | None = None,
+    init_mode: str = "single",
+    perturb_max: float = 0.5,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """PT-ICM を num_trials 並列実行する公開 API。
 
@@ -376,6 +399,30 @@ def simulate_pticm_batch(
     if seeds is None:
         seeds = np.arange(num_trials, dtype=np.int64)
     seeds = np.ascontiguousarray(np.asarray(seeds, dtype=np.int64))
+
+    mode_map = {"single": 1, "ladder": 2}
+    if init_signs is None:
+        init_mode_code = 0
+        warm = np.empty((num_trials, n), dtype=np.int8)
+    else:
+        if init_mode not in mode_map:
+            raise ValueError(
+                f"init_mode must be one of {tuple(mode_map)}, got {init_mode!r}"
+            )
+        if not 0.0 <= perturb_max <= 1.0:
+            raise ValueError("perturb_max must be in [0, 1]")
+        warm_in = np.asarray(init_signs)
+        if warm_in.ndim == 1:
+            if warm_in.shape[0] != n:
+                raise ValueError(f"init_signs must have length {n}")
+            warm_in = np.repeat(warm_in[None, :], num_trials, axis=0)
+        if warm_in.shape != (num_trials, n):
+            raise ValueError(
+                f"init_signs must have shape ({num_trials}, {n}) or ({n},)"
+            )
+        warm = np.where(warm_in > 0, 1, -1).astype(np.int8)
+        init_mode_code = mode_map[init_mode]
+    warm = np.ascontiguousarray(warm)
 
     if weights is None:
         weights = [1.0] * len(edges)
@@ -416,5 +463,8 @@ def simulate_pticm_batch(
         sample_interval,
         num_samples,
         seeds,
+        warm,
+        init_mode_code,
+        float(perturb_max),
     )
     return best_cuts, best_signs, trajectory

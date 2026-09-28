@@ -1,0 +1,38 @@
+\noindent\textbf{[1] Dunning, I.; Gupta, S.; Silberholz, J. (2018).}\\
+\textit{What Works Best When? A Systematic Evaluation of Heuristics for Max-Cut and QUBO.} INFORMS Journal on Computing, 30(3), 608--624.\\
+\href{https://github.com/MQLib/MQLib/blob/master/paper/SECM_final.pdf}{著者公開本文} / \href{https://github.com/MQLib/MQLib}{公式実装}。Section 2.2・6を確認。
+
+\noindent\textbf{[2] Rehfeldt, D.; Koch, T.; Shinano, Y. (2023).}\\
+\textit{Faster exact solution of sparse MaxCut and QUBO problems.} Mathematical Programming Computation, 15, 445--470.\\
+\href{https://link.springer.com/article/10.1007/s12532-023-00236-6}{公開全文: DOI 10.1007/s12532-023-00236-6}。Section 4.1の分解を確認。
+
+\noindent\textbf{[3] Trevisan, L. (2009; preprint 2008).}\\
+\textit{Max Cut and the Smallest Eigenvalue.} STOC 2009.\\
+\href{https://arxiv.org/abs/0806.1978}{著者プレプリント: arXiv:0806.1978}。非負重みMax-Cutのスペクトル法。
+
+\noindent\textbf{[4] Schwartzman, G. (2024).}\\
+\textit{Local Max-Cut on Sparse Graphs.} ESA 2024, LIPIcs 308, Article 98.\\
+\href{https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.ESA.2024.98}{論文・PDF}。局所的な疎さとFLIPの平滑化計算量。GA/SAの品質保証ではない。
+
+\noindent\textbf{[5] Rampášek, L. et al. (2022).}\\
+\textit{Recipe for a General, Powerful, Scalable Graph Transformer.} NeurIPS 2022.\\
+\href{https://arxiv.org/abs/2205.12454}{論文: arXiv:2205.12454}。効率的attentionを選ぶ構成と、通常の全点attentionを区別する。
+
+\noindent\textbf{[6] Garmendia, A. I.; Cappart, Q.; Ceberio, J.; Mendiburu, A. (2024).}\\
+\textit{MARCO: A Memory-Augmented Reinforcement Framework for Combinatorial Optimization.} IJCAI 2024, 6931--6939.\\
+\href{https://www.ijcai.org/proceedings/2024/0766.pdf}{公開本文PDF}。Section 5のGraph Transformerを参照。
+
+\noindent\textbf{[7] Barrett, T. D.; Clements, W. R.; Foerster, J. N.; Lvovsky, A. I. (2020).}\\
+\textit{Exploratory Combinatorial Optimization with Reinforcement Learning.} AAAI, 34(04), 3243--3250.\\
+\href{https://ojs.aaai.org/index.php/AAAI/article/view/5723}{出版版} / \href{https://arxiv.org/abs/1909.04063}{本文・補足資料} / \href{https://github.com/tomdbar/eco-dqn}{公式実装}。観測・報酬・Table 1・SimCIM比較を確認。
+
+\noindent\textbf{[8] 本リポジトリの記録・実装。}\\
+\texttt{modules/CIM.py}、2026年8月23日のCIMアブレーション、9月14日のGA世代別多様性測定。図10の値は後者の\texttt{REPORT.md}に基づく。確認した実験結果は9月14日分まで。
+}
+\sub{追加図と集計の再現}
+{\small
+同梱の\texttt{data/summary.json}に既存の構造集計、\texttt{degree\_and\_cycle.json}に今回の次数分布とG70の閉路、\texttt{toy\_spectrum.json}に小グラフの固有値を保存した。図8は既存の構造集計、図9は新たな次数集計、図10は既存GA結果の正規化、図12は入力で確認した閉路、図16は文献の報告値であり、説明用の例と区別した。
+
+\texttt{make\_revision\_figures.py}が追加図を生成する。入力の構造集計は、リポジトリの\texttt{graph\_structure\_audit.py}で再実行できる。赤字ごとの反映先は\texttt{redline\_response.md}に記録した。元PDFと旧版は保持している。
+}
+\end{document}

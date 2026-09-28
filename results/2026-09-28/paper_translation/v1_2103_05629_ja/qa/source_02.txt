@@ -1,0 +1,151 @@
+[2.0] [557.1129760742188, 28.347885131835938, 562.0942993164062, 38.31048583984375]
+2
+
+
+[2.1] [53.99998092651367, 54.25090026855469, 299.1297912597656, 339.1819763183594]
+In this paper, we study the sampling performance of
+the measurement-feedback-based coherent Ising machine
+(MFB-CIM) [7–9, 29], a hardware platform originally
+conceived for performing Ising optimization using a net-
+work of degenerate optical parametric oscillators (DO-
+POs) subject to a real-time measurement-feedback pro-
+tocol, which encodes Ising interactions into the network
+dynamics. In particular, we use a Gaussian-state model
+to examine how quantum noise arises within the dy-
+namics of the MFB-CIM and address whether stochas-
+tic nonlinear dynamics can facilitate eﬃcient sampling
+of low-energy Ising conﬁgurations. While a full-quantum
+treatment of the MFB-CIM is possible [29], a numerical
+study of the large-scale systems relevant for combina-
+torial optimization/sampling is only possible up to the
+Gaussian-state regime where quantum correlations are
+considered up to second-order (i.e., up to covariances of
+observables) [30, 31].
+This Gaussian-state approxima-
+tion is consistent with the operational regimes of all ex-
+perimental MFB-CIMs known to date [7–9], while still
+providing an accurate treatment of important quantum-
+noise-driven phenomena such as squeezing/antisqueezing
+and measurement uncertainty and backaction [29, 32, 33],
+which are central to our study of sampling performance
+but usually neglected in mean-ﬁeld models.
+
+
+[2.2] [53.999977111816406, 347.15240478515625, 299.1297607421875, 723.739990234375]
+The potential of MFB-CIMs to generate samples of
+degenerate ground- and low-energy-excited spin conﬁg-
+urations was recently pointed out in Ref. [34], using a
+Gaussian-state model formulated in continuous time [35].
+As we show in this work, such continuous-time mod-
+els correctly capture the dynamics of the MFB-CIM
+in the high-ﬁnesse limit where the cavity decay time
+of its constituent DOPOs dominate all other system
+timescales. On the other hand, the intrinsically higher
+bandwidth of a low-ﬁnesse system can, at least in prin-
+ciple, be leveraged to signiﬁcantly reduce computational
+runtime; indeed, most experimental implementations of
+CIMs (both optically-coupled as well as measurement-
+feedback-based) utilize DOPOs operating in the low-
+ﬁnesse regime of short cavity decay times [6–9].
+Low-
+ﬁnesse systems are more conveniently described in dis-
+crete time, where dynamics occur via a sequence of dis-
+crete operations on the system state [36].
+Theoreti-
+cally, quantum treatments of MFB-CIMs in discrete time
+have been previously studied in Refs. [37, 38].
+While
+the latter study used a non-Gaussian model for the
+quantum state, which is only numerically tractable for
+small problem sizes, the former work indeed turned to
+a Gaussian-state model to study the linear dynamics of
+the MFB-CIM. In their Gaussian model, however, the
+nonlinear gain saturation—which can play an impor-
+tant dynamical role in the MFB-CIM near and above
+threshold—was only considered phenomenologically. To
+circumvent these limitations, we develop here a discrete-
+time Gaussian-state quantum model featuring a physi-
+cal model for nonlinear gain saturation, allowing us to
+study low- and intermediate-ﬁnesse MFB-CIMs below,
+through, and above threshold.
+To our knowledge, the
+
+
+[2.3] [317.01397705078125, 54.25041198730469, 562.1039428710938, 87.126953125]
+model presented here is the most general treatment cur-
+rently available to numerically simulate large-scale MFB-
+CIMs operating in the Gaussian-state regime.
+
+
+[2.4] [324.5099792480469, 114.10789489746094, 554.6057739257812, 123.07429504394531]
+II.
+DISCRETE-TIME GAUSSIAN QUANTUM
+
+
+[2.5] [371.10797119140625, 124.56889343261719, 508.02490234375, 133.53529357910156]
+MODEL OF THE MFB-CIM
+
+
+[2.6] [317.01397705078125, 149.99034118652344, 562.1536865234375, 308.8946838378906]
+Conceptually, the coherent Ising machine (CIM) is a
+system of N degenerate optical parametric oscillators
+(DOPOs), which are nonlinear optical oscillators exhibit-
+ing saturable phase-sensitive gain. When pumped below
+its oscillation threshold, the state of a DOPO is well de-
+scribed by a quadrature-squeezed vacuum state, while
+far above threshold, nonlinear saturation of the gain due
+to pump depletion stabilizes the system into one of two
+phase-bistable bright coherent states (referred to as the
+0- and π-phase states). To encode Ising spins into the
+DOPO network, we associate these bistable phase states
+to the Ising spins σ = ±1, respectively. By engineering
+the interactions among DOPOs, we can realize system
+dynamics dictated by a desired Ising coupling matrix J.
+
+
+[2.7] [317.013916015625, 310.9600830078125, 562.1466674804688, 598.5076293945312]
+Figure 1 depicts on the schematic level a notably suc-
+cessful experimental implementation of the CIM where
+the DOPOs are realized as synchronously-pumped, time-
+multiplexed “signal” pulses in a single optical ﬁber-
+loop cavity, with pulse interactions mediated by a syn-
+chronous, real-time measurement-feedback protocol. In
+this measurement-feedback-based CIM (MFB-CIM), the
+signal pulses are separated by a time interval 1/frep; thus
+to ﬁt N pulses, the cavity length is ∼Nc/frep.
+On
+each roundtrip through the cavity, the signal pulses se-
+quentially co-propagate through a nonlinear χ(2) crystal
+alongside synchronous, externally injected pump pulses
+derived from the second harmonic of the source laser,
+which imparts phase-sensitive ampliﬁcation along the in-
+phase q quadrature. Next, the signal pulses are tapped
+out sequentially through an output coupler.
+The out-
+put is measured on a q-quadrature homodyne detector,
+which results in an indirect and weak measurement of
+the q-quadrature amplitude of the internal signal pulse.
+Crucially, the sign conﬁguration of the N homodyne mea-
+surements, say (sgn w1, . . . , sgn wN), constitutes a sam-
+pled Ising spin conﬁguration under the correspondence
+σi ↔sgn wi. Finally, to implement the interactions be-
+tween the pulses, an FPGA receives the homodyne results
+and computes a feedback signal vi ∝PN
+
+
+[2.8] [317.0139465332031, 587.1791381835938, 562.1436767578125, 688.7987060546875]
+j=1 Jijwj, which
+is applied to the corresponding ith signal pulse via syn-
+chronous external injection of a feedback pulse derived
+from the source laser but with intensity and phase deter-
+mined by vi (e.g., using synchronous optical modulators).
+The interference between the injected pulse and the inter-
+nal signal pulse steers the system towards lower-energy
+Ising spin conﬁgurations, thus dynamically realizing the
+Ising coupling matrix J in the MFB-CIM system.
+
+
+[2.9] [317.0139465332031, 690.8630981445312, 562.1238403320312, 723.7396850585938]
+The result of embedding the structure of the Ising cou-
+plings into the system dynamics is that the evolution of
+the state is governed by the interplay among three gen-

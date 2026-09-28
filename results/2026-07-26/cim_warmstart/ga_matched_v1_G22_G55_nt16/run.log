@@ -1,0 +1,15 @@
+G22 CIM: 0.195s best=13270 mean=13247.5
+G22 g=0: cold=13349, warm=13356, mean_delta=+13.3, W/T/L=10/6/0, p=0.005062
+G22 g=1: cold=13355, warm=13356, mean_delta=+11.5, W/T/L=9/7/0, p=0.007686
+G22 g=3: cold=13357, warm=13357, mean_delta=+7.9, W/T/L=9/6/1, p=0.02165
+G22 g=8: cold=13357, warm=13357, mean_delta=+0.9, W/T/L=6/4/6, p=0.8748
+G22 g=20: cold=13358, warm=13358, mean_delta=+2.6, W/T/L=9/2/5, p=0.1859
+G22 g=50: cold=13359, warm=13358, mean_delta=-1.2, W/T/L=1/12/3, p=0.2568
+G55 CIM: 0.300s best=10179 mean=10133.8
+G55 g=0: cold=9985, warm=10214, mean_delta=+214.8, W/T/L=16/0/0, p=0.0004368
+G55 g=1: cold=10035, warm=10214, mean_delta=+173.1, W/T/L=16/0/0, p=0.0004368
+G55 g=3: cold=10087, warm=10214, mean_delta=+143.1, W/T/L=16/0/0, p=0.0004368
+G55 g=8: cold=10111, warm=10214, mean_delta=+101.8, W/T/L=16/0/0, p=0.0004358
+G55 g=20: cold=10177, warm=10223, mean_delta=+49.1, W/T/L=15/0/1, p=9.155e-05
+G55 g=50: cold=10196, warm=10231, mean_delta=+26.8, W/T/L=16/0/0, p=0.0004358
+saved: C:\Users\hikar\igarashi\cim-cac-maxcut-g22\results\2026-07-26\cim_warmstart\ga_matched_v1_G22_G55_nt16

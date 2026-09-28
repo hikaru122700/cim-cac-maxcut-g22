@@ -1,0 +1,35 @@
+{
+  "G22": {
+    "core_vertices": 2000,
+    "core_edges": 19990,
+    "attached_vertices": 0,
+    "attached_edges": 0,
+    "separate_tree_components": 0,
+    "separate_tree_vertices": 0,
+    "separate_tree_edges": 0,
+    "isolates": 0,
+    "bridges": 0
+  },
+  "G55": {
+    "core_vertices": 4789,
+    "core_edges": 12318,
+    "attached_vertices": 180,
+    "attached_edges": 180,
+    "separate_tree_components": 0,
+    "separate_tree_vertices": 0,
+    "separate_tree_edges": 0,
+    "isolates": 31,
+    "bridges": 180
+  },
+  "G70": {
+    "core_vertices": 4798,
+    "core_edges": 6394,
+    "attached_vertices": 3215,
+    "attached_edges": 3215,
+    "separate_tree_components": 243,
+    "separate_tree_vertices": 633,
+    "separate_tree_edges": 390,
+    "isolates": 1354,
+    "bridges": 3605
+  }
+}

@@ -1,0 +1,218 @@
+[11.0] [552.1320190429688, 28.347885131835938, 562.0946655273438, 38.31048583984375]
+11
+
+
+[11.1] [54.000030517578125, 54.25090026855469, 299.10992431640625, 169.13128662109375]
+trajectories change as a function of Tdecay while all other
+model parameters are held constant. By running the sim-
+ulation for 15Tdecay roundtrips in all cases, we see there
+is a qualitative diﬀerence in going from a low-ﬁnesse sys-
+tem (Tdecay = 4), to an intermediate-ﬁnesse one (Tdecay =
+16), to a high-ﬁnesse one (Tdecay = 64), but the dynamics
+eventually converge to the continuous-time trajectory in
+the high-ﬁnesse limit, as depicted in the rightmost col-
+umn. As expected, the homodyne record wi (and hence
+the measured Ising energy −PN
+
+
+[11.2] [54.00001525878906, 159.16868591308594, 299.0773010253906, 193.41110229492188]
+j=1 Jij sgn wi sgn wj) be-
+comes increasingly noisy as the ﬁnesse increases because
+the outcoupling ratio rout ∼1/
+
+
+[11.3] [195.57000732421875, 181.2400665283203, 205.53260803222656, 191.20266723632812]
+p
+
+
+[11.4] [54.0000114440918, 182.0829315185547, 299.13983154296875, 340.9873352050781]
+Tdecay, providing less
+information about the internal state in any given shot of
+the measurement and requiring more roundtrips to ob-
+tain the same amount of information produced by a sin-
+gle measurement shot in a lower-ﬁnesse system. In addi-
+tion, if we assume the wall-clock roundtrip time is ﬁxed
+(corresponding to the time between successive points
+in the discrete-time model, or to dt in the continuous-
+time model), it follows that the low-ﬁnesse system takes
+a shorter wall-clock time to reach steady state (i.e.,
+∼40 roundtrips at Tdecay = 4 vs ∼640 roundtrips at
+Tdecay = 64), all else being equal. This scaling plays an
+important role in the eﬃciency of the system and the
+overall time-to-sample as we analyze next.
+
+
+[11.5] [75.0110092163086, 367.25628662109375, 278.08209228515625, 376.2226867675781]
+B.
+Ising sampling in Gaussian MFB-CIMs
+
+
+[11.6] [54.00000762939453, 392.54473876953125, 299.1397705078125, 608.7333374023438]
+As evident from Fig. 3, the dynamics of the MFB-CIM
+drive the system towards states encoding low-energy spin
+conﬁgurations of the Ising problem. At the same time,
+the particular conﬁgurations found by the MFB-CIM are
+stochastic.
+We therefore expect that, at least in cer-
+tain regimes of operation, the MFB-CIM can be used to
+stochastically sample diﬀerent spin conﬁgurations, simply
+by running the system under the injection of measure-
+ment noise.
+Each “run” of the MFB-CIM would con-
+sist of a homodyne record like the ones shown in Fig. 3,
+which takes O(Tdecay) roundtrips to collect and would
+yield one or more samples of low-energy Ising spin con-
+ﬁgurations after an initial transient period; repeated runs
+(i.e., passing through threshold again) could also gener-
+ate new samples. The sampling eﬃciency is thus charac-
+terized by the likelihood of a given trajectory to yield at
+least one sample of interest and also how quickly it can
+do so, while sampling fairness depends on how uniformly
+such conﬁgurations are distributed.
+
+
+[11.7] [54.00001525878906, 610.6647338867188, 299.1198425292969, 723.7403564453125]
+Figure 4 illustrates this procedure for the N = 16 prob-
+lem instance shown in Fig. 2. In Fig. 4(a), the number
+of trajectories where each spin conﬁguration appears at
+least once is recorded. Over the course of 1000 trajec-
+tories, we easily obtain multiple samples of every spin
+conﬁguration of interest, indicating relatively fair sam-
+pling at least for this instance. Nevertheless, there are
+systematic biases in the sampling: namely, the spin con-
+ﬁgurations in a given energy level are not necessarily uni-
+formly sampled. These biases are problem-dependent in
+
+
+[11.8] [317.0140380859375, 54.25077819824219, 562.1040649414062, 75.67034912109375]
+general but also depend on the model parameters chosen
+for the sampling process.
+
+
+[11.9] [317.0140380859375, 80.77275085449219, 562.1438598632812, 182.39111328125]
+To fully quantify the sampling eﬃciency, however, it
+is not enough to simply count trajectories in which each
+spin conﬁguration appears, since certain conﬁgurations
+may systematically appear later than other conﬁgura-
+tions within any given trajectory. These diﬀerences in
+sampling time are illustrated in Fig. 4(b), where, for each
+spin conﬁguration considered in Fig. 4(a) (up to an over-
+all sign ﬂip), we show a (vertical) histogram of the ﬁrst
+time that conﬁguration appeared in each trajectory, if
+
+
+[11.10] [387.4608459472656, 313.4751892089844, 524.6775512695312, 329.9325256347656]
+1
+2
+3
+Ising energy level
+
+
+[11.11] [347.569580078125, 306.45245361328125, 351.7063903808594, 314.0170593261719]
+0
+
+
+[11.12] [339.2967834472656, 283.2376403808594, 351.70721435546875, 290.80224609375]
+100
+
+
+[11.13] [339.2967834472656, 260.0227966308594, 351.70721435546875, 267.58740234375]
+200
+
+
+[11.14] [339.2967834472656, 236.80795288085938, 351.70721435546875, 244.37257385253906]
+300
+
+
+[11.15] [339.2967834472656, 213.59312438964844, 351.70721435546875, 221.15774536132812]
+400
+
+
+[11.16] [321.7723388671875, 227.5357666015625, 329.3369445800781, 299.78009033203125]
+Num. trajectories with
+
+
+[11.17] [329.04302978515625, 222.43238830566406, 336.6076354980469, 296.9077453613281]
+1 occurrence (of 1000)
+
+
+[11.18] [365.2808532714844, 436.9781188964844, 546.8576049804688, 453.4354553222656]
+1
+2
+3
+4
+5
+6
+7
+8
+9
+Ising spin configurations
+
+
+[11.19] [347.569580078125, 429.95538330078125, 351.7063903808594, 437.5199890136719]
+0
+
+
+[11.20] [339.2967834472656, 411.383544921875, 351.70721435546875, 418.9481506347656]
+100
+
+
+[11.21] [339.2967834472656, 392.8116455078125, 351.70721435546875, 400.3762512207031]
+200
+
+
+[11.22] [339.2967834472656, 374.23980712890625, 351.70721435546875, 381.8044128417969]
+300
+
+
+[11.23] [339.2967834472656, 355.66790771484375, 351.70721435546875, 363.2325134277344]
+400
+
+
+[11.24] [339.2967834472656, 337.0960693359375, 351.70721435546875, 344.6606750488281]
+500
+
+
+[11.25] [329.3072814941406, 341.7857971191406, 336.87188720703125, 432.5416259765625]
+Sampling time in roundtrips
+
+
+[11.26] [434.962890625, 345.6160888671875, 539.19580078125, 363.791015625]
+Distribution, 1st-sampling times
+Tsamp required sampling time
+
+
+[11.27] [317.6467590332031, 208.69482421875, 330.1934509277344, 219.1774139404297]
+(a)
+
+
+[11.28] [317.6467590332031, 329.3472900390625, 330.3917236328125, 339.82989501953125]
+(b)
+
+
+[11.29] [317.0140075683594, 469.741455078125, 562.1553344726562, 720.3678588867188]
+FIG. 4.
+Sampling low-energy spin conﬁgurations of the
+N = 16 Ising problem shown in Fig. 2 using an MFB-CIM.
+(a) Bar graph showing the number of trajectories with at least
+one occurrence of each spin conﬁguration, each represented by
+a colored bar (adjacent bars of the same color but diﬀerent
+lightness represent conﬁgurations diﬀering only in an overall
+sign ﬂip). Conﬁgurations are grouped together by Ising en-
+ergy, with labels 1, 2, and 3 for the ground, ﬁrst-excited, and
+second-excited energy levels, respectively. The solid-line rect-
+angle around each group represents the expected histogram if
+sampling within that energy level were perfectly fair. Error
+bars indicate simulation uncertainty of the counts. (b) Re-
+solving the time along a trajectory at which a sample ﬁrst
+appears. The vertical histograms show, for the set of realized
+samples, the distribution of time (in roundtrips) at which the
+ﬁrst sample appeared (i.e., the ﬁrst-sampling time). Each spin
+conﬁguration is colored in accordance with (a); however, oc-
+currences of conﬁgurations diﬀering only in an overall sign ﬂip
+have been combined. Square markers show the required sam-
+pling time based on Tsamp as deﬁned by (33), a metric taking
+into account both the ﬁrst-sampling time distribution as well
+as the frequency of occurrences. For this simulation, r = 0.8,
+α = 5, Tdecay = 4, ηesc = 0.2, and nsat = 200; Ntraj = 1000
+trajectories are simulated for 100Tdecay roundtrips each.

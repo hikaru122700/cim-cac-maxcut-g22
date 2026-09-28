@@ -1,0 +1,15 @@
+JIT warm-up
+CIM budget=600 time=0.303s best=10179 mean=10133.8
+GA b=3: cold=10087 (3.964s), warm=10214 (total 5.076s), delta_mean=+143.1
+GA b=8: cold=10111 (6.512s), warm=10214 (total 6.901s), delta_mean=+99.7
+GA b=20: cold=10177 (12.366s), warm=10214 (total 12.675s), delta_mean=+43.4
+SA b=1000000: cold=10187 (0.205s), warm=10228 (total 0.537s), delta_mean=+34.8
+SA b=3000000: cold=10232 (0.561s), warm=10221 (total 0.945s), delta_mean=-3.9
+SA b=10000000: cold=10256 (1.866s), warm=10245 (total 2.015s), delta_mean=-22.2
+PT-single b=30: cold=10032 (1.446s), warm=10205 (total 1.717s), delta_mean=+179.7
+PT-ladder b=30: cold=10032 (1.446s), warm=10218 (total 1.710s), delta_mean=+184.8
+PT-single b=80: cold=10150 (3.941s), warm=10220 (total 4.173s), delta_mean=+56.9
+PT-ladder b=80: cold=10150 (3.941s), warm=10228 (total 3.883s), delta_mean=+71.8
+PT-single b=200: cold=10205 (9.658s), warm=10229 (total 10.237s), delta_mean=+11.9
+PT-ladder b=200: cold=10205 (9.658s), warm=10243 (total 9.340s), delta_mean=+31.8
+saved: C:\Users\hikar\igarashi\cim-cac-maxcut-g22\results\2026-07-24\cim_warmstart\v4_G55_nt16_replication

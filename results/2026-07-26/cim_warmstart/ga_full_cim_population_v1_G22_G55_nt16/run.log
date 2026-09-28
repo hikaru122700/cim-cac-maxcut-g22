@@ -1,0 +1,15 @@
+G22 CIM: single=0.199s/16, full=2.953s/240, full_diversity=0.330
+G22 g=0: cold=13349, single=13356, full=13358; full-cold=+29.8 (16/0/0), full-single=+16.5
+G22 g=1: cold=13355, single=13356, full=13358; full-cold=+26.6 (16/0/0), full-single=+15.1
+G22 g=3: cold=13357, single=13357, full=13358; full-cold=+18.9 (12/2/2), full-single=+11.1
+G22 g=8: cold=13357, single=13357, full=13358; full-cold=+10.0 (13/2/1), full-single=+9.1
+G22 g=20: cold=13358, single=13358, full=13358; full-cold=+7.2 (13/3/0), full-single=+4.6
+G22 g=50: cold=13359, single=13358, full=13358; full-cold=+0.1 (2/13/1), full-single=+1.2
+G55 CIM: single=0.346s/16, full=1.952s/96, full_diversity=0.356
+G55 g=0: cold=9985, single=10214, full=10217; full-cold=+230.1 (16/0/0), full-single=+15.3
+G55 g=1: cold=10035, single=10214, full=10217; full-cold=+188.4 (16/0/0), full-single=+15.3
+G55 g=3: cold=10087, single=10214, full=10217; full-cold=+158.4 (16/0/0), full-single=+15.3
+G55 g=8: cold=10111, single=10214, full=10217; full-cold=+115.0 (16/0/0), full-single=+13.2
+G55 g=20: cold=10177, single=10223, full=10223; full-cold=+58.4 (16/0/0), full-single=+9.4
+G55 g=50: cold=10196, single=10231, full=10233; full-cold=+25.9 (13/0/3), full-single=-0.8
+saved: C:\Users\hikar\igarashi\cim-cac-maxcut-g22\results\2026-07-26\cim_warmstart\ga_full_cim_population_v1_G22_G55_nt16

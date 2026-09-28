@@ -1,0 +1,7 @@
+JIT warm-up
+CIM budget=30 time=0.004s best=10551 mean=10524.0
+GA b=1: cold=13355 (0.373s), warm=13327 (total 0.369s), delta_mean=-7.5
+SA b=10000: cold=12732 (0.012s), warm=12759 (total 0.016s), delta_mean=+11.0
+PT-single b=2: cold=12368 (0.021s), warm=12338 (total 0.025s), delta_mean=-23.0
+PT-ladder b=2: cold=12368 (0.021s), warm=12375 (total 0.026s), delta_mean=-3.0
+saved: C:\Users\hikar\igarashi\cim-cac-maxcut-g22\results\2026-07-24\cim_warmstart\v1_G22_nt2_api_smoke

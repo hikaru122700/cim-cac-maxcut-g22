@@ -1,0 +1,247 @@
+[20.0] [552.1320190429688, 28.347885131835938, 562.0946655273438, 38.31048583984375]
+20
+
+
+[20.1] [54.000030517578125, 55.02946472167969, 299.1414489746094, 63.99586486816406]
+[32] C. M. Caves, Quantum limits on noise in linear ampli-
+
+
+[20.2] [54.000022888183594, 65.49046325683594, 299.0933532714844, 84.91786193847656]
+ﬁers, Phys. Rev. D 26, 1817 (1982).
+[33] H. Wiseman and G. Milburn, Quantum Measurement and
+
+
+[20.3] [54.000022888183594, 86.41246032714844, 299.1414489746094, 105.83888244628906]
+Control (Cambridge University Press, 2010).
+[34] S. Kako, T. Leleu, Y. Inui, F. Khoyratee, S. Reifenstein,
+
+
+[20.4] [54.000038146972656, 107.33348083496094, 299.1414794921875, 147.68287658691406]
+and Y. Yamamoto, Coherent Ising Machines with Error
+Correction Feedback, Adv. Quantum Technol. 3, 2000045
+(2020).
+[35] Y. Inui and Y. Yamamoto, Noise correlation and success
+
+
+[20.5] [54.000038146972656, 149.17649841308594, 299.1414489746094, 179.0648956298828]
+probability in coherent Ising machines, arXiv:2009.10328
+[physics.optics].
+[36] R. Hamerly, K. Inaba, T. Inagaki, H. Takesue, Y. Ya-
+
+
+[20.6] [54.000038146972656, 180.5594940185547, 299.1593933105469, 231.36891174316406]
+mamoto, and H. Mabuchi, Topological defect formation
+in 1D and 2D spin chains realized by network of optical
+parametric oscillators, Int. J. Mod. Phys. B 30, 1630014
+(2016).
+[37] W. R. Clements, J. J. Renema, Y. H. Wen, H. M.
+
+
+[20.7] [54.000022888183594, 232.86351013183594, 299.1683349609375, 273.2119140625]
+Chrzanowski, W. S. Kolthammer, and I. A. Walmsley,
+Gaussian optical Ising machines, Phys. Rev. A 96, 043850
+(2017).
+[38] A. Yamamura, K. Aihara, and Y. Yamamoto, Quantum
+
+
+[20.8] [54.000022888183594, 274.7065124511719, 299.1413879394531, 315.0549011230469]
+model for coherent Ising machines: Discrete-time mea-
+surement feedback formulation, Phys. Rev. A 96, 053834
+(2017).
+[39] G. Adesso, S. Ragy, and A. R. Lee, Continuous Vari-
+
+
+[20.9] [54.000030517578125, 316.54949951171875, 299.11614990234375, 346.4368896484375]
+able Quantum Information:
+Gaussian States and Be-
+yond, Open Syst. Inf. Dyn. 21, 1440001 (2014).
+[40] J. B. Brask, Gaussian states and operations – a quick
+
+
+[20.10] [54.000030517578125, 347.9314880371094, 299.1430969238281, 409.2018737792969]
+reference , arXiv:2102.05748 [quant-ph].
+[41] I.
+G.
+Vladimirov
+and
+I.
+R.
+Petersen,
+Gaussian
+Stochastic
+Linearization
+for
+Open
+Quantum
+Sys-
+tems Using Quadratic Approximation of Hamiltonians,
+arXiv:1202.0946 [quant-ph].
+[42] S. Lloyd, Universal Quantum Simulators, Science 273,
+
+
+[20.11] [54.000022888183594, 410.69647216796875, 299.0825500488281, 430.1238708496094]
+1073 (1996).
+[43] J. J. Sakurai and J. Napolitano, Modern Quantum Me-
+
+
+[20.12] [54.00002670288086, 431.6174621582031, 299.15032958984375, 451.04486083984375]
+chanics, 2nd ed. (Cambridge University Press, 2017).
+[44] Z. Wang, A. Marandi, K. Wen, R. L. Byer, and Y. Ya-
+
+
+[20.13] [54.00000762939453, 452.5394592285156, 299.1504211425781, 492.8878479003906]
+mamoto, Coherent Ising machine based on degenerate
+optical parametric oscillators, Phys. Rev. A 88, 063853
+(2013).
+[45] T. Leleu, Y. Yamamoto, P. L. McMahon, and K. Aihara,
+
+
+[20.14] [54.00000762939453, 494.3824462890625, 299.1593933105469, 534.7308349609375]
+Destabilization of Local Minima in Analog Spin Systems
+by Correction of Amplitude Heterogeneity, Phys. Rev.
+Lett. 122, 040607 (2019).
+[46] M. C. Strinati, L. Bello, E. G. D. Torre, and A. Pe’er, Can
+
+
+[20.15] [54.0, 536.2254638671875, 299.1503601074219, 566.1138305664062]
+Nonlinear Parametric Oscillators Solve Random Ising
+Models?, Phys. Rev. Lett. 126, 143901 (2021).
+[47] D. Pierangeli, G. Marcucci, D. Brunner, and C. Conti,
+
+
+[20.16] [53.99999237060547, 567.6074829101562, 299.13250732421875, 597.495849609375]
+Noise-enhanced
+spatial-photonic
+Ising
+machine,
+Nanophotonics 9, 4109 (2020).
+[48] D. J. Earl and M. W. Deem, Parallel tempering: Theory,
+
+
+[20.17] [53.99999237060547, 598.990478515625, 299.1234130859375, 628.8778076171875]
+applications, and new perspectives, Phys. Chem. Chem.
+Phys. 7, 3910 (2005).
+[49] We do not consider the classical mean-ﬁeld model here as
+
+
+[20.18] [53.99999237060547, 630.3724975585938, 299.14141845703125, 660.2608642578125]
+it requires classical energy scales to realize in experiment,
+making the comparison unfair.
+[50] Y. Inui and Y. Yamamoto, Entanglement and quan-
+
+
+[20.19] [53.99999237060547, 661.7544555664062, 299.134033203125, 691.642822265625]
+tum discord in optically coupled coherent Ising machines,
+Phys. Rev. A 102, 062419 (2020).
+[51] I. Gershenzon, G. Arwas, S. Gadasi, C. Tradonsky,
+
+
+[20.20] [72.31999206542969, 693.137451171875, 299.134033203125, 723.0248413085938]
+A. Friesem, O. Raz, and N. Davidson, Exact mapping
+between a laser network loss rate and the classical XY
+Hamiltonian by laser loss control, Nanophotonics 9, 4117
+
+
+[20.21] [317.01397705078125, 55.03044128417969, 562.1465454101562, 74.45686340332031]
+(2020).
+[52] V. Pal, S. Mahler, C. Tradonsky, A. A. Friesem, and
+
+
+[20.22] [317.01397705078125, 75.95146179199219, 562.1553955078125, 116.30085754394531]
+N. Davidson, Rapid fair sampling of the XY spin Hamil-
+tonian with a laser simulator, Phys. Rev. Research 2,
+033008 (2020).
+[53] C. W. Gardiner and M. J. Collett, Input and output in
+
+
+[20.23] [317.01397705078125, 117.79447937011719, 562.1464233398438, 158.1438751220703]
+damped quantum systems: Quantum stochastic diﬀeren-
+tial equations and the master equation, Phys. Rev. A 31,
+3761 (1985).
+[54] H. M. Wiseman and G. J. Milburn, Quantum theory
+
+
+[20.24] [317.013916015625, 159.6374969482422, 562.1166381835938, 189.52589416503906]
+of ﬁeld-quadrature measurements, Phys. Rev. A 47, 642
+(1993).
+[55] M. Schork and T. Mansour, Commutation Relations,
+
+
+[20.25] [335.33392333984375, 191.02049255371094, 562.1061401367188, 210.44789123535156]
+Normal Ordering, and Stirling Numbers (Chapman and
+Hall/CRC, 2015).
+
+
+[20.26] [324.49993896484375, 237.1594696044922, 554.5868530273438, 246.12586975097656]
+Appendix A: Continuous-time Gaussian quantum
+
+
+[20.27] [362.7529296875, 247.62046813964844, 516.3385009765625, 256.58685302734375]
+models and the high-ﬁnesse limit
+
+
+[20.28] [317.013916015625, 272.950927734375, 562.143798828125, 443.3115234375]
+As outlined in Sec. II D, the discrete-time model can
+be reduced to continuous-time models for CIMs derived
+using conventional quantum optics theory. We ﬁrst give
+one example of such a continuous-time quantum model,
+which produces the Gaussian-state EOMs (24) from the
+main text.
+We then analyze each of the discrete map
+operations described in Sec. II C, including the nonlin-
+ear crystal propagation, to show how (24) can arise in
+the high-ﬁnesse limit of the formalism; in the process
+we derive the explicit relationships (25) that characterize
+the scaling of all parameters in our discrete-time model
+required for the limit to hold.
+Finally, we present an
+alternative perspective on this limit in the language of
+quantum input-output theory, which may also be useful
+for some readers.
+
+
+[20.29] [330.8849182128906, 469.8064880371094, 548.2125854492188, 478.77288818359375]
+1.
+Continuous-time Gaussian quantum model
+
+
+[20.30] [317.013916015625, 495.136962890625, 562.1337280273438, 573.841552734375]
+The standard approach to modeling the MFB-CIM is
+based on input-output theory [33, 53], which describes
+open quantum systems coupled weakly to a set of ex-
+ternal reservoirs.
+In this formalism, the dynamics are
+speciﬁed by a system Hamiltonian capturing the unitary
+evolution and a set of Lindblad operators, which describe
+the interactions of the system with the reservoirs.
+
+
+[20.31] [317.0138854980469, 575.8150024414062, 562.1338500976562, 667.4705200195312]
+For the MFB-CIM, the system of N DOPOs is repre-
+sented as in the discrete-time case by optical modes with
+annihilation operators ˆai. The system is coupled to three
+reservoirs. The ﬁrst describes unmeasured linear loss and
+is represented by Lindblad operators ˆLloss,i := √2γ ˆai,
+where γ is the ﬁeld decay rate due to loss. The second
+describes outcoupling and is represented by Lindblad op-
+erators ˆLout,i :=
+
+
+[20.32] [389.5970153808594, 647.643798828125, 397.8958740234375, 657.6064453125]
+√
+
+
+[20.33] [317.013916015625, 656.013916015625, 562.1336059570312, 701.842529296875]
+2κ ˆai, where κ is the ﬁeld outcoupling
+rate. Finally, gain saturation is modeled as a two-photon
+loss corresponding to back-conversion of signal into pump
+and is represented by Lindblad operators ˆLtpl,i := √g ˆa2
+
+
+[20.34] [317.01397705078125, 690.3849487304688, 562.0965576171875, 711.8045043945312]
+i ,
+where g is the two-photon loss rate.
+
+
+[20.35] [326.9759826660156, 713.7778930664062, 562.0833740234375, 723.740478515625]
+The Hamiltonian consists of two coherent eﬀects. The

@@ -1,0 +1,1029 @@
+{
+  "meta": {
+    "datasets": [
+      "G22",
+      "G55",
+      "G70",
+      "K2000"
+    ],
+    "candidate_budgets": [
+      10,
+      30,
+      80,
+      200,
+      600,
+      1800,
+      5000
+    ],
+    "num_trials": 16,
+    "cim_budget": 600,
+    "warm_mode": "ladder",
+    "perturb_max": 0.5,
+    "stop_rule": "first tested sweep budget with paired two-sided Wilcoxon p >= 0.05",
+    "note": "each sweep budget is an independent run; CIM generation time is measured once per dataset"
+  },
+  "datasets": {
+    "G22": {
+      "bks": 13359,
+      "n": 2000,
+      "edges": 19990,
+      "pt_params": {
+        "num_temps": 28,
+        "t_min": 0.39864834666902677,
+        "t_max": 3.137133516578398,
+        "swap_interval": 2,
+        "icm_interval": 5
+      },
+      "cim": {
+        "time": 0.18607020005583763,
+        "cut_best": 13270.0,
+        "cut_mean": 13247.5,
+        "gap_best": 89.0
+      },
+      "points": [
+        {
+          "sweeps": 10,
+          "cold": {
+            "cut_best": 13016.0,
+            "cut_mean": 12993.8125,
+            "gap_best": 343.0,
+            "gap_mean": 365.1875,
+            "gap_median": 364.5,
+            "gap_std": 12.274051643609782,
+            "solver_time": 0.29996139998547733,
+            "cim_time": 0.0,
+            "total_time": 0.29996139998547733
+          },
+          "warm": {
+            "cut_best": 13310.0,
+            "cut_mean": 13285.125,
+            "gap_best": 49.0,
+            "gap_mean": 73.875,
+            "gap_median": 69.5,
+            "gap_std": 17.503124721031956,
+            "solver_time": 0.3116601000074297,
+            "cim_time": 0.18607020005583763,
+            "total_time": 0.49773030006326735
+          },
+          "paired": {
+            "delta_mean": 291.3125,
+            "delta_median": 290.5,
+            "delta_mean_ci95": [
+              280.4375,
+              302.25
+            ],
+            "wins": 16,
+            "ties": 0,
+            "losses": 0,
+            "wilcoxon_p": 3.0517578125e-05,
+            "significant_0_05": true
+          }
+        },
+        {
+          "sweeps": 30,
+          "cold": {
+            "cut_best": 13192.0,
+            "cut_mean": 13157.6875,
+            "gap_best": 167.0,
+            "gap_mean": 201.3125,
+            "gap_median": 202.0,
+            "gap_std": 18.033714086399396,
+            "solver_time": 0.9098069999599829,
+            "cim_time": 0.0,
+            "total_time": 0.9098069999599829
+          },
+          "warm": {
+            "cut_best": 13328.0,
+            "cut_mean": 13300.625,
+            "gap_best": 31.0,
+            "gap_mean": 58.375,
+            "gap_median": 55.0,
+            "gap_std": 19.351598771161,
+            "solver_time": 1.0419280999340117,
+            "cim_time": 0.18607020005583763,
+            "total_time": 1.2279982999898493
+          },
+          "paired": {
+            "delta_mean": 142.9375,
+            "delta_median": 148.5,
+            "delta_mean_ci95": [
+              127.25,
+              156.5625
+            ],
+            "wins": 16,
+            "ties": 0,
+            "losses": 0,
+            "wilcoxon_p": 0.0004358423668112835,
+            "significant_0_05": true
+          }
+        },
+        {
+          "sweeps": 80,
+          "cold": {
+            "cut_best": 13288.0,
+            "cut_mean": 13249.4375,
+            "gap_best": 71.0,
+            "gap_mean": 109.5625,
+            "gap_median": 111.5,
+            "gap_std": 18.530275058670878,
+            "solver_time": 2.623036199947819,
+            "cim_time": 0.0,
+            "total_time": 2.623036199947819
+          },
+          "warm": {
+            "cut_best": 13339.0,
+            "cut_mean": 13312.875,
+            "gap_best": 20.0,
+            "gap_mean": 46.125,
+            "gap_median": 40.0,
+            "gap_std": 18.907257204576236,
+            "solver_time": 2.2963648999575526,
+            "cim_time": 0.18607020005583763,
+            "total_time": 2.48243510001339
+          },
+          "paired": {
+            "delta_mean": 63.4375,
+            "delta_median": 69.5,
+            "delta_mean_ci95": [
+              46.618750000000006,
+              78.31562500000001
+            ],
+            "wins": 15,
+            "ties": 0,
+            "losses": 1,
+            "wilcoxon_p": 0.0005301001326941152,
+            "significant_0_05": true
+          }
+        },
+        {
+          "sweeps": 200,
+          "cold": {
+            "cut_best": 13313.0,
+            "cut_mean": 13297.3125,
+            "gap_best": 46.0,
+            "gap_mean": 61.6875,
+            "gap_median": 59.5,
+            "gap_std": 11.128335174229791,
+            "solver_time": 5.726844600052573,
+            "cim_time": 0.0,
+            "total_time": 5.726844600052573
+          },
+          "warm": {
+            "cut_best": 13353.0,
+            "cut_mean": 13325.125,
+            "gap_best": 6.0,
+            "gap_mean": 33.875,
+            "gap_median": 27.5,
+            "gap_std": 18.560290272514596,
+            "solver_time": 6.307299299980514,
+            "cim_time": 0.18607020005583763,
+            "total_time": 6.493369500036351
+          },
+          "paired": {
+            "delta_mean": 27.8125,
+            "delta_median": 30.0,
+            "delta_mean_ci95": [
+              16.7484375,
+              38.125
+            ],
+            "wins": 13,
+            "ties": 0,
+            "losses": 3,
+            "wilcoxon_p": 0.000579833984375,
+            "significant_0_05": true
+          }
+        },
+        {
+          "sweeps": 600,
+          "cold": {
+            "cut_best": 13351.0,
+            "cut_mean": 13338.4375,
+            "gap_best": 8.0,
+            "gap_mean": 20.5625,
+            "gap_median": 20.5,
+            "gap_std": 8.396195194848676,
+            "solver_time": 18.709878099965863,
+            "cim_time": 0.0,
+            "total_time": 18.709878099965863
+          },
+          "warm": {
+            "cut_best": 13355.0,
+            "cut_mean": 13348.3125,
+            "gap_best": 4.0,
+            "gap_mean": 10.6875,
+            "gap_median": 10.0,
+            "gap_std": 4.509971590819614,
+            "solver_time": 17.891682300018147,
+            "cim_time": 0.18607020005583763,
+            "total_time": 18.077752500073984
+          },
+          "paired": {
+            "delta_mean": 9.875,
+            "delta_median": 7.5,
+            "delta_mean_ci95": [
+              5.5,
+              14.4375
+            ],
+            "wins": 15,
+            "ties": 0,
+            "losses": 1,
+            "wilcoxon_p": 0.0010133130709898328,
+            "significant_0_05": true
+          }
+        },
+        {
+          "sweeps": 1800,
+          "cold": {
+            "cut_best": 13357.0,
+            "cut_mean": 13355.0,
+            "gap_best": 2.0,
+            "gap_mean": 4.0,
+            "gap_median": 4.0,
+            "gap_std": 1.1726039399558574,
+            "solver_time": 53.306223499937914,
+            "cim_time": 0.0,
+            "total_time": 53.306223499937914
+          },
+          "warm": {
+            "cut_best": 13357.0,
+            "cut_mean": 13355.8125,
+            "gap_best": 2.0,
+            "gap_mean": 3.1875,
+            "gap_median": 3.0,
+            "gap_std": 1.5090870584562046,
+            "solver_time": 50.65857650001999,
+            "cim_time": 0.18607020005583763,
+            "total_time": 50.84464670007583
+          },
+          "paired": {
+            "delta_mean": 0.8125,
+            "delta_median": 1.0,
+            "delta_mean_ci95": [
+              -0.3125,
+              1.8125
+            ],
+            "wins": 10,
+            "ties": 2,
+            "losses": 4,
+            "wilcoxon_p": 0.10556865156203142,
+            "significant_0_05": false
+          }
+        }
+      ],
+      "stop_reached": true,
+      "stop_sweeps": 1800
+    },
+    "G55": {
+      "bks": 10299,
+      "n": 5000,
+      "edges": 12498,
+      "pt_params": {
+        "num_temps": 25,
+        "t_min": 0.23592030145207105,
+        "t_max": 1.580578662969446,
+        "swap_interval": 3,
+        "icm_interval": 3
+      },
+      "cim": {
+        "time": 0.5311579999979585,
+        "cut_best": 10179.0,
+        "cut_mean": 10133.75,
+        "gap_best": 120.0
+      },
+      "points": [
+        {
+          "sweeps": 10,
+          "cold": {
+            "cut_best": 9827.0,
+            "cut_mean": 9809.1875,
+            "gap_best": 472.0,
+            "gap_mean": 489.8125,
+            "gap_median": 491.0,
+            "gap_std": 10.927137948703677,
+            "solver_time": 0.5015307000139728,
+            "cim_time": 0.0,
+            "total_time": 0.5015307000139728
+          },
+          "warm": {
+            "cut_best": 10202.0,
+            "cut_mean": 10165.875,
+            "gap_best": 97.0,
+            "gap_mean": 133.125,
+            "gap_median": 138.5,
+            "gap_std": 16.706566822659884,
+            "solver_time": 0.5584317999891937,
+            "cim_time": 0.5311579999979585,
+            "total_time": 1.0895897999871522
+          },
+          "paired": {
+            "delta_mean": 356.6875,
+            "delta_median": 355.5,
+            "delta_mean_ci95": [
+              346.25,
+              367.9390625
+            ],
+            "wins": 16,
+            "ties": 0,
+            "losses": 0,
+            "wilcoxon_p": 0.0004348772241765821,
+            "significant_0_05": true
+          }
+        },
+        {
+          "sweeps": 30,
+          "cold": {
+            "cut_best": 10032.0,
+            "cut_mean": 9997.5,
+            "gap_best": 267.0,
+            "gap_mean": 301.5,
+            "gap_median": 303.5,
+            "gap_std": 13.233480267866046,
+            "solver_time": 1.5207830000435933,
+            "cim_time": 0.0,
+            "total_time": 1.5207830000435933
+          },
+          "warm": {
+            "cut_best": 10218.0,
+            "cut_mean": 10182.25,
+            "gap_best": 81.0,
+            "gap_mean": 116.75,
+            "gap_median": 119.5,
+            "gap_std": 15.95109714094927,
+            "solver_time": 1.5140873999334872,
+            "cim_time": 0.5311579999979585,
+            "total_time": 2.0452453999314457
+          },
+          "paired": {
+            "delta_mean": 184.75,
+            "delta_median": 184.0,
+            "delta_mean_ci95": [
+              176.1859375,
+              194.1890625
+            ],
+            "wins": 16,
+            "ties": 0,
+            "losses": 0,
+            "wilcoxon_p": 0.00043680902321148305,
+            "significant_0_05": true
+          }
+        },
+        {
+          "sweeps": 80,
+          "cold": {
+            "cut_best": 10150.0,
+            "cut_mean": 10128.1875,
+            "gap_best": 149.0,
+            "gap_mean": 170.8125,
+            "gap_median": 172.0,
+            "gap_std": 9.6515461844204,
+            "solver_time": 3.964393200003542,
+            "cim_time": 0.0,
+            "total_time": 3.964393200003542
+          },
+          "warm": {
+            "cut_best": 10228.0,
+            "cut_mean": 10199.9375,
+            "gap_best": 71.0,
+            "gap_mean": 99.0625,
+            "gap_median": 103.0,
+            "gap_std": 13.934977350178938,
+            "solver_time": 3.8194504999555647,
+            "cim_time": 0.5311579999979585,
+            "total_time": 4.350608499953523
+          },
+          "paired": {
+            "delta_mean": 71.75,
+            "delta_median": 65.5,
+            "delta_mean_ci95": [
+              64.9375,
+              79.6875
+            ],
+            "wins": 16,
+            "ties": 0,
+            "losses": 0,
+            "wilcoxon_p": 0.00043680902321148305,
+            "significant_0_05": true
+          }
+        },
+        {
+          "sweeps": 200,
+          "cold": {
+            "cut_best": 10205.0,
+            "cut_mean": 10185.6875,
+            "gap_best": 94.0,
+            "gap_mean": 113.3125,
+            "gap_median": 117.5,
+            "gap_std": 10.220804457086537,
+            "solver_time": 10.034044000087306,
+            "cim_time": 0.0,
+            "total_time": 10.034044000087306
+          },
+          "warm": {
+            "cut_best": 10243.0,
+            "cut_mean": 10217.4375,
+            "gap_best": 56.0,
+            "gap_mean": 81.5625,
+            "gap_median": 84.5,
+            "gap_std": 12.419585087675031,
+            "solver_time": 9.740358100039884,
+            "cim_time": 0.5311579999979585,
+            "total_time": 10.271516100037843
+          },
+          "paired": {
+            "delta_mean": 31.75,
+            "delta_median": 28.0,
+            "delta_mean_ci95": [
+              24.375,
+              39.375
+            ],
+            "wins": 16,
+            "ties": 0,
+            "losses": 0,
+            "wilcoxon_p": 0.0004348772241765821,
+            "significant_0_05": true
+          }
+        },
+        {
+          "sweeps": 600,
+          "cold": {
+            "cut_best": 10243.0,
+            "cut_mean": 10231.5,
+            "gap_best": 56.0,
+            "gap_mean": 67.5,
+            "gap_median": 69.5,
+            "gap_std": 6.324555320336759,
+            "solver_time": 28.915275900042616,
+            "cim_time": 0.0,
+            "total_time": 28.915275900042616
+          },
+          "warm": {
+            "cut_best": 10254.0,
+            "cut_mean": 10241.75,
+            "gap_best": 45.0,
+            "gap_mean": 57.25,
+            "gap_median": 58.5,
+            "gap_std": 6.85109480302236,
+            "solver_time": 28.47883689997252,
+            "cim_time": 0.5311579999979585,
+            "total_time": 29.00999489997048
+          },
+          "paired": {
+            "delta_mean": 10.25,
+            "delta_median": 8.5,
+            "delta_mean_ci95": [
+              5.3125,
+              15.375
+            ],
+            "wins": 13,
+            "ties": 1,
+            "losses": 2,
+            "wilcoxon_p": 0.002600355528314682,
+            "significant_0_05": true
+          }
+        },
+        {
+          "sweeps": 1800,
+          "cold": {
+            "cut_best": 10274.0,
+            "cut_mean": 10261.0625,
+            "gap_best": 25.0,
+            "gap_mean": 37.9375,
+            "gap_median": 40.0,
+            "gap_std": 5.141361079519703,
+            "solver_time": 88.21693340002093,
+            "cim_time": 0.0,
+            "total_time": 88.21693340002093
+          },
+          "warm": {
+            "cut_best": 10281.0,
+            "cut_mean": 10263.5625,
+            "gap_best": 18.0,
+            "gap_mean": 35.4375,
+            "gap_median": 36.5,
+            "gap_std": 6.274638933835157,
+            "solver_time": 81.37914380000439,
+            "cim_time": 0.5311579999979585,
+            "total_time": 81.91030180000234
+          },
+          "paired": {
+            "delta_mean": 2.5,
+            "delta_median": 3.5,
+            "delta_mean_ci95": [
+              -1.4390624999999995,
+              7.0
+            ],
+            "wins": 9,
+            "ties": 1,
+            "losses": 6,
+            "wilcoxon_p": 0.27994840378225927,
+            "significant_0_05": false
+          }
+        }
+      ],
+      "stop_reached": true,
+      "stop_sweeps": 1800
+    },
+    "G70": {
+      "bks": 9591,
+      "n": 10000,
+      "edges": 9999,
+      "pt_params": {
+        "num_temps": 24,
+        "t_min": 0.09356289164437716,
+        "t_max": 1.5195888983368662,
+        "swap_interval": 3,
+        "icm_interval": 1
+      },
+      "cim": {
+        "time": 0.5413500999566168,
+        "cut_best": 9343.0,
+        "cut_mean": 9316.8125,
+        "gap_best": 248.0
+      },
+      "points": [
+        {
+          "sweeps": 10,
+          "cold": {
+            "cut_best": 9170.0,
+            "cut_mean": 9136.5625,
+            "gap_best": 421.0,
+            "gap_mean": 454.4375,
+            "gap_median": 457.0,
+            "gap_std": 12.11903848289954,
+            "solver_time": 0.7212098999880254,
+            "cim_time": 0.0,
+            "total_time": 0.7212098999880254
+          },
+          "warm": {
+            "cut_best": 9476.0,
+            "cut_mean": 9441.6875,
+            "gap_best": 115.0,
+            "gap_mean": 149.3125,
+            "gap_median": 150.5,
+            "gap_std": 19.738030391860278,
+            "solver_time": 0.6871085000457242,
+            "cim_time": 0.5413500999566168,
+            "total_time": 1.228458600002341
+          },
+          "paired": {
+            "delta_mean": 305.125,
+            "delta_median": 304.5,
+            "delta_mean_ci95": [
+              296.1875,
+              314.5640625
+            ],
+            "wins": 16,
+            "ties": 0,
+            "losses": 0,
+            "wilcoxon_p": 0.00043680902321148305,
+            "significant_0_05": true
+          }
+        },
+        {
+          "sweeps": 30,
+          "cold": {
+            "cut_best": 9340.0,
+            "cut_mean": 9314.875,
+            "gap_best": 251.0,
+            "gap_mean": 276.125,
+            "gap_median": 276.0,
+            "gap_std": 11.174049176551891,
+            "solver_time": 2.0350995999760926,
+            "cim_time": 0.0,
+            "total_time": 2.0350995999760926
+          },
+          "warm": {
+            "cut_best": 9492.0,
+            "cut_mean": 9452.625,
+            "gap_best": 99.0,
+            "gap_mean": 138.375,
+            "gap_median": 139.5,
+            "gap_std": 19.179660450591925,
+            "solver_time": 1.9556348000187427,
+            "cim_time": 0.5413500999566168,
+            "total_time": 2.4969848999753594
+          },
+          "paired": {
+            "delta_mean": 137.75,
+            "delta_median": 140.0,
+            "delta_mean_ci95": [
+              125.8125,
+              148.3765625
+            ],
+            "wins": 16,
+            "ties": 0,
+            "losses": 0,
+            "wilcoxon_p": 0.00043680902321148305,
+            "significant_0_05": true
+          }
+        },
+        {
+          "sweeps": 80,
+          "cold": {
+            "cut_best": 9415.0,
+            "cut_mean": 9397.9375,
+            "gap_best": 176.0,
+            "gap_mean": 193.0625,
+            "gap_median": 195.5,
+            "gap_std": 9.29024185637812,
+            "solver_time": 5.87003949994687,
+            "cim_time": 0.0,
+            "total_time": 5.87003949994687
+          },
+          "warm": {
+            "cut_best": 9492.0,
+            "cut_mean": 9472.0,
+            "gap_best": 99.0,
+            "gap_mean": 119.0,
+            "gap_median": 119.5,
+            "gap_std": 12.114041439585717,
+            "solver_time": 5.355869199964218,
+            "cim_time": 0.5413500999566168,
+            "total_time": 5.897219299920835
+          },
+          "paired": {
+            "delta_mean": 74.0625,
+            "delta_median": 74.5,
+            "delta_mean_ci95": [
+              66.5625,
+              81.5625
+            ],
+            "wins": 16,
+            "ties": 0,
+            "losses": 0,
+            "wilcoxon_p": 3.0517578125e-05,
+            "significant_0_05": true
+          }
+        },
+        {
+          "sweeps": 200,
+          "cold": {
+            "cut_best": 9468.0,
+            "cut_mean": 9444.875,
+            "gap_best": 123.0,
+            "gap_mean": 146.125,
+            "gap_median": 146.5,
+            "gap_std": 9.486009434952086,
+            "solver_time": 14.063715899945237,
+            "cim_time": 0.0,
+            "total_time": 14.063715899945237
+          },
+          "warm": {
+            "cut_best": 9507.0,
+            "cut_mean": 9492.1875,
+            "gap_best": 84.0,
+            "gap_mean": 98.8125,
+            "gap_median": 98.0,
+            "gap_std": 8.654614015078893,
+            "solver_time": 13.642610699986108,
+            "cim_time": 0.5413500999566168,
+            "total_time": 14.183960799942724
+          },
+          "paired": {
+            "delta_mean": 47.3125,
+            "delta_median": 48.0,
+            "delta_mean_ci95": [
+              40.8125,
+              53.5625
+            ],
+            "wins": 16,
+            "ties": 0,
+            "losses": 0,
+            "wilcoxon_p": 0.00043199086688202525,
+            "significant_0_05": true
+          }
+        },
+        {
+          "sweeps": 600,
+          "cold": {
+            "cut_best": 9516.0,
+            "cut_mean": 9499.375,
+            "gap_best": 75.0,
+            "gap_mean": 91.625,
+            "gap_median": 91.5,
+            "gap_std": 9.068317098558033,
+            "solver_time": 42.489132400020026,
+            "cim_time": 0.0,
+            "total_time": 42.489132400020026
+          },
+          "warm": {
+            "cut_best": 9529.0,
+            "cut_mean": 9514.3125,
+            "gap_best": 62.0,
+            "gap_mean": 76.6875,
+            "gap_median": 77.5,
+            "gap_std": 7.354579780653685,
+            "solver_time": 42.0590363999363,
+            "cim_time": 0.5413500999566168,
+            "total_time": 42.60038649989292
+          },
+          "paired": {
+            "delta_mean": 14.9375,
+            "delta_median": 16.0,
+            "delta_mean_ci95": [
+              10.0625,
+              19.6875
+            ],
+            "wins": 14,
+            "ties": 1,
+            "losses": 1,
+            "wilcoxon_p": 0.0009662548657680318,
+            "significant_0_05": true
+          }
+        },
+        {
+          "sweeps": 1800,
+          "cold": {
+            "cut_best": 9540.0,
+            "cut_mean": 9527.3125,
+            "gap_best": 51.0,
+            "gap_mean": 63.6875,
+            "gap_median": 64.0,
+            "gap_std": 6.925665581732921,
+            "solver_time": 124.38743790006265,
+            "cim_time": 0.0,
+            "total_time": 124.38743790006265
+          },
+          "warm": {
+            "cut_best": 9546.0,
+            "cut_mean": 9534.4375,
+            "gap_best": 45.0,
+            "gap_mean": 56.5625,
+            "gap_median": 56.5,
+            "gap_std": 7.193475776702108,
+            "solver_time": 122.30102130002342,
+            "cim_time": 0.5413500999566168,
+            "total_time": 122.84237139998004
+          },
+          "paired": {
+            "delta_mean": 7.125,
+            "delta_median": 10.5,
+            "delta_mean_ci95": [
+              0.8734375000000005,
+              12.875
+            ],
+            "wins": 12,
+            "ties": 1,
+            "losses": 3,
+            "wilcoxon_p": 0.06469405919768884,
+            "significant_0_05": false
+          }
+        }
+      ],
+      "stop_reached": true,
+      "stop_sweeps": 1800
+    },
+    "K2000": {
+      "bks": 33337,
+      "n": 2000,
+      "edges": 1999000,
+      "pt_params": {
+        "num_temps": 21,
+        "t_min": 0.07418977999928053,
+        "t_max": 4.621205502737279,
+        "swap_interval": 4,
+        "icm_interval": 4
+      },
+      "cim": {
+        "time": 16.96035910001956,
+        "cut_best": 32514.0,
+        "cut_mean": 32335.125,
+        "gap_best": 823.0
+      },
+      "points": [
+        {
+          "sweeps": 10,
+          "cold": {
+            "cut_best": 30402.0,
+            "cut_mean": 29887.5625,
+            "gap_best": 2935.0,
+            "gap_mean": 3449.4375,
+            "gap_median": 3469.0,
+            "gap_std": 192.66939584103648,
+            "solver_time": 10.523956999997608,
+            "cim_time": 0.0,
+            "total_time": 10.523956999997608
+          },
+          "warm": {
+            "cut_best": 32900.0,
+            "cut_mean": 32650.8125,
+            "gap_best": 437.0,
+            "gap_mean": 686.1875,
+            "gap_median": 658.0,
+            "gap_std": 130.08757567019995,
+            "solver_time": 12.218965200008824,
+            "cim_time": 16.96035910001956,
+            "total_time": 29.179324300028384
+          },
+          "paired": {
+            "delta_mean": 2763.25,
+            "delta_median": 2804.5,
+            "delta_mean_ci95": [
+              2656.3734375,
+              2859.1875
+            ],
+            "wins": 16,
+            "ties": 0,
+            "losses": 0,
+            "wilcoxon_p": 0.00043680902321148305,
+            "significant_0_05": true
+          }
+        },
+        {
+          "sweeps": 30,
+          "cold": {
+            "cut_best": 31366.0,
+            "cut_mean": 31110.0625,
+            "gap_best": 1971.0,
+            "gap_mean": 2226.9375,
+            "gap_median": 2189.0,
+            "gap_std": 138.78961990635324,
+            "solver_time": 31.98372020001989,
+            "cim_time": 0.0,
+            "total_time": 31.98372020001989
+          },
+          "warm": {
+            "cut_best": 32933.0,
+            "cut_mean": 32672.625,
+            "gap_best": 404.0,
+            "gap_mean": 664.375,
+            "gap_median": 631.5,
+            "gap_std": 137.05513261093142,
+            "solver_time": 29.707549500046298,
+            "cim_time": 16.96035910001956,
+            "total_time": 46.66790860006586
+          },
+          "paired": {
+            "delta_mean": 1562.5625,
+            "delta_median": 1518.5,
+            "delta_mean_ci95": [
+              1468.55,
+              1658.1390625000001
+            ],
+            "wins": 16,
+            "ties": 0,
+            "losses": 0,
+            "wilcoxon_p": 3.0517578125e-05,
+            "significant_0_05": true
+          }
+        },
+        {
+          "sweeps": 80,
+          "cold": {
+            "cut_best": 31635.0,
+            "cut_mean": 31386.125,
+            "gap_best": 1702.0,
+            "gap_mean": 1950.875,
+            "gap_median": 1958.5,
+            "gap_std": 102.3382107279583,
+            "solver_time": 74.70830439997371,
+            "cim_time": 0.0,
+            "total_time": 74.70830439997371
+          },
+          "warm": {
+            "cut_best": 32933.0,
+            "cut_mean": 32673.8125,
+            "gap_best": 404.0,
+            "gap_mean": 663.1875,
+            "gap_median": 631.5,
+            "gap_std": 136.318661025371,
+            "solver_time": 79.7851098999381,
+            "cim_time": 16.96035910001956,
+            "total_time": 96.74546899995767
+          },
+          "paired": {
+            "delta_mean": 1287.6875,
+            "delta_median": 1280.5,
+            "delta_mean_ci95": [
+              1211.3125,
+              1361.1875
+            ],
+            "wins": 16,
+            "ties": 0,
+            "losses": 0,
+            "wilcoxon_p": 3.0517578125e-05,
+            "significant_0_05": true
+          }
+        },
+        {
+          "sweeps": 200,
+          "cold": {
+            "cut_best": 31899.0,
+            "cut_mean": 31656.75,
+            "gap_best": 1438.0,
+            "gap_mean": 1680.25,
+            "gap_median": 1676.5,
+            "gap_std": 110.22675491912116,
+            "solver_time": 192.47989890002646,
+            "cim_time": 0.0,
+            "total_time": 192.47989890002646
+          },
+          "warm": {
+            "cut_best": 32933.0,
+            "cut_mean": 32676.75,
+            "gap_best": 404.0,
+            "gap_mean": 660.25,
+            "gap_median": 631.5,
+            "gap_std": 133.63640035559175,
+            "solver_time": 195.42074420000426,
+            "cim_time": 16.96035910001956,
+            "total_time": 212.38110330002382
+          },
+          "paired": {
+            "delta_mean": 1020.0,
+            "delta_median": 1011.0,
+            "delta_mean_ci95": [
+              931.434375,
+              1106.3890625000001
+            ],
+            "wins": 16,
+            "ties": 0,
+            "losses": 0,
+            "wilcoxon_p": 3.0517578125e-05,
+            "significant_0_05": true
+          }
+        },
+        {
+          "sweeps": 600,
+          "cold": {
+            "cut_best": 32038.0,
+            "cut_mean": 31908.5625,
+            "gap_best": 1299.0,
+            "gap_mean": 1428.4375,
+            "gap_median": 1410.5,
+            "gap_std": 79.0007664124216,
+            "solver_time": 264.05212989996653,
+            "cim_time": 0.0,
+            "total_time": 264.05212989996653
+          },
+          "warm": {
+            "cut_best": 32933.0,
+            "cut_mean": 32678.6875,
+            "gap_best": 404.0,
+            "gap_mean": 658.3125,
+            "gap_median": 631.5,
+            "gap_std": 130.21411153845807,
+            "solver_time": 256.5758111999603,
+            "cim_time": 16.96035910001956,
+            "total_time": 273.53617029997986
+          },
+          "paired": {
+            "delta_mean": 770.125,
+            "delta_median": 809.0,
+            "delta_mean_ci95": [
+              691.871875,
+              845.8140625
+            ],
+            "wins": 16,
+            "ties": 0,
+            "losses": 0,
+            "wilcoxon_p": 0.00043680902321148305,
+            "significant_0_05": true
+          }
+        },
+        {
+          "sweeps": 1800,
+          "cold": {
+            "cut_best": 32288.0,
+            "cut_mean": 32153.875,
+            "gap_best": 1049.0,
+            "gap_mean": 1183.125,
+            "gap_median": 1206.0,
+            "gap_std": 79.72599560369252,
+            "solver_time": 770.1462812999962,
+            "cim_time": 0.0,
+            "total_time": 770.1462812999962
+          },
+          "warm": {
+            "cut_best": 32933.0,
+            "cut_mean": 32681.5,
+            "gap_best": 404.0,
+            "gap_mean": 655.5,
+            "gap_median": 629.5,
+            "gap_std": 125.86500705120545,
+            "solver_time": 802.0057477999944,
+            "cim_time": 16.96035910001956,
+            "total_time": 818.966106900014
+          },
+          "paired": {
+            "delta_mean": 527.625,
+            "delta_median": 535.0,
+            "delta_mean_ci95": [
+              446.5609375,
+              604.125
+            ],
+            "wins": 16,
+            "ties": 0,
+            "losses": 0,
+            "wilcoxon_p": 0.00043680902321148305,
+            "significant_0_05": true
+          }
+        }
+      ],
+      "stop_reached": false,
+      "stop_sweeps": null,
+      "practical_cap_sweeps": 1800,
+      "cap_reason": "K2000 remained significant at 1800 sweeps; 5000 sweeps was stopped because the projected 16-trial cold/warm runtime exceeded one hour."
+    }
+  }
+}

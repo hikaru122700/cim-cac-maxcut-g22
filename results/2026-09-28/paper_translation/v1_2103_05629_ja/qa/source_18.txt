@@ -1,0 +1,120 @@
+[18.0] [552.1320190429688, 28.347885131835938, 562.0946655273438, 38.31048583984375]
+18
+
+
+[18.1] [54.000030517578125, 54.25090026855469, 299.1197509765625, 144.413330078125]
+serve that setting the pump parameter to be negative or
+even zero results in performance that scales similarly to,
+or arguably even better than, the case of positive pump
+parameter, both for sampling all conﬁgurations as well
+as any. Considering the experimental advantages of no
+longer requiring a pump for the system, we expect the
+r = 0 results to be an interesting regime to explore in
+MFB-CIM sampling experiments.
+
+
+[18.2] [126.6820297241211, 171.99229431152344, 226.3973846435547, 180.9586944580078]
+V.
+CONCLUSIONS
+
+
+[18.3] [54.00002670288086, 197.5277557373047, 299.13970947265625, 425.1741943359375]
+In this paper, we have formulated a numerically
+tractable, discrete-time model of the MFB-CIM valid
+down to the Gaussian-state regime in which quantum
+noise plays an important role in the system dynamics.
+Despite being based on the Gaussian-state formalism,
+however, the model nevertheless captures nonlinear dy-
+namics in the mean and variance of the Gaussian state
+under experimentally relevant conditions by employing a
+second-order moment expansion to describe the propa-
+gation of the state through the intracavity nonlinearity.
+The resulting dynamical model is highly general, simulta-
+neously overcoming several restrictions in previously es-
+tablished numerical models for MFB-CIMs: Continuous-
+time models based on quantum input-output theory only
+apply to high-ﬁnesse CIMs; linear models based on pure
+Gaussian operations (e.g., squeezing) only apply to CIMs
+operating below threshold or without optical nonlineari-
+ties; and mean-ﬁeld nonlinear models only apply to high-
+photon-number CIMs in the classical regime where quan-
+tum noise is neglected.
+
+
+[18.4] [54.00002670288086, 427.35162353515625, 299.1297607421875, 723.740234375]
+The generality of our model has allowed us to exam-
+ine the MFB-CIM in the context of a new computational
+application beyond conventional combinatorial optimiza-
+tion: the dynamical sampling of low-energy Ising spin
+conﬁgurations, driven by quantum noise. We have shown
+that the sampling behavior ﬁrst observed in continuous-
+time Gaussian models of the MFB-CIM [34] persists into
+the low-ﬁnesse regime, carrying the important advantage
+of increased eﬃciency by bypassing the diﬀusive dynam-
+ics inherent to the continuous-time limit. We have pro-
+vided natural parametrizations of our model of relevance
+to experimental settings, and we have operationally ex-
+plored sampling performance across a range of these pa-
+rameters, including pump rate, feedback gain, cavity ﬁ-
+nesse, and outcoupling eﬃciency. Using this model, we
+have explored diﬀerent operational modes of the MFB-
+CIM, including negative or zero pump rates, which re-
+sult in comparable or even enhanced performance, and
+the absence of optical nonlinearity or quantum noise,
+both of which result in signiﬁcant degradation of sam-
+pling performance. Due to the compatibility of our model
+with both existing (low-ﬁnesse, high-photon-number) as
+well as future (quantum-noise-dominated) experimental
+MFB-CIMs, we expect our numerical results to have im-
+mediate implications for the path towards demonstrating
+eﬃcient Ising sampling on the CIM platform.
+
+
+[18.5] [317.0140075683594, 54.25065612792969, 562.1536865234375, 350.63873291015625]
+In addition to our numerical ﬁndings in the context of
+Ising sampling, this paper also complements and expands
+upon a longstanding goal of identifying quantum mech-
+anisms and principles of operation in the CIM [29]. The
+ability to properly treat quantum noise in the Gaussian-
+state regime using a discrete-time formalism generalizes
+and validates previous investigations into CIM physics
+via continuous-time positive-P, truncated-Husimi, and
+truncated-Wigner SDEs [35, 50], and it also helps clar-
+ify the limitations of mean-ﬁeld models [44, 45] com-
+monly used to study the role of nonlinear dynamics in
+the large-N limit.
+Back in the small-N limit, these
+Gaussian-regime results can act as conceptual semiclas-
+sical scaﬀolding on which to build better understanding
+of complicated and often unintuitive deep-quantum dy-
+namics. While our focus has been on the measurement-
+feedback CIM in this paper for the sake of simplicity
+and experimental relevance, it is straightforward to gen-
+eralize our approach to describe coherently-coupled CIM
+networks [6, 9] or potentially even other optical ma-
+chines like laser networks implementing XY-spin Hamil-
+tonians [51, 52]. In cases where nonlocal entanglement is
+generated, the cost of representing an entangled Gaussian
+state only scales as O(N 2), so our modeling approach can
+enable intermediate-N numerical studies into the poten-
+tial role of entanglement in these platforms.
+
+
+[18.6] [380.0660095214844, 374.5926818847656, 499.0590515136719, 383.55908203125]
+ACKNOWLEDGMENTS
+
+
+[18.7] [317.0140075683594, 399.4451599121094, 562.1536865234375, 535.4347534179688]
+The authors thank Yoshitaka Inui, Sam Reifenstein,
+Logan G. Wright, Ryotatsu Yanagimoto, and Evan Lak-
+sono for helpful discussions and feedback.
+This work
+was supported by the National Science Foundation under
+Grant No. CCF-1918549 and the Army Research Oﬃce
+under Grant No. W911NF-16-1-0086. P.L.M. acknowl-
+edges membership in the CIFAR Quantum Information
+Science Program as an Azrieli Global Scholar. The au-
+thors wish to thank NTT Research for their ﬁnancial and
+technical support. E.N., T.O., S.K., and Y.Y. are listed
+as inventors on a U.S. provisional patent application (No.
+63/157,673) related to this paper.

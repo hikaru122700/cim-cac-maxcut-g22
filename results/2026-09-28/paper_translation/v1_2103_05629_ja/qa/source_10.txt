@@ -1,0 +1,272 @@
+[10.0] [552.1320190429688, 28.347885131835938, 562.0946655273438, 38.31048583984375]
+10
+
+
+[10.1] [85.49246215820312, 120.66600036621094, 94.36619567871094, 132.4976348876953]
+20
+
+
+[10.2] [89.92616271972656, 95.61361694335938, 94.36302947998047, 107.44525146484375]
+0
+
+
+[10.3] [85.48973083496094, 70.56121826171875, 94.36346435546875, 82.39285278320312]
+20
+
+
+[10.4] [66.80529022216797, 78.12841796875, 78.63692474365234, 125.0294189453125]
+Internal state
+
+
+[10.5] [132.851806640625, 52.79042053222656, 541.962646484375, 67.95706939697266]
+Tdecay = 4
+Tdecay = 16
+Tdecay = 64
+Cont. time (dt = 1/256)
+
+
+[10.6] [85.49246215820312, 193.3671875, 94.36619567871094, 205.19882202148438]
+20
+
+
+[10.7] [89.92616271972656, 168.31480407714844, 94.36302947998047, 180.1464385986328]
+0
+
+
+[10.8] [85.48973083496094, 143.2624053955078, 94.36346435546875, 155.0940399169922]
+20
+
+
+[10.9] [65.8787612915039, 143.2100067138672, 78.85492706298828, 206.00938415527344]
+Homodyne wi / rout
+
+
+[10.10] [97.0277099609375, 282.2060546875, 209.26405334472656, 303.5754699707031]
+0
+20
+40
+60
+Time (roundtrip index)
+
+
+[10.11] [85.49246215820312, 273.56719970703125, 94.36619567871094, 285.3988342285156]
+20
+
+
+[10.12] [85.49246215820312, 251.86639404296875, 94.36619567871094, 263.6980285644531]
+10
+
+
+[10.13] [89.92616271972656, 230.16558837890625, 94.36302947998047, 241.99722290039062]
+0
+
+
+[10.14] [85.48973083496094, 208.4647674560547, 94.36346435546875, 220.29640197753906]
+10
+
+
+[10.15] [66.80529022216797, 225.41217041015625, 78.63692474365234, 268.5460205078125]
+Ising energy
+
+
+[10.16] [211.0550079345703, 282.2060546875, 307.9131774902344, 303.5754699707031]
+0
+50
+100
+150
+200
+Time (roundtrip index)
+
+
+[10.17] [325.0823059082031, 282.2060546875, 421.94049072265625, 303.5754699707031]
+0
+200
+400
+600
+800
+Time (roundtrip index)
+
+
+[10.18] [439.109619140625, 282.2060546875, 532.6874389648438, 303.5209655761719]
+0
+1000
+2000
+3000
+Time (dt)
+
+
+[10.19] [53.99998474121094, 320.4634704589844, 562.1328735351562, 382.8028564453125]
+FIG. 3. Representative trajectories of the discrete-time Gaussian-state MFB-CIM model for the N = 16 problem instance
+shown in Fig. 2. Each of the ﬁrst three columns represents a diﬀerent cavity decay time Tdecay, while the rightmost column
+depicts the continuous-time limit sampled at dt = 1/256; all trajectories are based on the same underlying noise process but
+sampled at diﬀerent rates. The N traces shown in the ﬁrst row represent the Gaussian states of the N intracavity signal
+pulses: the center of each trace gives the mean quadrature amplitude ⟨ˆqi⟩, while the half-thickness of each trace is given by the
+root-variance
+
+
+[10.20] [109.38903045654297, 373.014404296875, 113.73773193359375, 381.9808044433594]
+
+
+
+[10.21] [113.74102783203125, 372.3633117675781, 126.2573471069336, 382.8028564453125]
+δˆq2
+
+
+[10.22] [122.28303527832031, 377.83831787109375, 124.94904327392578, 383.81591796875]
+i
+
+
+[10.23] [54.00006103515625, 372.3633117675781, 562.1138305664062, 403.7238464355469]
+1/2. The second row shows two of the homodyne records wi (speciﬁcally i = 2, 3) divided by the outcoupling
+ratio rout; the corresponding intracavity mean ⟨ˆqi⟩is reproduced from the ﬁrst row as a guide for the eye. In the last row,
+the dark line shows the Ising energy −P
+
+
+[10.24] [54.000152587890625, 394.6412658691406, 562.1234741210938, 415.34783935546875]
+j Jij sgn ⟨ˆqi⟩sgn ⟨ˆqj⟩based on the intracavity mean, while the light-grey line shows
+the Ising energy −P
+
+
+[10.25] [54.000152587890625, 406.38140869140625, 562.1072387695312, 426.8048095703125]
+j Jij sgn(wi) sgn(wj) based on the homodyne record (black dashed line shows the ground energy). In this
+simulation, the other model parameters are held ﬁxed at nsat = 200, ηesc = 0.5, r = 0.9, and α = 5.
+
+
+[10.26] [54.00007247924805, 449.6868591308594, 299.1397705078125, 539.8494873046875]
+The saturation photon number is the steady-state pho-
+ton number at r = 2, considering the eﬀects of loss and
+outcoupling, parametric gain, and nonlinear gain satura-
+tion. Because this feature involves the nonlinear terms
+of the crystal EOMs at ﬁnite signal amplitude, the exact
+value of the saturation photon number can depend on
+cavity layout for low-ﬁnesse cavities. In the high-ﬁnesse
+limit, however, it can be shown to be
+
+
+[10.27] [131.00607299804688, 550.8768920898438, 189.48007202148438, 575.2545776367188]
+nsat =
+8
+(ϵτnl)2
+
+
+[10.28] [192.36500549316406, 550.8768920898438, 217.61602783203125, 575.2545776367188]
+1
+Tdecay
+
+
+[10.29] [219.30801391601562, 557.616943359375, 299.0835266113281, 567.5795288085938]
+.
+(30)
+
+
+[10.30] [53.99995040893555, 587.2767944335938, 299.1396789550781, 689.0255126953125]
+When the roundtrip attenuation is moderately low (∼0.4
+in power), then ϵτnl ≪1, and we can take for convenience
+the above equation to deﬁne the parameter nsat, so that
+for a ﬁxed Tdecay, specifying nsat determines ϵτnl, which
+then ﬁxes βth. When the roundtrip attenuation is large,
+however, it may be the case that a given nsat corresponds
+to ϵτnl̸ ≪1, which is inconsistent with a Gaussian-state
+approximation for the crystal propagation.
+To handle
+these cases as well, we specify
+
+
+[10.31] [102.36094665527344, 703.9649047851562, 160.02810668945312, 718.882568359375]
+(ϵτnl)2 = min
+
+
+[10.32] [161.6809539794922, 701.1953125, 212.18002319335938, 725.716552734375]
+
+8
+nsatTdecay
+
+
+[10.33] [213.87200927734375, 706.2103271484375, 238.46408081054688, 718.04150390625]
+, 10−2
+
+
+[10.34] [238.9580078125, 701.1943359375, 246.2904815673828, 711.156982421875]
+
+
+
+[10.35] [247.95201110839844, 708.0789184570312, 299.08349609375, 718.04150390625]
+,
+(31)
+
+
+[10.36] [317.0140075683594, 446.07196044921875, 562.1151123046875, 484.05853271484375]
+where 10−2 is taken as an appropriate maximal value to
+respect the Gaussian-state approximation. In this latter
+case, (29) and (30) are replaced with βth = (10
+
+
+[10.37] [514.2080078125, 464.2308349609375, 522.5068359375, 474.19342041015625]
+√
+
+
+[10.38] [317.0140075683594, 472.6009216308594, 561.597900390625, 495.5155029296875]
+2)/Tdecay
+and nsat = 800/Tdecay.
+
+
+[10.39] [317.0140075683594, 495.5149230957031, 562.1052856445312, 551.3065185546875]
+In summary, we henceforth parametrize our system us-
+ing the values Tdecay, ηesc, r, and nsat. We use (27) and
+(28) to determine rloss and rout, and we use (31) to de-
+termine ϵτnl. This procedure sets βth via (29), which also
+gives us β given r.
+
+
+[10.40] [317.0140075683594, 552.8009643554688, 562.123291015625, 596.2919921875]
+Finally, with regards to the feedback control, we note
+that for r < 1, the feedback gain J0 needed for the system
+to go above threshold due to feedback gain scales with
+p
+
+
+[10.41] [317.0140075683594, 587.1719360351562, 562.0967407226562, 608.5914916992188]
+Tdecay but also with the Ising matrix entries Jij. To
+this end, we deﬁne a feedback gain parameter
+
+
+[10.42] [364.98199462890625, 622.8699340820312, 404.02703857421875, 634.01953125]
+α := −J0
+
+
+[10.43] [404.5209655761719, 621.8863525390625, 414.4835510253906, 631.8489990234375]
+p
+
+
+[10.44] [414.4840087890625, 623.2159423828125, 439.73504638671875, 634.01953125]
+Tdecay
+
+
+[10.45] [441.8909912109375, 619.3203125, 458.36151123046875, 632.8699951171875]
+P
+
+
+[10.46] [458.3580017089844, 623.0867919921875, 491.22857666015625, 636.0384521484375]
+i̸=j |Jij|
+
+
+[10.47] [491.2259826660156, 616.5577392578125, 509.2040710449219, 629.282958984375]
+1/2
+
+
+[10.48] [511.3590087890625, 623.2159423828125, 562.0964965820312, 633.1785278320312]
+,
+(32)
+
+
+[10.49] [317.0139465332031, 645.0359497070312, 562.128173828125, 677.9125366210938]
+where the negative sign is chosen since we usually use
+J0 < 0 in order for the feedback to enforce minimization
+of the Ising energy; thus α is positive in these cases.
+
+
+[10.50] [317.0139465332031, 679.4069213867188, 562.123779296875, 723.7405395507812]
+In Fig. 3, we illustrate some representative dynamics of
+the MFB-CIM running on the N = 16 problem instance
+shown in Fig. 2. As a way of making the discussion in
+Sec. II D more concrete, we note in particular how these

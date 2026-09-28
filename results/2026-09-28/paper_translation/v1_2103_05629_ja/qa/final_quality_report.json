@@ -1,0 +1,51 @@
+{
+  "pages": 24,
+  "regions": 218,
+  "figures": [
+    {
+      "page": 3,
+      "pixel_identical": true
+    },
+    {
+      "page": 4,
+      "pixel_identical": true
+    },
+    {
+      "page": 10,
+      "pixel_identical": true
+    },
+    {
+      "page": 11,
+      "pixel_identical": true
+    },
+    {
+      "page": 12,
+      "pixel_identical": true
+    },
+    {
+      "page": 13,
+      "pixel_identical": true
+    },
+    {
+      "page": 14,
+      "pixel_identical": true
+    },
+    {
+      "page": 16,
+      "pixel_identical": true
+    },
+    {
+      "page": 17,
+      "pixel_identical": true
+    }
+  ],
+  "text_issues": [],
+  "outside_translation_pixel_changes": [],
+  "changed_pages_since_visual_review": [
+    13
+  ],
+  "source_sha256": "585611eafb6c9bc949e8031210e18e8aed67e36124fa2b0b157467b434238e53",
+  "output_sha256": "ee14ddf332d504b991eff85bad7b3b53efa140a863ae8758a1e4d3eee2fc4e9b",
+  "output_bytes": 3070978,
+  "bookmarks": 20
+}

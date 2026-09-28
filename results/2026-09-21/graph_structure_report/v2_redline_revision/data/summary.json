@@ -1,0 +1,98 @@
+{
+  "networkx_version": "3.6.1",
+  "graphs": [
+    {
+      "graph": "G22",
+      "input": "input/G22.txt",
+      "sha256": "1b100420195c44c62da2543f404d2b1e620b31cd09074c4e52985d0a6d9f41a2",
+      "vertices": 2000,
+      "edges": 19990,
+      "mean_degree": 19.99,
+      "connected_components": 1,
+      "largest_component": 2000,
+      "isolated_vertices": 0,
+      "degree_one_vertices": 0,
+      "bridges": 0,
+      "articulation_points": 0,
+      "biconnected_blocks_including_bridges": 1,
+      "largest_biconnected_block_vertices": 2000,
+      "core_number_histogram": {
+        "7": 1,
+        "8": 3,
+        "9": 8,
+        "10": 13,
+        "11": 49,
+        "12": 50,
+        "13": 143,
+        "14": 1733
+      },
+      "two_core_vertices": 2000,
+      "two_core_edges": 19990,
+      "cycle_rank": 17991,
+      "triangles": 1395,
+      "average_clustering_including_degree_zero_one": 0.01053430534862818,
+      "edge_weight_counts": {
+        "1": 19990
+      }
+    },
+    {
+      "graph": "G55",
+      "input": "input/G55.txt",
+      "sha256": "6cc641c62bdda9985281acfb63b0bf624a0ff002a4c34c8633c10d988e9386f5",
+      "vertices": 5000,
+      "edges": 12498,
+      "mean_degree": 4.9992,
+      "connected_components": 32,
+      "largest_component": 4969,
+      "isolated_vertices": 31,
+      "degree_one_vertices": 174,
+      "bridges": 180,
+      "articulation_points": 179,
+      "biconnected_blocks_including_bridges": 181,
+      "largest_biconnected_block_vertices": 4789,
+      "core_number_histogram": {
+        "0": 31,
+        "1": 180,
+        "2": 550,
+        "3": 4239
+      },
+      "two_core_vertices": 4789,
+      "two_core_edges": 12318,
+      "cycle_rank": 7530,
+      "triangles": 23,
+      "average_clustering_including_degree_zero_one": 0.0011886446886446888,
+      "edge_weight_counts": {
+        "1": 12498
+      }
+    },
+    {
+      "graph": "G70",
+      "input": "input/G70.txt",
+      "sha256": "4a8c1e4019b0cbfb40ad553dcee525cb373d68804f2617f239fb209cd8e51071",
+      "vertices": 10000,
+      "edges": 9999,
+      "mean_degree": 1.9998,
+      "connected_components": 1598,
+      "largest_component": 8013,
+      "isolated_vertices": 1354,
+      "degree_one_vertices": 2673,
+      "bridges": 3605,
+      "articulation_points": 2770,
+      "biconnected_blocks_including_bridges": 3606,
+      "largest_biconnected_block_vertices": 4798,
+      "core_number_histogram": {
+        "0": 1354,
+        "1": 3848,
+        "2": 4798
+      },
+      "two_core_vertices": 4798,
+      "two_core_edges": 6394,
+      "cycle_rank": 1597,
+      "triangles": 0,
+      "average_clustering_including_degree_zero_one": 0.0,
+      "edge_weight_counts": {
+        "1": 9999
+      }
+    }
+  ]
+}

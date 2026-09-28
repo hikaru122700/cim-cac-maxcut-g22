@@ -1,0 +1,124 @@
+[1.0] [55.909000396728516, 52.69361877441406, 560.3705444335938, 64.64881896972656]
+Eﬃcient sampling of ground and low-energy Ising spin conﬁgurations with a coherent
+
+
+[1.1] [267.5989990234375, 66.64161682128906, 348.5237731933594, 78.59681701660156]
+Ising machine
+
+
+[1.2] [182.2779998779297, 90.73934173583984, 433.32208251953125, 102.07147216796875]
+Edwin Ng,1, 2, ∗Tatsuhiro Onodera,1, 3, ∗Satoshi Kako,1
+
+
+[1.3] [161.43701171875, 100.94688415527344, 454.1640930175781, 114.5255126953125]
+Peter L. McMahon,3 Hideo Mabuchi,2 and Yoshihisa Yamamoto1
+
+
+[1.4] [112.42803955078125, 117.81531524658203, 503.7124328613281, 159.6378936767578]
+1Physics & Informatics Laboratories, NTT Research, Inc., Sunnyvale, California 94085, USA
+2E. L. Ginzton Laboratory, Stanford University, Stanford, California 94305, USA
+3School of Applied and Engineering Physics, Cornell University, Ithaca, New York 14853, USA
+(Dated: January 31, 2022)
+
+
+[1.5] [108.79405975341797, 167.6074676513672, 507.3874816894531, 354.4068603515625]
+We show that the nonlinear stochastic dynamics of a measurement-feedback-based coherent Ising
+machine (MFB-CIM) in the presence of quantum noise can be exploited to sample degenerate
+ground and low-energy spin conﬁgurations of the Ising model. We formulate a general discrete-time
+Gaussian-state model of the MFB-CIM which faithfully captures the nonlinear dynamics present
+at and above system threshold. This model overcomes the limitations of both mean-ﬁeld models,
+which neglect quantum noise, and continuous-time models, which assume long photon lifetimes.
+Numerical simulations of our model show that when the MFB-CIM is operated in a quantum-noise-
+dominated regime with short photon lifetimes (i.e., low cavity ﬁnesse), homodyne monitoring of the
+system can eﬃciently produce samples of low-energy Ising spin conﬁgurations, requiring many fewer
+roundtrips to sample than suggested by established high-ﬁnesse, continuous-time models. We ﬁnd
+that sampling performance is robust to, or even improved by, turning oﬀor altogether reversing
+the sign of the parametric drive, but performance is critically reduced in the absence of optical
+nonlinearity. For the class of MAX-CUT problems with binary-signed edge weights, the number
+of roundtrips suﬃcient to fully sample all spin conﬁgurations up to the ﬁrst-excited Ising energy,
+including all degeneracies, scales with the problem size N as 1.08N. At N = 100 with a few dozen
+(median ∼20) such desired conﬁgurations per instance, we have found median suﬃcient sampling
+times of 6 × 106 roundtrips; in an experimental implementation of an MFB-CIM with a 10 GHz
+repetition rate, this corresponds to a wall-clock sampling time of 60 ms.
+
+
+[1.6] [124.32305908203125, 376.574462890625, 228.76368713378906, 385.5408630371094]
+I.
+INTRODUCTION
+
+
+[1.7] [54.000057220458984, 401.4259338378906, 299.1297912597656, 514.5015258789062]
+For decades, the Ising model has served as a key con-
+ceptual bridge between the ﬁelds of physics and com-
+putation. A host of important combinatorial optimiza-
+tion problems have eﬃcient mappings to the problem of
+ﬁnding ground states of the Ising model [1], while the
+simple and highly generic form of the model means that
+Ising-like interactions are ubiquitous across a diverse ar-
+ray of systems [2]. Formally, the Ising model consists of
+a set of spins σi = ±1 with conﬁguration energy given
+by the Ising Hamiltonian −P
+
+
+[1.8] [54.00006103515625, 504.5389404296875, 299.13970947265625, 629.071533203125]
+i̸=j Jijσiσj, and, in gen-
+eral, the Ising problem of ﬁnding spin conﬁgurations that
+minimize this energy is presently intractable on conven-
+tional computers [3]. As a result, signiﬁcant interest has
+developed towards leveraging physical Ising-like systems
+as special-purpose computational hardware for tackling
+problems such as combinatorial optimization, with ongo-
+ing research on platforms ranging from quantum anneal-
+ers built from microwave superconducting circuits [4, 5]
+to coherent Ising machines [6–9] based on networks of
+nonlinear optical oscillators among many others [10–15].
+
+
+[1.9] [54.00006103515625, 630.5669555664062, 299.12982177734375, 674.9005126953125]
+But while combinatorial optimization is often focused
+on ﬁnding just one of the ground-state Ising spin conﬁg-
+urations, it is desirable in many applications to obtain
+many or all degenerate ground-state conﬁgurations, and,
+
+
+[1.10] [55.327999114990234, 703.19287109375, 299.0125732421875, 721.960205078125]
+∗These authors contributed equally to this work.
+Email to
+{edwin.ng, tatsuhiro.onodera}@ntt-research.com.
+
+
+[1.11] [317.01397705078125, 375.7959289550781, 562.1735229492188, 718.0125122070312]
+in some cases, to sample many low-energy conﬁgurations
+as well [16]. Such sampling capability is particularly use-
+ful for applications that involve obtaining distributional
+information about spin conﬁgurations in an Ising model,
+such as estimating the ground-state entropy of a physical
+simulation with Ising-like interactions or implementing
+Boltzmann machines as generative models for machine
+learning [17–19]. In industrial settings, accessing a pool
+of candidate solutions to an optimization problem can
+make processes more eﬃcient and ﬂexible; for example
+in drug discovery [20–23], structure-based lead optimiza-
+tion could generate a number of candidate molecules for
+simultaneous testing. Recently, it has also been pointed
+out [24, 25] that when decomposing large optimization
+problems into subproblems to be solved separately (e.g.,
+to accommodate hardware limitations), better solutions
+to the original problem can be constructed using multi-
+ple low-energy samples rather than just the optimum for
+each subproblem. However, an Ising solver designed for
+combinatorial optimization is not necessarily well suited
+to sample all ground states and/or low-energy states. For
+instance, although the commercial quantum annealers by
+D-Wave Systems have shown success in ﬁnding ground
+states of the Ising problem, their principle of operation
+can lead to an exponential bias in the distributions of
+degenerate ground-state samples [26–28]. Because such
+issues are often intrinsically tied to the hardware details
+underlying an Ising solver, a numerical study of sampling
+performance requires the development and study of ac-
+curate models for the machine and its operation.
+
+
+[1.12] [10.940000534057617, 207.8199462890625, 37.619998931884766, 575.0]
+arXiv:2103.05629v2  [quant-ph]  28 Jan 2022

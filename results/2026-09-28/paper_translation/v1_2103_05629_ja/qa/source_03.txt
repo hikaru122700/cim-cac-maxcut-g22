@@ -1,0 +1,188 @@
+[3.0] [557.1129760742188, 28.347885131835938, 562.0942993164062, 38.31048583984375]
+3
+
+
+[3.1] [53.999969482421875, 54.25090026855469, 299.1297302246094, 121.4993896484375]
+eral elements: (i) nonlinearity, which drives the signal
+amplitudes to bistable spin values; (ii) linear coupling,
+which drives the system towards collective conﬁgurations
+that minimize the Ising energy; and (iii) quantum noise,
+which arises from the inherent uncertainty of the weak
+homodyne measurement followed by measurement back-
+
+
+[3.2] [163.54360961914062, 433.8179931640625, 227.48263549804688, 441.2666015625]
+FPGA
+ADC
+DAC
+
+
+[3.3] [105.17505645751953, 439.1511535644531, 282.3519592285156, 455.5809326171875]
+Homodyne
+Optical
+modulation
+
+
+[3.4] [79.62446594238281, 460.1556091308594, 134.68003845214844, 467.6042175292969]
+Local oscillator →
+
+
+[3.5] [87.03948974609375, 341.4686279296875, 94.48863983154297, 413.5556640625]
+2nd harmonic pump →
+
+
+[3.6] [59.057254791259766, 368.63580322265625, 66.50640106201172, 415.6563415527344]
+Source laser →
+
+
+[3.7] [102.60767364501953, 375.2606201171875, 110.05682373046875, 413.1485900878906]
+Feedback →
+
+
+[3.8] [281.51007080078125, 370.12799072265625, 288.9591979980469, 418.653564453125]
+Out-coupling →
+
+
+[3.9] [158.06942749023438, 348.3931579589844, 232.41624450683594, 363.8475646972656]
+Time-multiplexed
+optical-ﬁber ring cavity
+
+
+[3.10] [168.32357788085938, 327.1571350097656, 221.97650146484375, 342.6115417480469]
+Pumped
+nonlinear crystal
+
+
+[3.11] [117.05149841308594, 280.6458740234375, 238.72116088867188, 300.3130187988281]
+External control:
+Ising matrix multiplication
+
+
+[3.12] [259.62957763671875, 175.09129333496094, 269.1142578125, 252.83070373535156]
+Quantum-limited
+
+
+[3.13] [269.82379150390625, 182.24024963378906, 279.3084716796875, 245.65921020507812]
+measurement
+
+
+[3.14] [122.46192932128906, 194.86158752441406, 228.07371520996094, 214.52871704101562]
+Local processes:
+gain, loss, nonlinearity
+
+
+[3.15] [73.87191772460938, 181.46469116210938, 83.35658264160156, 247.89120483398438]
+Measurement-
+
+
+[3.16] [84.06610870361328, 178.47518920898438, 93.55077362060547, 250.87600708007812]
+based feedback
+
+
+[3.17] [55.43623733520508, 149.09710693359375, 67.98290252685547, 159.57969665527344]
+(a)
+
+
+[3.18] [55.43623733520508, 308.6300354003906, 68.18119812011719, 319.1126403808594]
+(b)
+
+
+[3.19] [54.0, 480.6834716796875, 299.1324462890625, 510.5718688964844]
+FIG. 1.
+Schematic of the measurement-feedback coherent
+Ising machine (MFB-CIM). (a) Abstractly, the MFB-CIM
+consists of a system (gray box) of N optical modes with state
+
+
+[3.20] [53.999969482421875, 512.0654907226562, 299.15032958984375, 719.786865234375]
+ˆρi (characterized by a mean vector µi and covariance matrix
+Σi), each of which experiences optical gain, loss, and non-
+linearity.
+The system is probed via weak measurement to
+produce an estimate wi of the in-phase quadrature ˆqi, up to
+some normally-distributed (i.e., Gaussian) quantum noise zi.
+This estimate is processed by an external controller (green
+box) that generates a feedback signal vi based on a spec-
+iﬁed Ising-problem matrix Jij.
+Closing the loop thus em-
+beds the Ising couplings into the system dynamics. (b) An
+optical schematic of the MFB-CIM, implemented in a time-
+multiplexed scheme [7, 8].
+The system consists of optical
+pulses ˆρi circulating in a resonant cavity with a pumped non-
+linear crystal to provide gain and nonlinearity, plus any ex-
+cess linear losses. An output coupler taps out a fraction of
+each pulse to be measured in balanced optical homodyne, pro-
+ducing the electronic signal wi. This signal is processed by
+an FPGA to generate the feedback vi, which is optically re-
+encoded by applying intensity/phase modulation to a local
+oscillator that is injected back into the cavity, optically dis-
+placing the pulses and closing the loop.
+
+
+[3.21] [317.01397705078125, 54.25090026855469, 562.1537475585938, 258.9830322265625]
+action and feedback injection and introduces stochastic-
+ity into the system dynamics. As illustrated conceptually
+in Fig. 2, the dynamical evolution of the signal ampli-
+tudes is stochastic and nonlinear, but with a strong pref-
+erence towards low-energy sign conﬁgurations dictated
+by the Ising coupling matrix.
+In the continuous-time
+limit, a convenient and intuitive picture is to think of such
+stochastic trajectories as quantum-noise-driven gradient
+descent on a potential landscape: As the state evolves
+stochastically in time, the instantaneous potential seen
+by any given spin dynamically changes as well, guiding
+the system around and across local minima born out of
+the interplay between nonlinearity and coupling. While
+we will not focus on elucidating this energy-landscape
+concept in this paper, such a multistability dynamical
+picture of MFB-CIM dynamics in the quantum-noise-
+dominated regime can provide useful physical intuition
+as we develop the formalism.
+
+
+[3.22] [317.01397705078125, 263.7154541015625, 562.1338500976562, 479.9050598144531]
+Open-dissipative bosonic systems like the MFB-CIM
+with relatively weak single-photon-induced nonlinearities
+and subject to continuous homodyne measurement can
+usually be well approximated by a Gaussian state, even
+as the system evolves through the classical bifurcation
+at threshold. Formally, the Gaussian-state approxima-
+tion means the quantum state, conditioned on the mea-
+surement results, has a Wigner function well approxi-
+mated by a Gaussian distribution; consequently, the state
+can be fully characterized by simply specifying a set of
+mean-ﬁeld amplitudes and a set of covariances describ-
+ing the quantum correlations and uncertainties of those
+amplitudes [30, 31]. Another very useful simpliﬁcation
+(which applies more speciﬁcally to MFB-CIMs) is that
+the pulses, while interacting through measurement feed-
+back, are nevertheless unentangled since the physics in
+Fig. 1 only involve local operations and classical commu-
+nication (LOCC) among the signal pulses, leading to zero
+covariance between diﬀerent signal pulses.
+
+
+[3.23] [317.01397705078125, 484.636474609375, 562.1629028320312, 723.7401123046875]
+Many of the operations involved in Fig. 1, including
+outcoupling, homodyne measurement, and feedback in-
+jection, are linear operations, and for Gaussian states,
+such operations have a particularly simple description if
+we use a discrete-time formalism for the dynamics, where
+we assume the signal pulses undergo a discrete transfor-
+mation upon passing through each optical component.
+This discrete-time approach stands in contrast to more
+traditional continuous-time models in quantum optics,
+where the amplitudes evolve continuously in time under
+an eﬀective system Hamiltonian and a set of Liouvillian
+superoperators representing continuous losses and mea-
+surements. Of course, the time-multiplexed, pulsed na-
+ture of the setup described in Fig. 1 lends itself naturally
+to a discrete-time model when the pulse widths are short
+compared to their separation. A continuous-time model
+can be thought of as an appropriate approximation to
+the discrete-time model when the cavity ﬁnesse is high:
+In this limit, the single-roundtrip gain, loss, and mea-
+surement eﬀects are all small, leading to small changes
+in the cavity state on every roundtrip, so the overall
