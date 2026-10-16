@@ -1,0 +1,15 @@
+{
+  "created": "2026-09-14",
+  "new_ga_runs": 0,
+  "claim": "品質と多様性は別軸だが、多様性のGA性能への因果効果は未検証",
+  "inputs": {
+    "results\\2026-09-14\\cim_diversity_evidence\\v2_G22_G55_G70_matched_r1000_discussion\\metrics.json": "a9c8d8deb461deeb453781206c3e0ad6374ffafb103f389864d9c7ec14e9a8b8",
+    "results\\2026-09-14\\ga_diversity_trajectory\\v1_G22_G55_G70_nt16_gen300_measured\\metadata.json": "1972a74e38c21e92b2783bb7caaf4bc4125bef7099cb759ced6e82f5a3390389",
+    "results\\2026-09-14\\ga_diversity_trajectory\\v1_G22_G55_G70_nt16_gen300_measured\\G22_random_trajectory.npz": "461019bc0573d32085c0f08a1c73d382b2b4187733d17d36bd7de6754dd2bcdf",
+    "results\\2026-09-14\\ga_diversity_trajectory\\v1_G22_G55_G70_nt16_gen300_measured\\G22_cim_trajectory.npz": "3b06b7ee762bbe793ac52432e70f7f7d42807fc5d58c781fe72efdb6377a8b5b",
+    "results\\2026-09-14\\ga_diversity_trajectory\\v1_G22_G55_G70_nt16_gen300_measured\\G55_random_trajectory.npz": "9e53f8500f7950bf26639ab72014b10384fba01ecc96577c9abd647f724fec7d",
+    "results\\2026-09-14\\ga_diversity_trajectory\\v1_G22_G55_G70_nt16_gen300_measured\\G55_cim_trajectory.npz": "bce56a9dcca05aea3563b00f04d79cf46e111ffbaaf13623688f1c0a0ad57c9e",
+    "results\\2026-09-14\\ga_diversity_trajectory\\v1_G22_G55_G70_nt16_gen300_measured\\G70_random_trajectory.npz": "5c09d079de4ca5b07646f2f21aa1f110069ec9b5406ec82766d37c37633396f2",
+    "results\\2026-09-14\\ga_diversity_trajectory\\v1_G22_G55_G70_nt16_gen300_measured\\G70_cim_trajectory.npz": "544bb0a354d4c087e5ba41dfef3a543c150eef40d0fd07c3f9dffdd04de3b93c"
+  }
+}
