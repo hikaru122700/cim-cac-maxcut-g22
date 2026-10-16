@@ -1,0 +1,15 @@
+G22 CIM K=16 rounds=600: 0.2s cut mean=13247.5 min=13208 max=13270 distinct=13
+features: 0.01s
+B=    10,000: 0.0s label=13288.0 between_sd=17.40 noise_se=1.76 R2(cut)=0.8834162639225123 splithalf_resid_SB=0.916 CI=[0.848072762577546, 0.9850686269224582] go=True dist_from_seed=0.032
+                n_pos_gain: rho=+0.580 p=0.0185
+               n_zero_gain: rho=+0.348 p=0.187
+              sum_pos_gain: rho=+0.644 p=0.00709
+      largest_zero_cluster: rho=+0.710 p=0.00207
+        n_gain_minus2_to_0: rho=-0.316 p=0.234
+B=   100,000: 0.1s label=13298.6 between_sd=18.18 noise_se=1.74 R2(cut)=0.8327132614615057 splithalf_resid_SB=0.955 CI=[0.9270683561513313, 0.9822980798661218] go=True dist_from_seed=0.041
+                n_pos_gain: rho=+0.511 p=0.0432
+               n_zero_gain: rho=+0.391 p=0.135
+              sum_pos_gain: rho=+0.573 p=0.0202
+      largest_zero_cluster: rho=+0.533 p=0.0336
+        n_gain_minus2_to_0: rho=-0.001 p=0.996
+go_any=True  saved: results\2026-10-16\seed_value_pilot\v1_G22_K16_R4_cim600_T0p5_smoke

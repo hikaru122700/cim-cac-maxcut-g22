@@ -1,0 +1,52 @@
+{
+  "meta": {
+    "dataset": "G22",
+    "bks": 13359,
+    "trials": 2,
+    "generations": 3,
+    "cim_budget": 600,
+    "ga_params": {
+      "pop_size": 15,
+      "ts_iters": 35238,
+      "cr": 2159,
+      "alpha_tenure": 40,
+      "beta_quality": 0.8373501301265787
+    },
+    "cim_seeds": "0..29",
+    "random_pop_seed": 20261016
+  },
+  "conditions": {
+    "cim_ts35k": {
+      "name": "cim_ts35k",
+      "ts_iters": 35238,
+      "time_s": 0.9296863999916241,
+      "final_best_mean": 13354.5,
+      "final_gap_mean": 4.5,
+      "accept_rate": 1.0,
+      "accept_runs": 2,
+      "child_beats_pop_min_rate": 1.0,
+      "child_beats_pop_max_rate": 0.16666666666666666,
+      "mean_parent": 13340.75,
+      "mean_pop_min": 13296.333333333334,
+      "mean_child_raw": 13019.333333333334,
+      "mean_child_ts": 13345.666666666666,
+      "mean_disagree_frac": 0.15808333333333335
+    },
+    "rand_ts35k": {
+      "name": "rand_ts35k",
+      "ts_iters": 35238,
+      "time_s": 0.7210448999830987,
+      "final_best_mean": 13313.0,
+      "final_gap_mean": 46.0,
+      "accept_rate": 1.0,
+      "accept_runs": 2,
+      "child_beats_pop_min_rate": 1.0,
+      "child_beats_pop_max_rate": 0.16666666666666666,
+      "mean_parent": 13274.5,
+      "mean_pop_min": 13244.333333333334,
+      "mean_child_raw": 12079.833333333334,
+      "mean_child_ts": 13293.833333333334,
+      "mean_disagree_frac": 0.3989166666666667
+    }
+  }
+}

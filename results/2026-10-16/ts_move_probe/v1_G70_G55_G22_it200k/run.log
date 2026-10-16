@@ -1,0 +1,16 @@
+G70 params {'pop_size': 8, 'ts_iters': 41152, 'cr': 521, 'alpha_tenure': 11, 'beta_quality': 0.6617624429773965} gamma_pert 500
+cim: best=9465 moves +:148050 0:51950 -:0 perturbations=383
+   cut right after kick: mean=8570.2  max reached before next kick: mean=9361.5 max=9459
+rand: best=9285 moves +:121934 0:78066 -:0 perturbations=311
+   cut right after kick: mean=8420.0  max reached before next kick: mean=9182.3 max=9285
+G55 params {'pop_size': 6, 'ts_iters': 58453, 'cr': 930, 'alpha_tenure': 13, 'beta_quality': 0.43297527070849817} gamma_pert 250
+cim: best=10184 moves +:46957 0:153043 -:0 perturbations=210
+   cut right after kick: mean=9451.6  max reached before next kick: mean=10165.6 max=10184
+rand: best=10077 moves +:37772 0:162228 -:0 perturbations=161
+   cut right after kick: mean=9296.6  max reached before next kick: mean=9978.8 max=10077
+G22 params {'pop_size': 15, 'ts_iters': 35238, 'cr': 2159, 'alpha_tenure': 40, 'beta_quality': 0.8373501301265787} gamma_pert 100
+cim: best=13345 moves +:54415 0:94340 -:51245 perturbations=87
+   cut right after kick: mean=12708.1  max reached before next kick: mean=13339.4 max=13345
+rand: best=13299 moves +:51370 0:101416 -:47214 perturbations=83
+   cut right after kick: mean=12670.2  max reached before next kick: mean=13288.8 max=13299
+saved: results\2026-10-16\ts_move_probe\v1_G70_G55_G22_it200k

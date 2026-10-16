@@ -377,6 +377,7 @@ def simulate_ga_batch(
     align_rng_with_cold: bool = False,
     return_history: bool = False,
     population_observer: Optional[Callable] = None,
+    child_observer: Optional[Callable] = None,
 ):
     """メメティックアルゴリズムを num_trials 個、独立に実行。
 
@@ -401,6 +402,12 @@ def simulate_ga_batch(
         population_observer : callback(generation, populations, fitnesses)。
                           -1 は初期 TS 前、0 は初期 TS 後、1 以降は集団更新後。
                           配列はコピーを渡す。観測によって乱数列は変わらない。
+        child_observer  : callback(generation, record)。各世代の子の追跡用。
+                          record は dict で、各キーが (num_trials,) の配列:
+                          parent_a / parent_b(親の cut)、pop_min / pop_max(更新前の
+                          集団の cut)、child_raw(交叉直後)、child_ts(TS 後)、
+                          accepted(集団に採用されたか)、n_disagree(親の不一致頂点数)。
+                          観測によって乱数列は変わらない。
 
     Returns:
         best_cuts  : (num_trials,)
@@ -506,9 +513,23 @@ def simulate_ga_batch(
     while gen < max_generations:
         # 各 run で交叉して子を 1 個作る
         children = np.zeros((num_trials, n), dtype=np.int8)
+        if child_observer is not None:
+            rec = {
+                "parent_a": np.zeros(num_trials), "parent_b": np.zeros(num_trials),
+                "pop_min": fits.min(axis=1).copy(), "pop_max": fits.max(axis=1).copy(),
+                "n_disagree": np.zeros(num_trials, dtype=np.int64),
+                "accepted": np.zeros(num_trials, dtype=bool),
+            }
         for t in range(num_trials):
             ia, ib = rngs[t].choice(pop_size, size=2, replace=False)
             children[t] = _grouping_crossover(pops[t, ia], pops[t, ib], rngs[t])
+            if child_observer is not None:
+                rec["parent_a"][t] = fits[t, ia]
+                rec["parent_b"][t] = fits[t, ib]
+                agree = int(np.sum(pops[t, ia] == pops[t, ib]))
+                rec["n_disagree"][t] = min(agree, n - agree)
+        if child_observer is not None:
+            rec["child_raw"] = _cut_batch(n, indptr, indices, data, children)
         child_seeds = ((seeds + 7919 * (gen + 1)) % (2**31)).astype(np.int64)
         # 子をまとめて TS 磨き
         cs, cc = _tabu_search_batch(
@@ -517,11 +538,16 @@ def simulate_ga_batch(
         )
         # DisQual で各 run のプール更新
         for t in range(num_trials):
-            _pool_update(pops[t], fits[t], cs[t], cc[t], n, beta_quality)
+            accepted = _pool_update(pops[t], fits[t], cs[t], cc[t], n, beta_quality)
+            if child_observer is not None:
+                rec["accepted"][t] = accepted
             if cc[t] > best_cuts[t]:
                 best_cuts[t] = cc[t]
                 best_signs[t] = cs[t]
         gen += 1
+        if child_observer is not None:
+            rec["child_ts"] = np.asarray(cc, dtype=np.float64).copy()
+            child_observer(gen, rec)
         if population_observer is not None:
             population_observer(gen, pops.copy(), fits.copy())
         if return_history:

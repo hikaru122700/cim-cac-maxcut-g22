@@ -145,3 +145,25 @@ def test_ga_rejects_conflicting_warm_inputs():
             init_population=np.ones((1, 2, n), dtype=np.int8),
             seeds=np.array([0]),
         )
+
+
+def test_child_observer_does_not_change_results_and_is_consistent():
+    """child_observer は乱数列・結果を変えず、記録した cut が再計算と一致する。"""
+    n, edges, weights = load_graph("input/G22.txt", return_weights=True)
+    kw = dict(num_trials=3, pop_size=6, max_generations=5, ts_iters=2000, seeds=np.arange(3))
+    base_cuts, base_signs = simulate_ga_batch(n, edges, weights, **kw)
+    records = []
+    cuts, signs = simulate_ga_batch(
+        n, edges, weights, **kw, child_observer=lambda g, r: records.append((g, r))
+    )
+    assert np.array_equal(base_cuts, cuts)
+    assert np.array_equal(base_signs, signs)
+    assert [g for g, _ in records] == list(range(1, 6))
+    for _, r in records:
+        assert np.all(r["child_ts"] >= r["child_raw"])  # TS は最良解を返す
+        assert np.all(r["pop_min"] <= r["pop_max"])
+        assert np.all(r["n_disagree"] <= n // 2)
+        assert r["accepted"].dtype == bool
+    # 最終 best は、初期集団の最良とすべての子の TS 後 cut 以上
+    best_child = np.max([r["child_ts"] for _, r in records], axis=0)
+    assert np.all(cuts >= best_child)

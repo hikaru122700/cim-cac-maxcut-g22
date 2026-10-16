@@ -1,0 +1,68 @@
+{
+  "meta": {
+    "dataset": "G70",
+    "bks": 9591,
+    "trials": 16,
+    "generations": 30,
+    "cim_budget": 600,
+    "ga_params": {
+      "pop_size": 8,
+      "ts_iters": 41152,
+      "cr": 521,
+      "alpha_tenure": 11,
+      "beta_quality": 0.6617624429773965
+    },
+    "cim_seeds": "0..127",
+    "random_pop_seed": 20261016
+  },
+  "conditions": {
+    "cim_ts41k": {
+      "name": "cim_ts41k",
+      "ts_iters": 41152,
+      "time_s": 17.025276200001827,
+      "final_best_mean": 9484.6875,
+      "final_gap_mean": 106.3125,
+      "accept_rate": 0.0,
+      "accept_runs": 0,
+      "child_beats_pop_min_rate": 0.0,
+      "child_beats_pop_max_rate": 0.0,
+      "mean_parent": 9465.855208333332,
+      "mean_pop_min": 9445.8125,
+      "mean_child_raw": 7953.745833333333,
+      "mean_child_ts": 9326.522916666667,
+      "mean_disagree_frac": 0.37004375
+    },
+    "cim_ts411k": {
+      "name": "cim_ts411k",
+      "ts_iters": 411520,
+      "time_s": 297.31348850001814,
+      "final_best_mean": 9484.6875,
+      "final_gap_mean": 106.3125,
+      "accept_rate": 0.0,
+      "accept_runs": 0,
+      "child_beats_pop_min_rate": 0.0,
+      "child_beats_pop_max_rate": 0.0,
+      "mean_parent": 9465.855208333332,
+      "mean_pop_min": 9445.8125,
+      "mean_child_raw": 7953.745833333333,
+      "mean_child_ts": 9379.333333333334,
+      "mean_disagree_frac": 0.37004375
+    },
+    "rand_ts41k": {
+      "name": "rand_ts41k",
+      "ts_iters": 41152,
+      "time_s": 32.235129999986384,
+      "final_best_mean": 9323.875,
+      "final_gap_mean": 267.125,
+      "accept_rate": 0.9791666666666666,
+      "accept_runs": 16,
+      "child_beats_pop_min_rate": 0.975,
+      "child_beats_pop_max_rate": 0.28541666666666665,
+      "mean_parent": 9217.965625,
+      "mean_pop_min": 9182.01875,
+      "mean_child_raw": 7736.625,
+      "mean_child_ts": 9244.783333333333,
+      "mean_disagree_frac": 0.39165833333333333
+    }
+  }
+}

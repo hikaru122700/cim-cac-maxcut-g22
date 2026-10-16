@@ -1,0 +1,3 @@
+   cim_ts35k: 1s gap=4.5 accept=1.000 (runs with any accept 2/2) parent=13340.8 pop_min=13296.3 child_raw=13019.3 child_ts=13345.7 child>pop_min=1.000 disagree=0.158
+  rand_ts35k: 1s gap=46.0 accept=1.000 (runs with any accept 2/2) parent=13274.5 pop_min=13244.3 child_raw=12079.8 child_ts=13293.8 child>pop_min=1.000 disagree=0.399
+saved: results\2026-10-16\ga_child_fate_diag\v1_G22_nt2_gen3_smoke
