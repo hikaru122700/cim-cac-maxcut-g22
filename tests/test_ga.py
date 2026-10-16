@@ -167,3 +167,19 @@ def test_child_observer_does_not_change_results_and_is_consistent():
     # 最終 best は、初期集団の最良とすべての子の TS 後 cut 以上
     best_child = np.max([r["child_ts"] for _, r in records], axis=0)
     assert np.all(cuts >= best_child)
+
+
+def test_tie_break_modes():
+    """tie_break は random / first のみ受け付け、どちらも報告 cut が再計算と一致する。"""
+    import pytest
+    n, edges, weights = load_graph("input/G22.txt", return_weights=True)
+    init = np.random.default_rng(1).integers(0, 2, (2, n)).astype(np.int8)
+    indptr, indices, data = _csr(n, edges, weights)
+    for mode in ("random", "first"):
+        cuts, signs = tabu_refine_batch(
+            n, edges, weights, init, ts_iters=3000, seeds=np.arange(2), tie_break=mode
+        )
+        for t in range(2):
+            assert abs(_cut_of(n, indptr, indices, data, signs[t].astype(np.int8)) - cuts[t]) < 1e-6
+    with pytest.raises(ValueError):
+        tabu_refine_batch(n, edges, weights, init, ts_iters=10, tie_break="last")

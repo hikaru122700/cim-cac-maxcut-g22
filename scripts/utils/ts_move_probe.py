@@ -22,7 +22,8 @@ from scripts.benchmarks.algo_registry import load_context, run_cim, PARAMS
 
 
 @njit(cache=False)
-def ts_probe(n, indptr, indices, data, s, ts_iters, cr, gamma_pert, alpha_tenure, seed):
+def ts_probe(n, indptr, indices, data, s, ts_iters, cr, gamma_pert, alpha_tenure, seed,
+             random_ties):
     np.random.seed(seed)
     gains, cut = _init_gains(n, indptr, indices, data, s)
     best_cut = cut
@@ -40,12 +41,19 @@ def ts_probe(n, indptr, indices, data, s, ts_iters, cr, gamma_pert, alpha_tenure
         best_g = -1.0e18
         asp_v = -1
         asp_g = -1.0e18
+        n_ties = 0
         for v in range(n):
             g = gains[v]
             if it >= tabu_until[v]:
                 if g > best_g:
                     best_g = g
                     best_v = v
+                    n_ties = 1
+                elif random_ties and g == best_g:
+                    # 同点は等確率に選ぶ(reservoir sampling)
+                    n_ties += 1
+                    if np.random.randint(0, n_ties) == 0:
+                        best_v = v
             else:
                 if cut + g > best_cut and g > asp_g:
                     asp_g = g
@@ -99,20 +107,20 @@ def out_dir_for(names):
     return d
 
 
-def probe(name, log):
+def probe(name, log, random_ties, gamma_override):
     ctx = load_context(name)
     p = PARAMS[name]["GA"]
-    gamma = max(50, int(0.05 * ctx.n))
+    gamma = gamma_override if gamma_override else max(50, int(0.05 * ctx.n))
     ea = np.array([e[0] for e in ctx.edges], dtype=np.int64)
     eb = np.array([e[1] for e in ctx.edges], dtype=np.int64)
     ip, ix, dt = _build_csr(ctx.n, ea, eb, np.ones(len(ea)))
     _, s = run_cim(ctx, 600, 2, np.arange(2))
     starts = {"cim": np.asarray(s[0]).astype(np.int8),
               "rand": (np.random.default_rng(0).random(ctx.n) < 0.5).astype(np.int8)}
-    log(f"{name} params {p} gamma_pert {gamma}")
+    log(f"{name} params {p} gamma_pert {gamma} random_ties {random_ties}")
     for label, s0 in starts.items():
         r = ts_probe(ctx.n, ip, ix, dt, s0.copy(), 200_000, p["cr"], gamma,
-                     p["alpha_tenure"], 0)
+                     p["alpha_tenure"], 0, random_ties)
         best, npos, nzero, nneg, npert, after, kmax = r
         k = min(npert, 2000)
         log(f"{label}: best={best:.0f} moves +:{npos} 0:{nzero} -:{nneg} perturbations={npert}")
@@ -122,8 +130,17 @@ def probe(name, log):
 
 
 def main():
-    names = sys.argv[1:] or ["G70"]
-    out = out_dir_for(names)
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("names", nargs="*", default=["G70"])
+    ap.add_argument("--random-ties", action="store_true",
+                    help="Wu & Hao (2012) と同じく同点の手を等確率に選ぶ")
+    ap.add_argument("--gamma", type=int, default=0, help="摂動の強さ(0 なら GA.py の既定)")
+    args = ap.parse_args()
+    names = args.names
+    tag = names + (["randties"] if args.random_ties else []) + (
+        [f"gamma{args.gamma}"] if args.gamma else [])
+    out = out_dir_for(tag)
 
     def log(msg):
         print(msg, flush=True)
@@ -131,7 +148,7 @@ def main():
             f.write(msg + "\n")
 
     for name in names:
-        probe(name, log)
+        probe(name, log, args.random_ties, args.gamma)
     log(f"saved: {out}")
 
 

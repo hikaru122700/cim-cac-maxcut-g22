@@ -149,11 +149,15 @@ def _apply_flip(v, s, gains, indptr, indices, data):
 
 @njit(cache=True)
 def _tabu_search_one(
-    n, indptr, indices, data, s, ts_iters, cr, gamma_pert, alpha_tenure
+    n, indptr, indices, data, s, ts_iters, cr, gamma_pert, alpha_tenure, random_ties
 ):
     """単一解 s(0/1, 破壊的に更新される作業コピー)に対する Tabu Search。
 
     動的 tenure・aspiration・摂動付き。best 解と best カットを返す。
+    random_ties=True なら、利得が最大の非 tabu 手が複数あるとき等確率に選ぶ
+    (Wu & Hao 2012 と同じ)。False は旧実装(番号が最小の頂点を選ぶ)。
+    疎なグラフでは局所最適で利得 0 の手が多数残り、旧実装は同じ数頂点を
+    往復し続けて探索が止まる(2026-10-16、G55/G70 で確認)。
     """
     gains, cut = _init_gains(n, indptr, indices, data, s)
     best_s = s.copy()
@@ -169,12 +173,19 @@ def _tabu_search_one(
         best_g = -1.0e18
         asp_v = -1
         asp_g = -1.0e18
+        n_ties = 0
         for v in range(n):
             g = gains[v]
             if it >= tabu_until[v]:
                 if g > best_g:
                     best_g = g
                     best_v = v
+                    n_ties = 1
+                elif random_ties and g == best_g:
+                    # 同点は等確率に選ぶ(reservoir sampling)
+                    n_ties += 1
+                    if np.random.randint(0, n_ties) == 0:
+                        best_v = v
             else:
                 # tabu。best 更新を満たすなら aspiration 候補
                 if cut + g > best_cut and g > asp_g:
@@ -219,7 +230,7 @@ def _tabu_search_one(
 @njit(cache=True, parallel=True)
 def _tabu_search_batch(
     n, indptr, indices, data, s_batch, ts_iters, cr, gamma_pert,
-    alpha_tenure, seeds
+    alpha_tenure, seeds, random_ties
 ):
     """初期解バッチ s_batch (num, n) を各々 TS で磨く(trial 並列)。"""
     num = s_batch.shape[0]
@@ -229,12 +240,23 @@ def _tabu_search_batch(
         np.random.seed(seeds[t])
         s = s_batch[t].copy()
         bs, bc = _tabu_search_one(
-            n, indptr, indices, data, s, ts_iters, cr, gamma_pert, alpha_tenure
+            n, indptr, indices, data, s, ts_iters, cr, gamma_pert, alpha_tenure,
+            random_ties
         )
         for i in range(n):
             out_signs[t, i] = bs[i]
         out_cuts[t] = bc
     return out_signs, out_cuts
+
+
+# 摂動の強さの既定値(Wu & Hao 2012 の γ=150)
+DEFAULT_GAMMA_PERT = 150
+
+
+def _parse_tie_break(tie_break: str) -> bool:
+    if tie_break not in ("random", "first"):
+        raise ValueError(f"tie_break must be 'random' or 'first', got {tie_break!r}")
+    return tie_break == "random"
 
 
 @njit(cache=True)
@@ -370,6 +392,7 @@ def simulate_ga_batch(
     gamma_pert: Optional[int] = None,
     alpha_tenure: int = 15,
     beta_quality: float = 0.6,
+    tie_break: str = "random",
     time_budget: Optional[float] = None,
     init_signs: Optional[np.ndarray] = None,
     init_population: Optional[np.ndarray] = None,
@@ -387,7 +410,11 @@ def simulate_ga_batch(
     Args:
         max_generations : 世代数(主要な計算量ノブ。anytime sweep で振る)
         ts_iters        : TS 1 回あたりの反復数
-        gamma_pert      : 摂動フリップ数。None なら max(50, 0.05*n)
+        gamma_pert      : 摂動フリップ数。None なら 150(Wu & Hao 2012)。
+                          2026-10-16 以前の既定は max(50, 0.05*n)。
+        tie_break       : "random"(同点の手を等確率に選ぶ、Wu & Hao 2012)
+                          または "first"(旧実装)。旧結果の再現は
+                          tie_break="first", gamma_pert=max(50, int(0.05*n))。
         time_budget     : 秒。指定時はこの実時間で世代ループを打ち切る
         init_signs      : (num_trials, n) or (n,) の warm-start 初期解(±1 or 0/1)。
                           各 run の集団 1 個体目に投入。ハイブリッド用。
@@ -439,7 +466,8 @@ def simulate_ga_batch(
         seeds = np.arange(num_trials, dtype=np.int64)
     seeds = np.asarray(seeds, dtype=np.int64)
     if gamma_pert is None:
-        gamma_pert = max(50, int(0.05 * n))
+        gamma_pert = DEFAULT_GAMMA_PERT
+    random_ties = _parse_tie_break(tie_break)
 
     if init_signs is not None and init_population is not None:
         raise ValueError("init_signs and init_population are mutually exclusive")
@@ -493,7 +521,7 @@ def simulate_ga_batch(
     init_seeds = (seeds.repeat(pop_size) + np.arange(num_trials * pop_size)) % (2**31)
     signs0, cuts0 = _tabu_search_batch(
         n, indptr, indices, data, init_batch, ts_iters, cr, gamma_pert,
-        alpha_tenure, init_seeds.astype(np.int64)
+        alpha_tenure, init_seeds.astype(np.int64), random_ties
     )
     pops = signs0.reshape(num_trials, pop_size, n).copy()
     fits = cuts0.reshape(num_trials, pop_size).copy()
@@ -534,7 +562,7 @@ def simulate_ga_batch(
         # 子をまとめて TS 磨き
         cs, cc = _tabu_search_batch(
             n, indptr, indices, data, children, ts_iters, cr, gamma_pert,
-            alpha_tenure, child_seeds
+            alpha_tenure, child_seeds, random_ties
         )
         # DisQual で各 run のプール更新
         for t in range(num_trials):
@@ -574,11 +602,12 @@ def tabu_refine_batch(
     gamma_pert: Optional[int] = None,
     alpha_tenure: int = 15,
     seeds: Optional[np.ndarray] = None,
+    tie_break: str = "random",
 ):
     """与えた初期解 init_signs (num,n) を Tabu Search のみで磨く。
 
     ハイブリッド(CIM/CAC → TS)や、GA の「局所探索のみ」アブレーション用。
-    init_signs は ±1 でも 0/1 でも可。
+    init_signs は ±1 でも 0/1 でも可。gamma_pert・tie_break は simulate_ga_batch と同じ。
     """
     edges_np = np.asarray(edges, dtype=np.int64)
     edge_a = np.ascontiguousarray(edges_np[:, 0])
@@ -598,10 +627,11 @@ def tabu_refine_batch(
         seeds = np.arange(num, dtype=np.int64)
     seeds = np.asarray(seeds, dtype=np.int64)
     if gamma_pert is None:
-        gamma_pert = max(50, int(0.05 * n))
+        gamma_pert = DEFAULT_GAMMA_PERT
+    random_ties = _parse_tie_break(tie_break)
 
     signs, cuts = _tabu_search_batch(
         n, indptr, indices, data, s_batch, ts_iters, cr, gamma_pert,
-        alpha_tenure, seeds
+        alpha_tenure, seeds, random_ties
     )
     return cuts, signs.astype(bool)

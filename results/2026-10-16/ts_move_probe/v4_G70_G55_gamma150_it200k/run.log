@@ -1,0 +1,11 @@
+G70 params {'pop_size': 8, 'ts_iters': 41152, 'cr': 521, 'alpha_tenure': 11, 'beta_quality': 0.6617624429773965} gamma_pert 150 random_ties False
+cim: best=9469 moves +:46801 0:153199 -:0 perturbations=382
+   cut right after kick: mean=9192.8  max reached before next kick: mean=9453.5 max=9469
+rand: best=9263 moves +:42804 0:157196 -:0 perturbations=334
+   cut right after kick: mean=8890.2  max reached before next kick: mean=9133.6 max=9263
+G55 params {'pop_size': 6, 'ts_iters': 58453, 'cr': 930, 'alpha_tenure': 13, 'beta_quality': 0.43297527070849817} gamma_pert 150 random_ties False
+cim: best=10185 moves +:28710 0:171290 -:0 perturbations=210
+   cut right after kick: mean=9724.2  max reached before next kick: mean=10168.7 max=10185
+rand: best=10034 moves +:25033 0:174967 -:0 perturbations=170
+   cut right after kick: mean=9522.1  max reached before next kick: mean=9943.2 max=10034
+saved: results\2026-10-16\ts_move_probe\v4_G70_G55_gamma150_it200k
