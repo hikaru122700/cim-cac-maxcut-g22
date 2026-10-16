@@ -1,0 +1,68 @@
+{
+  "meta": {
+    "dataset": "G70",
+    "bks": 9591,
+    "trials": 16,
+    "generations": 30,
+    "cim_budget": 600,
+    "ga_params": {
+      "pop_size": 8,
+      "ts_iters": 41152,
+      "cr": 521,
+      "alpha_tenure": 11,
+      "beta_quality": 0.6617624429773965
+    },
+    "cim_seeds": "0..127",
+    "random_pop_seed": 20261016
+  },
+  "conditions": {
+    "cim_ts41k": {
+      "name": "cim_ts41k",
+      "ts_iters": 41152,
+      "time_s": 132.6382886999927,
+      "final_best_mean": 9502.0625,
+      "final_gap_mean": 88.9375,
+      "accept_rate": 0.05,
+      "accept_runs": 8,
+      "child_beats_pop_min_rate": 0.08958333333333333,
+      "child_beats_pop_max_rate": 0.010416666666666666,
+      "mean_parent": 9484.227083333333,
+      "mean_pop_min": 9468.464583333332,
+      "mean_child_raw": 7958.6375,
+      "mean_child_ts": 9420.7625,
+      "mean_disagree_frac": 0.37596999999999997
+    },
+    "cim_ts411k": {
+      "name": "cim_ts411k",
+      "ts_iters": 411520,
+      "time_s": 1377.0151287000044,
+      "final_best_mean": 9538.875,
+      "final_gap_mean": 52.125,
+      "accept_rate": 0.6416666666666667,
+      "accept_runs": 16,
+      "child_beats_pop_min_rate": 0.6916666666666667,
+      "child_beats_pop_max_rate": 0.18958333333333333,
+      "mean_parent": 9513.373958333334,
+      "mean_pop_min": 9501.341666666667,
+      "mean_child_raw": 8412.9875,
+      "mean_child_ts": 9508.304166666667,
+      "mean_disagree_frac": 0.29963854166666665
+    },
+    "rand_ts41k": {
+      "name": "rand_ts41k",
+      "ts_iters": 41152,
+      "time_s": 103.28719520001323,
+      "final_best_mean": 9418.875,
+      "final_gap_mean": 172.125,
+      "accept_rate": 1.0,
+      "accept_runs": 16,
+      "child_beats_pop_min_rate": 0.9958333333333333,
+      "child_beats_pop_max_rate": 0.4395833333333333,
+      "mean_parent": 9311.894791666668,
+      "mean_pop_min": 9272.839583333332,
+      "mean_child_raw": 8140.104166666667,
+      "mean_child_ts": 9343.18125,
+      "mean_disagree_frac": 0.3236104166666667
+    }
+  }
+}

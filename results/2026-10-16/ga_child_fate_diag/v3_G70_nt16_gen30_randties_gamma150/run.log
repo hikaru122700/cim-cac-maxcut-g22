@@ -1,0 +1,4 @@
+   cim_ts41k: 133s gap=88.9 accept=0.050 (runs with any accept 8/16) parent=9484.2 pop_min=9468.5 child_raw=7958.6 child_ts=9420.8 child>pop_min=0.090 disagree=0.376
+  cim_ts411k: 1377s gap=52.1 accept=0.642 (runs with any accept 16/16) parent=9513.4 pop_min=9501.3 child_raw=8413.0 child_ts=9508.3 child>pop_min=0.692 disagree=0.300
+  rand_ts41k: 103s gap=172.1 accept=1.000 (runs with any accept 16/16) parent=9311.9 pop_min=9272.8 child_raw=8140.1 child_ts=9343.2 child>pop_min=0.996 disagree=0.324
+saved: results\2026-10-16\ga_child_fate_diag\v3_G70_nt16_gen30_randties_gamma150
