@@ -56,6 +56,7 @@ plt.rcParams["axes.unicode_minus"] = False
 EXPERIMENT_KIND = "seed_value_pilot"
 GO_RELIABILITY = 0.3
 SA_SEED_OFFSET = 1_000_000  # CIM seed(0..K-1)と重ならない SA 乱数
+TRIAL_SEED_OFFSET = 50_000_000  # 試し打ち SA の乱数(ラベルの SA と重ならない)
 
 
 def get_kind_root() -> Path:
@@ -339,6 +340,9 @@ def main():
     ap.add_argument("--t-end", type=float, default=0.001)
     ap.add_argument("--cim-seed-start", type=int, default=0)
     ap.add_argument("--sa-seed-offset", type=int, default=SA_SEED_OFFSET)
+    ap.add_argument("--trial-runs", type=int, default=0,
+                    help="試し打ち(短い SA)の回数。0 なら計算しない")
+    ap.add_argument("--trial-sweeps", type=int, default=50)
     ap.add_argument("--tag", default="")
     args = ap.parse_args()
     assert args.repeats % 2 == 0, "split-half のため R は偶数"
@@ -393,6 +397,19 @@ def main():
     simulate_sa_warm(ctx.n, ctx.edges, ctx.weights, init_rep[:2], 100,
                      t_start=args.t_start, t_end=args.t_end, seeds=sa_seeds[:2])
 
+    if args.trial_runs > 0:
+        t0 = time.perf_counter()
+        tr_init = np.repeat(signs_pm, args.trial_runs, axis=0)
+        tr_seeds = TRIAL_SEED_OFFSET + np.arange(len(tr_init), dtype=np.int64)
+        _, tr_signs = simulate_sa_warm(
+            ctx.n, ctx.edges, ctx.weights, tr_init, args.trial_sweeps * ctx.n,
+            t_start=args.t_start, t_end=args.t_end, seeds=tr_seeds,
+        )
+        tr_cut = ctx.score(tr_signs).reshape(K, args.trial_runs).astype(float)
+        features["trial_sa_mean"] = tr_cut.mean(axis=1)
+        features["trial_sa_max"] = tr_cut.max(axis=1)
+        log(f"trial SA: {args.trial_runs} x {args.trial_sweeps} sweeps, {time.perf_counter() - t0:.1f}s")
+
     raw, results, out_align = {}, {}, {}
     for b in args.budgets:
         t0 = time.perf_counter()
@@ -438,6 +455,8 @@ def main():
             "cim_seeds": [int(cim_seeds[0]), int(cim_seeds[-1])],
             "sa_seed_rule": f"{args.sa_seed_offset} + c*R + r",
             "low_eigenvalues_A": eig_vals.tolist(),
+            "trial": {"runs": args.trial_runs, "sweeps": args.trial_sweeps,
+                      "seed_offset": TRIAL_SEED_OFFSET},
             "t_start": args.t_start,
             "t_end": args.t_end,
             "budgets": args.budgets,
