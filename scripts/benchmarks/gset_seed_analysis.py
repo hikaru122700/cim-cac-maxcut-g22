@@ -88,6 +88,8 @@ def analyze_run(run_dir: Path) -> list[dict]:
         }
         row["c1_go"] = bool(row["c1_sb"] >= GO_RELIABILITY and row["c1_ci95"][0] > 0)
         if np.ptp(residual(label, cov)) < 1e-9:
+            # SA が種から動かず、ラベル = 初期 cut。C1 は判定不能(信頼性 1.0 は見かけ)。
+            row["c1_go"] = None
             row["features"] = {}
             rows.append(row)
             continue

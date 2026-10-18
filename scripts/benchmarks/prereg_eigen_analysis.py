@@ -104,6 +104,12 @@ def analyze(run_dir: Path, budget: int) -> dict:
     cov = np.column_stack([z["init_cut"], z["ls_cut"]])
     resid = residual(label, cov)
     e = z["feat_eig_diff"]
+    if np.ptp(resid) < 1e-9:
+        # SA が種から動かず、ラベル = 初期 cut になった(登録後の変更 1)。判定不能。
+        return {"run_dir": str(run_dir.relative_to(ROOT)), "budget": budget,
+                "candidates": int(cuts.shape[0]), "repeats": int(cuts.shape[1]),
+                "primary": {"spearman_E_vs_residual": None, "ci95": None, "replicated": None},
+                "undetermined": "residual is identically zero (SA never improved on the seed)"}
 
     rho = spearman_resid(e, label, cov)
     lo, hi = bootstrap_ci(e, label, cov)
@@ -151,6 +157,10 @@ def main():
     with (out_dir / "result.json").open("w", encoding="utf-8") as f:
         json.dump({"label": args.label, **res}, f, ensure_ascii=False, indent=2)
     p = res["primary"]
+    if p["replicated"] is None:
+        print(f"{args.label}: undetermined ({res['undetermined']})")
+        print(f"saved: {out_dir}")
+        return
     print(
         f"{args.label}: rho(E, resid)={p['spearman_E_vs_residual']:+.3f} "
         f"CI95=[{p['ci95'][0]:+.3f}, {p['ci95'][1]:+.3f}] replicated={p['replicated']} "

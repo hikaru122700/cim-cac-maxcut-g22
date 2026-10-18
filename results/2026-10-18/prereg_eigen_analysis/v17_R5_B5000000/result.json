@@ -1,0 +1,13 @@
+{
+  "label": "R5",
+  "run_dir": "results\\2026-10-18\\seed_value_pilot\\v5_G70_K256_R16_cim2400_T2_R5",
+  "budget": 5000000,
+  "candidates": 256,
+  "repeats": 16,
+  "primary": {
+    "spearman_E_vs_residual": null,
+    "ci95": null,
+    "replicated": null
+  },
+  "undetermined": "residual is identically zero (SA never improved on the seed)"
+}
