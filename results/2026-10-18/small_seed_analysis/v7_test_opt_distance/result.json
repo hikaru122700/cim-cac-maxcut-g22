@@ -1,0 +1,61 @@
+{
+  "run_dir": "results\\2026-10-18\\small_seed_study\\v1_K1024_R256_cim512",
+  "split": "test",
+  "label": "opt_distance",
+  "problems": [
+    "reg3_01",
+    "reg3_03",
+    "reg3_05",
+    "reg3_07",
+    "reg3_09",
+    "pm1_01",
+    "pm1_03",
+    "pm1_05",
+    "pm1_07",
+    "pm1_09",
+    "trilat_01",
+    "trilat_03",
+    "trilat_05",
+    "trilat_07",
+    "trilat_09"
+  ],
+  "min_stratum": 5,
+  "rows": [
+    {
+      "feature": "eig_a1",
+      "target": "opt_distance",
+      "tau": -0.3030470349755532,
+      "tau_ci95": [
+        -0.5572029468877567,
+        -0.03667977762587145
+      ],
+      "partial_r2": 0.09079884644848991,
+      "partial_r2_ci95": [
+        0.0006243516059769944,
+        0.4095475252431825
+      ],
+      "candidates_used": 5125,
+      "tau_vs_barrier": -0.18039748127816196,
+      "tau_vs_path_length": -0.3209842336183667,
+      "tau_vs_opt_distance": -0.3030470349755532
+    },
+    {
+      "feature": "eig_diff",
+      "target": "opt_distance",
+      "tau": -0.19266826220829955,
+      "tau_ci95": [
+        -0.44825840556119956,
+        0.07813431250157801
+      ],
+      "partial_r2": 0.03239710888596375,
+      "partial_r2_ci95": [
+        4.710432640451758e-05,
+        0.32632796019523785
+      ],
+      "candidates_used": 5125,
+      "tau_vs_barrier": -0.09898919078907231,
+      "tau_vs_path_length": -0.2041273227695587,
+      "tau_vs_opt_distance": -0.19266826220829955
+    }
+  ]
+}

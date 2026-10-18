@@ -1,0 +1,166 @@
+{
+  "run_dir": "results\\2026-10-18\\small_seed_study\\v1_K1024_R256_cim512",
+  "split": "test",
+  "label": "success_S30",
+  "problems": [
+    "reg3_01",
+    "reg3_03",
+    "reg3_05",
+    "reg3_07",
+    "reg3_09",
+    "pm1_01",
+    "pm1_03",
+    "pm1_05",
+    "pm1_07",
+    "pm1_09",
+    "trilat_01",
+    "trilat_03",
+    "trilat_05",
+    "trilat_07",
+    "trilat_09"
+  ],
+  "min_stratum": 5,
+  "rows": [
+    {
+      "feature": "eig_a1",
+      "target": "success_S30",
+      "tau": 0.24418124164187752,
+      "tau_ci95": [
+        -0.005614606504497329,
+        0.4819589260125849
+      ],
+      "partial_r2": 0.10407171591920376,
+      "partial_r2_ci95": [
+        0.0010075301620274734,
+        0.4135587709241438
+      ],
+      "candidates_used": 5131,
+      "tau_vs_barrier": -0.18039748127816196,
+      "tau_vs_path_length": -0.3209842336183667,
+      "tau_vs_opt_distance": -0.3030470349755532
+    },
+    {
+      "feature": "eig_diff",
+      "target": "success_S30",
+      "tau": 0.17490791029681219,
+      "tau_ci95": [
+        -0.09096384999154683,
+        0.42151469344234044
+      ],
+      "partial_r2": 0.04569486434007868,
+      "partial_r2_ci95": [
+        0.00019220636138016128,
+        0.33025265123315456
+      ],
+      "candidates_used": 5131,
+      "tau_vs_barrier": -0.09898919078907231,
+      "tau_vs_path_length": -0.2041273227695587,
+      "tau_vs_opt_distance": -0.19266826220829955
+    },
+    {
+      "feature": "path_length",
+      "target": "success_S30",
+      "tau": -0.6890033547058597,
+      "tau_ci95": [
+        -0.7305510862896739,
+        -0.6515015290854667
+      ],
+      "partial_r2": 0.6614073263928387,
+      "partial_r2_ci95": [
+        0.6076726877756887,
+        0.7401680653591898
+      ],
+      "candidates_used": 5125,
+      "tau_vs_barrier": 0.36520526374208634,
+      "tau_vs_opt_distance": 0.962265961139415
+    },
+    {
+      "feature": "opt_distance",
+      "target": "success_S30",
+      "tau": -0.6928630547479171,
+      "tau_ci95": [
+        -0.7400354141659333,
+        -0.6465824984257651
+      ],
+      "partial_r2": 0.683293574795721,
+      "partial_r2_ci95": [
+        0.6154077192625398,
+        0.755098506661465
+      ],
+      "candidates_used": 5125,
+      "tau_vs_barrier": 0.3712904775996839,
+      "tau_vs_path_length": 0.962265961139415
+    },
+    {
+      "feature": "barrier",
+      "target": "success_S30",
+      "tau": -0.2703348509647327,
+      "tau_ci95": [
+        -0.3214073000748399,
+        -0.21919035514099883
+      ],
+      "partial_r2": 0.263283032054585,
+      "partial_r2_ci95": [
+        0.2163966952552888,
+        0.3331215007922406
+      ],
+      "candidates_used": 3878,
+      "tau_vs_path_length": 0.36520526374208634,
+      "tau_vs_opt_distance": 0.3712904775996839
+    },
+    {
+      "feature": "ls_gain",
+      "target": "success_S30",
+      "tau": 0.39136071418602614,
+      "tau_ci95": [
+        0.2688607720761058,
+        0.5307487355700437
+      ],
+      "partial_r2": 0.253105264191589,
+      "partial_r2_ci95": [
+        0.13382180119445955,
+        0.4301879618078673
+      ],
+      "candidates_used": 5131,
+      "tau_vs_barrier": -0.3830115088618658,
+      "tau_vs_path_length": -0.5667548858644952,
+      "tau_vs_opt_distance": -0.554845520946757
+    },
+    {
+      "feature": "ls_n_gain_minus2_to_0",
+      "target": "success_S30",
+      "tau": -0.4147544943933946,
+      "tau_ci95": [
+        -0.5389528575335378,
+        -0.3135002206037356
+      ],
+      "partial_r2": 0.346423022879569,
+      "partial_r2_ci95": [
+        0.22247350622702375,
+        0.49950116500410613
+      ],
+      "candidates_used": 5131,
+      "tau_vs_barrier": 0.4027342355456125,
+      "tau_vs_path_length": 0.520550874399459,
+      "tau_vs_opt_distance": 0.5227028892711967
+    },
+    {
+      "feature": "trial_sa_success",
+      "target": "success_S30",
+      "tau": 0.47605260367249236,
+      "tau_ci95": [
+        0.4055025275633384,
+        0.5454598939663472
+      ],
+      "partial_r2": 0.2831659033495493,
+      "partial_r2_ci95": [
+        0.20327399398299695,
+        0.3764036558878845
+      ],
+      "candidates_used": 5098,
+      "tau_vs_barrier": -0.24934385022491462,
+      "tau_vs_path_length": -0.5578243869576673,
+      "tau_vs_opt_distance": -0.5597458691175384
+    }
+  ]
+}

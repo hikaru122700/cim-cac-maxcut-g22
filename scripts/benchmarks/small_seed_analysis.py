@@ -120,9 +120,12 @@ def main():
     ap.add_argument("--split", choices=["dev", "test"], required=True)
     ap.add_argument("--label", default="success_S10")
     ap.add_argument("--features", nargs="*", default=None, help="解析する指標(既定は全部)")
+    ap.add_argument("--family", default=None, help="問題の種類で絞る(探索的な内訳用)")
     args = ap.parse_args()
     run_dir = args.run.resolve()
     problems = load(run_dir, args.split)
+    if args.family:
+        problems = [p for p in problems if p["rec"]["family"] == args.family]
     if not problems:
         ap.error(f"no problems for split {args.split}")
     if args.label not in problems[0]:
@@ -145,11 +148,12 @@ def main():
               flush=True)
 
     kind_root = get_kind_root()
-    out_dir = kind_root / f"v{next_version(kind_root)}_{args.split}_{args.label}"
+    fam = f"_{args.family}" if args.family else ""
+    out_dir = kind_root / f"v{next_version(kind_root)}_{args.split}{fam}_{args.label}"
     out_dir.mkdir(parents=True)
     with (out_dir / "result.json").open("w", encoding="utf-8") as fh:
         json.dump({"run_dir": str(run_dir.relative_to(ROOT)), "split": args.split,
-                   "label": args.label, "problems": [p["rec"]["name"] for p in problems],
+                   "label": args.label, "family": args.family, "problems": [p["rec"]["name"] for p in problems],
                    "min_stratum": MIN_STRATUM, "rows": rows}, fh, ensure_ascii=False, indent=2)
     with (out_dir / "table.csv").open("w", newline="", encoding="utf-8") as fh:
         w = csv.writer(fh)
