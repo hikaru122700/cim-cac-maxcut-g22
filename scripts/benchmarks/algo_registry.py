@@ -46,6 +46,15 @@ DATASETS = {
     "K2000": {"path": "input/K2000.txt", "bks": 33337, "weighted": True},
     "G55":   {"path": "input/G55.txt",   "bks": 10299, "weighted": False},
     "G70":   {"path": "input/G70.txt",   "bks": 9591,  "weighted": False},
+    # 2026-10-18 追加(論文化計画 v2 のステップ 3)。BKS は Ma & Hao (arXiv:1510.09156) の表、
+    # G77 は arXiv:2505.18508(2025)の報告値。解析は cut の差で行い、BKS は差の目安にだけ使う。
+    "G1":    {"path": "input/G1.txt",    "bks": 11624, "weighted": False},
+    "G14":   {"path": "input/G14.txt",   "bks": 3064,  "weighted": False},
+    "G15":   {"path": "input/G15.txt",   "bks": 3050,  "weighted": False},
+    "G23":   {"path": "input/G23.txt",   "bks": 13344, "weighted": False},
+    "G32":   {"path": "input/G32.txt",   "bks": 1410,  "weighted": True},
+    "G39":   {"path": "input/G39.txt",   "bks": 2408,  "weighted": True},
+    "G77":   {"path": "input/G77.txt",   "bks": 9940,  "weighted": True},
 }
 
 
@@ -151,6 +160,22 @@ PARAMS = {
         "GA":  dict(pop_size=10, ts_iters=60000, cr=3000, alpha_tenure=15, beta_quality=0.6),
     },
 }
+
+# ステップ 3 の追加問題:CIM は G22 の物理定数で、coupling だけを
+# {-0.005, -0.01, -0.02, -0.03, -0.05, -0.08} から CIM 単体の平均 cut 最大で選んだ
+# (2400 ラウンド・32 run、2026-10-18。SA のラベルは見ていない)。SA は他と同じ既定。
+# GA/PT/SB/CAC は使わないが、PARAMS の形を揃えるため G55 と同じ値を置く。
+_STEP3_COUPLING = {"G1": -0.01, "G14": -0.05, "G15": -0.03, "G23": -0.05,
+                   "G32": -0.08, "G39": -0.03, "G77": -0.08}
+for _name, _cpl in _STEP3_COUPLING.items():
+    PARAMS[_name] = {
+        "CIM": {**_CIM_GSET, "coupling": _cpl},
+        "CAC": None,
+        "SA": dict(t_start=2.0, t_end=0.001),
+        "SB": dict(variant="dSB", dt=0.5, a0=1.0),
+        "PT": dict(num_temps=16, t_min=0.05, t_max=3.0, swap_interval=1, icm_interval=5),
+        "GA": dict(pop_size=10, ts_iters=40000, cr=3000, alpha_tenure=15, beta_quality=0.6),
+    }
 
 
 # --- 永続的な tuned パラメータ上書き(tune_anytime_params.py が書き込む) ---
