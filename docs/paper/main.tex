@@ -1,0 +1,34 @@
+\newcommand{\DoNotLoadEpstopdf}{}
+\documentclass[10pt,a4paper]{ltjsarticle}
+\usepackage[margin=22mm]{geometry}
+\usepackage{luatexja-fontspec}
+\setmainfont{times.ttf}[Path=C:/Windows/Fonts/,BoldFont=timesbd.ttf,ItalicFont=timesi.ttf,BoldItalicFont=timesbi.ttf]
+\setmainjfont{msmincho.ttc}[Path=C:/Windows/Fonts/,FontIndex=0,BoldFont=YuGothB.ttc,BoldFeatures={FontIndex=0}]
+\setsansjfont{YuGothM.ttc}[Path=C:/Windows/Fonts/,FontIndex=0,BoldFont=YuGothB.ttc,BoldFeatures={FontIndex=0}]
+\usepackage{amsmath,amssymb,graphicx,booktabs,multirow,xcolor,caption,subcaption}
+\usepackage[hidelinks]{hyperref}
+\captionsetup{font=small,labelsep=quad}
+\graphicspath{{figures/}}
+
+\title{同じカット値の CIM 解は後段の探索で同じ価値を持つか\\[2pt]
+\large ——種の価値の実測，事前登録による検証，同じ総時間での選別——}
+\author{}
+\date{2026 年 10 月}
+
+\begin{document}
+\maketitle
+
+\input{sections/abstract}
+\input{sections/intro}
+\input{sections/related}
+\input{sections/method}
+\input{sections/results_prereg}
+\input{sections/results_small}
+\input{sections/results_gset}
+\input{sections/results_selection}
+\input{sections/results_ga}
+\input{sections/discussion}
+
+\input{refs}
+\input{sections/appendix}
+\end{document}
