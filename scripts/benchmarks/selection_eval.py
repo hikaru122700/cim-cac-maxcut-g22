@@ -6,7 +6,8 @@
 
   T = K·t_cim + m·t_sa(B)      (基準:CIM で K 個作り、そのまま m 個に SA)
   余分な費用(指標の計算・試し打ち)を使う方法は、最後にかける SA の本数を減らす。
-  ランダム初期化の SA は、CIM の時間も SA に回す(T / t_sa(B) 本)。
+  ランダム初期化の SA は、CIM の時間も SA に回す(T / t_sa(B) 本)。SA は同じ実装で反転数も
+  同じなので、1 本の時間は CIM の種の場合と同じ t_sa(B)(ステップ 3 の実測)を使う。
 
 学習モデル(model_*)は、ほかの問題のデータだけで学習したリッジ回帰で、
 問題ごとに標準化した指標から、問題ごとに標準化したラベルを予測する(未見の問題への予測)。
@@ -122,12 +123,12 @@ def diverse_m(p: dict, pool: np.ndarray, m: int, rng) -> np.ndarray:
     return cand[chosen]
 
 
-def simulate(p: dict, rand_cuts: np.ndarray, t_rand: float, scores: dict, K: int, m: int, rng) -> dict:
+def simulate(p: dict, rand_cuts: np.ndarray, scores: dict, K: int, m: int, rng) -> dict:
     """戦略ごとに MC 回の「最良値」を返す。"""
     total = K * p["t_cim"] + m * p["t_sa"]
     m_feat = max(int((total - K * (p["t_cim"] + p["t_feat"])) // p["t_sa"]), 0)
     m_trial = max(int((total - K * (p["t_cim"] + p["t_trial"])) // p["t_sa"]), 0)
-    m_rand = int(total // t_rand)
+    m_rand = int(total // p["t_sa"])
     budgets = {"cim_random": m, "cim_cut": m, "cim_ls": m_feat, "cim_div": m_feat,
                "cim_trial": m_trial, "random_init": m_rand, **{k: m_feat for k in scores}}
     k_all, r = p["cuts"].shape
@@ -178,8 +179,7 @@ def main():
         meta = json.loads((d / "summary.json").read_text(encoding="utf-8"))
         z = np.load(d / "raw.npz")
         if f"cuts_S{args.sweeps}" in z.files:
-            rand[meta["dataset"]] = (z[f"cuts_S{args.sweeps}"],
-                                     meta["sa_time_s"][str(args.sweeps)] / meta["runs"])
+            rand[meta["dataset"]] = z[f"cuts_S{args.sweeps}"]
     problems = [p for p in problems if p["name"] in rand]
     if len(problems) < 2:
         ap.error("need at least two problems with random-init data")
@@ -188,7 +188,7 @@ def main():
     rng = np.random.default_rng(MC_SEED)
     per_problem = {}
     for i, p in enumerate(problems):
-        sim = simulate(p, *rand[p["name"]], {k: v[i] for k, v in scores.items()}, args.pool, args.m, rng)
+        sim = simulate(p, rand[p["name"]], {k: v[i] for k, v in scores.items()}, args.pool, args.m, rng)
         target = np.quantile(p["cuts"], TARGET_QUANTILE)
         per_problem[p["name"]] = {
             "target": float(target), "bks": p["bks"], "total_time_s": sim["total_time_s"],

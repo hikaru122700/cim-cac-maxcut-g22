@@ -1,0 +1,31 @@
+G1 random-init SA 500 sweeps: 18.5s mean=11543.9 max=11611
+G1 random-init SA 5000 sweeps: 287.3s mean=11594.0 max=11624
+saved: results\2026-10-18\random_init_sa\v1_G1_N512_T2
+G14 random-init SA 500 sweeps: 2.4s mean=3036.4 max=3052
+G14 random-init SA 5000 sweeps: 75.5s mean=3050.0 max=3061
+saved: results\2026-10-18\random_init_sa\v2_G14_N512_T2
+G15 random-init SA 500 sweeps: 2.4s mean=3019.3 max=3040
+G15 random-init SA 5000 sweeps: 75.3s mean=3036.0 max=3049
+saved: results\2026-10-18\random_init_sa\v3_G15_N512_T2
+G22 random-init SA 500 sweeps: 17.5s mean=13245.6 max=13318
+G22 random-init SA 5000 sweeps: 231.7s mean=13328.2 max=13358
+saved: results\2026-10-18\random_init_sa\v4_G22_N512_T2
+G23 random-init SA 500 sweeps: 18.2s mean=13250.7 max=13312
+G23 random-init SA 5000 sweeps: 227.4s mean=13321.2 max=13344
+saved: results\2026-10-18\random_init_sa\v5_G23_N512_T2
+G32 random-init SA 500 sweeps: 4.6s mean=1377.5 max=1394
+G32 random-init SA 5000 sweeps: 171.2s mean=1390.3 max=1404
+saved: results\2026-10-18\random_init_sa\v6_G32_N512_T2
+G39 random-init SA 500 sweeps: 26.7s mean=2328.7 max=2381
+G39 random-init SA 5000 sweeps: 195.9s mean=2373.1 max=2400
+saved: results\2026-10-18\random_init_sa\v7_G39_N512_T2
+G55 random-init SA 500 sweeps: 31.9s mean=10153.8 max=10203
+G55 random-init SA 5000 sweeps: 385.1s mean=10247.1 max=10283
+saved: results\2026-10-18\random_init_sa\v8_G55_N512_T2
+G70 random-init SA 500 sweeps: 24.8s mean=9386.7 max=9433
+G70 random-init SA 5000 sweeps: 235.5s mean=9508.3 max=9537
+saved: results\2026-10-18\random_init_sa\v9_G70_N512_T2
+G77 random-init SA 500 sweeps: 37.8s mean=9712.0 max=9756
+G77 random-init SA 5000 sweeps: 401.0s mean=9794.7 max=9830
+saved: results\2026-10-18\random_init_sa\v10_G77_N512_T2
+ALL_DONE
