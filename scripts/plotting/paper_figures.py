@@ -167,7 +167,34 @@ def fig_small(out: Path):
     save(fig, out, "fig_small_tau")
 
 
-FIGS = {"prereg": fig_prereg, "small": fig_small}
+def fig_ga(out: Path):
+    old = ROOT / "results/2026-09-14/ga_diversity_trajectory/v1_G22_G55_G70_nt16_gen300_measured"
+    new = RESULTS / "ga_diversity_trajectory/v1_G22_G55_G70_nt16_gen300_fixedTS"
+    meta = json.loads((new / "metadata.json").read_text(encoding="utf-8"))
+    fig, axes = plt.subplots(1, 2, figsize=(18, 7))
+    styles = [(old, "random", MUTED, "--", "旧TS・ランダム"), (old, "cim", "#E08E45", "--", "旧TS・CIM"),
+              (new, "random", BLUE, "-", "新TS・ランダム"), (new, "cim", ACCENT, "-", "新TS・CIM")]
+    for ax, ds in zip(axes, ["G55", "G70"]):
+        bks = meta["datasets"][ds]["bks"]
+        for d, cond, color, ls, name in styles:
+            be = np.load(d / f"{ds}_{cond}_trajectory.npz")["best_ever"][1:]
+            gap = bks - be
+            g = np.arange(len(gap))
+            m = gap.mean(axis=1)
+            se = gap.std(axis=1, ddof=1) / np.sqrt(gap.shape[1])
+            ax.plot(g, m, color=color, ls=ls, lw=2.8, label=name)
+            ax.fill_between(g, m - 1.96 * se, m + 1.96 * se, color=color, alpha=0.15, lw=0)
+        ax.set_yscale("log")
+        ax.set_xlabel("世代")
+        ax.set_ylabel("BKSとの差（16回の平均）")
+        ax.set_title(ds)
+        style(ax)
+    axes[1].legend(loc="upper right")
+    fig.tight_layout()
+    save(fig, out, "fig_ga")
+
+
+FIGS = {"prereg": fig_prereg, "small": fig_small, "ga": fig_ga}
 
 
 def main():

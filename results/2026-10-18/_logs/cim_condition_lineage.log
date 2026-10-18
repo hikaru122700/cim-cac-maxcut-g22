@@ -1,0 +1,7 @@
+      base: rounds=600 cut=13238.2 a1=0.391 a2=0.283 E>0=0.68 SA=13331.0 rho(E,resid)=+0.44 (43.6s CIM)
+ ramp_x0.5: rounds=1200 cut=13245.3 a1=0.399 a2=0.293 E>0=0.73 SA=13330.0 rho(E,resid)=+0.47 (40.7s CIM)
+   ramp_x2: rounds=300 cut=13214.1 a1=0.352 a2=0.299 E>0=0.57 SA=13328.7 rho(E,resid)=+0.45 (14.7s CIM)
+noise_x0.5: rounds=600 cut=13238.0 a1=0.393 a2=0.282 E>0=0.69 SA=13330.8 rho(E,resid)=+0.48 (19.4s CIM)
+  noise_x2: rounds=600 cut=13237.4 a1=0.388 a2=0.283 E>0=0.68 SA=13331.1 rho(E,resid)=+0.45 (35.1s CIM)
+  noise_x4: rounds=600 cut=13237.8 a1=0.386 a2=0.285 E>0=0.67 SA=13331.2 rho(E,resid)=+0.44 (36.1s CIM)
+saved: results\2026-10-18\cim_condition_lineage\v1_G22_K256_R4
