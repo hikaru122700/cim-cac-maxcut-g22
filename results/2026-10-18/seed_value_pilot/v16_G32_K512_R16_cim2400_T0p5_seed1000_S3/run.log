@@ -1,0 +1,50 @@
+G32 CIM K=512 rounds=2400: 8.1s cut mean=1373.7 min=1356 max=1394 distinct=19
+greedy LS: cut mean=1373.7 (+0.0) corr(init, ls)=1.000
+features: 0.40s  low eigenvalues of A: [-3.4806, -3.4579]
+trial SA: 2 x 50 sweeps, 0.8s
+B=   100,000: 5.5s label=1378.0 between_sd=5.29 noise_se=0.56 beyond_cut_sd=1.67 beyond_cut+LS_sd=1.68 rel(cut)=0.905 rel(cut+LS)=0.905 [0.887, 0.922] go=True dist_from_seed=0.078
+                  n_pos_gain: rho(cut-resid)=+0.017 rho(cut+LS-resid)=-0.006 p=0.89
+                 n_zero_gain: rho(cut-resid)=+0.053 rho(cut+LS-resid)=+0.052 p=0.236
+                sum_pos_gain: rho(cut-resid)=+0.017 rho(cut+LS-resid)=-0.006 p=0.89
+        largest_zero_cluster: rho(cut-resid)=+0.011 rho(cut+LS-resid)=+0.011 p=0.808
+          n_gain_minus2_to_0: rho(cut-resid)=-0.094 rho(cut+LS-resid)=-0.095 p=0.0309
+                     ls_gain: rho(cut-resid)=+0.017 rho(cut+LS-resid)=-0.006 p=0.89
+              ls_n_zero_gain: rho(cut-resid)=+0.053 rho(cut+LS-resid)=+0.053 p=0.232
+     ls_largest_zero_cluster: rho(cut-resid)=+0.011 rho(cut+LS-resid)=+0.011 p=0.808
+       ls_n_gain_minus2_to_0: rho(cut-resid)=-0.095 rho(cut+LS-resid)=-0.096 p=0.0292
+                      eig_a1: rho(cut-resid)=+0.030 rho(cut+LS-resid)=+0.029 p=0.508
+                      eig_a2: rho(cut-resid)=+0.012 rho(cut+LS-resid)=+0.012 p=0.787
+                    eig_diff: rho(cut-resid)=+0.011 rho(cut+LS-resid)=+0.011 p=0.809
+               trial_sa_mean: rho(cut-resid)=+0.290 rho(cut+LS-resid)=+0.292 p=1.64e-11
+                trial_sa_max: rho(cut-resid)=+0.313 rho(cut+LS-resid)=+0.315 p=2.83e-13
+B= 1,000,000: 52.0s label=1385.6 between_sd=4.47 noise_se=0.68 beyond_cut_sd=2.86 beyond_cut+LS_sd=2.86 rel(cut)=0.945 rel(cut+LS)=0.945 [0.935, 0.953] go=True dist_from_seed=0.123
+                  n_pos_gain: rho(cut-resid)=+0.024 rho(cut+LS-resid)=-0.001 p=0.989
+                 n_zero_gain: rho(cut-resid)=+0.086 rho(cut+LS-resid)=+0.089 p=0.0433
+                sum_pos_gain: rho(cut-resid)=+0.024 rho(cut+LS-resid)=-0.001 p=0.989
+        largest_zero_cluster: rho(cut-resid)=-0.025 rho(cut+LS-resid)=-0.025 p=0.575
+          n_gain_minus2_to_0: rho(cut-resid)=-0.171 rho(cut+LS-resid)=-0.171 p=9.64e-05
+                     ls_gain: rho(cut-resid)=+0.024 rho(cut+LS-resid)=-0.001 p=0.989
+              ls_n_zero_gain: rho(cut-resid)=+0.086 rho(cut+LS-resid)=+0.090 p=0.0419
+     ls_largest_zero_cluster: rho(cut-resid)=-0.025 rho(cut+LS-resid)=-0.025 p=0.575
+       ls_n_gain_minus2_to_0: rho(cut-resid)=-0.171 rho(cut+LS-resid)=-0.172 p=9.33e-05
+                      eig_a1: rho(cut-resid)=-0.042 rho(cut+LS-resid)=-0.042 p=0.339
+                      eig_a2: rho(cut-resid)=-0.015 rho(cut+LS-resid)=-0.015 p=0.733
+                    eig_diff: rho(cut-resid)=-0.009 rho(cut+LS-resid)=-0.009 p=0.844
+               trial_sa_mean: rho(cut-resid)=+0.237 rho(cut+LS-resid)=+0.235 p=7.63e-08
+                trial_sa_max: rho(cut-resid)=+0.260 rho(cut+LS-resid)=+0.258 p=2.97e-09
+B=10,000,000: 484.8s label=1391.0 between_sd=2.93 noise_se=0.95 beyond_cut_sd=2.16 beyond_cut+LS_sd=2.16 rel(cut)=0.840 rel(cut+LS)=0.840 [0.811, 0.864] go=True dist_from_seed=0.205
+                  n_pos_gain: rho(cut-resid)=+0.053 rho(cut+LS-resid)=+0.011 p=0.801
+                 n_zero_gain: rho(cut-resid)=+0.070 rho(cut+LS-resid)=+0.071 p=0.108
+                sum_pos_gain: rho(cut-resid)=+0.053 rho(cut+LS-resid)=+0.011 p=0.801
+        largest_zero_cluster: rho(cut-resid)=-0.022 rho(cut+LS-resid)=-0.022 p=0.616
+          n_gain_minus2_to_0: rho(cut-resid)=-0.131 rho(cut+LS-resid)=-0.133 p=0.00248
+                     ls_gain: rho(cut-resid)=+0.053 rho(cut+LS-resid)=+0.011 p=0.801
+              ls_n_zero_gain: rho(cut-resid)=+0.070 rho(cut+LS-resid)=+0.071 p=0.107
+     ls_largest_zero_cluster: rho(cut-resid)=-0.022 rho(cut+LS-resid)=-0.022 p=0.616
+       ls_n_gain_minus2_to_0: rho(cut-resid)=-0.129 rho(cut+LS-resid)=-0.133 p=0.00257
+                      eig_a1: rho(cut-resid)=-0.095 rho(cut+LS-resid)=-0.095 p=0.0315
+                      eig_a2: rho(cut-resid)=-0.019 rho(cut+LS-resid)=-0.020 p=0.65
+                    eig_diff: rho(cut-resid)=-0.041 rho(cut+LS-resid)=-0.040 p=0.366
+               trial_sa_mean: rho(cut-resid)=+0.162 rho(cut+LS-resid)=+0.164 p=0.000202
+                trial_sa_max: rho(cut-resid)=+0.167 rho(cut+LS-resid)=+0.169 p=0.000126
+go_any=True  saved: results\2026-10-18\seed_value_pilot\v16_G32_K512_R16_cim2400_T0p5_seed1000_S3

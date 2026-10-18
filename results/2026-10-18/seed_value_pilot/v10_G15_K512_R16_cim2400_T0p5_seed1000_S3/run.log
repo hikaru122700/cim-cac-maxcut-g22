@@ -1,0 +1,14 @@
+G15 CIM K=512 rounds=2400: 4.8s cut mean=3019.0 min=3019 max=3019 distinct=1
+greedy LS: cut mean=3020.0 (+1.0) corr(init, ls)=nan
+features: 0.20s  low eigenvalues of A: [-10.8541, -9.741]
+trial SA: 2 x 50 sweeps, 0.3s
+B=    40,000: 1.9s label=3028.5 between_sd=0.72 noise_se=0.68 beyond_cut_sd=0.23 beyond_cut+LS_sd=0.23 rel(cut)=0.036 rel(cut+LS)=0.036 [-0.146, 0.188] go=False dist_from_seed=0.073
+               trial_sa_mean: rho(cut-resid)=-0.006 rho(cut+LS-resid)=-0.006 p=0.898
+                trial_sa_max: rho(cut-resid)=+0.062 rho(cut+LS-resid)=+0.062 p=0.161
+B=   400,000: 17.4s label=3031.1 between_sd=0.78 noise_se=0.76 beyond_cut_sd=0.20 beyond_cut+LS_sd=0.21 rel(cut)=0.183 rel(cut+LS)=0.183 [0.022, 0.313] go=False dist_from_seed=0.126
+               trial_sa_mean: rho(cut-resid)=+0.060 rho(cut+LS-resid)=+0.060 p=0.178
+                trial_sa_max: rho(cut-resid)=+0.089 rho(cut+LS-resid)=+0.089 p=0.0448
+B= 4,000,000: 148.8s label=3038.6 between_sd=0.69 noise_se=0.68 beyond_cut_sd=0.12 beyond_cut+LS_sd=0.12 rel(cut)=0.075 rel(cut+LS)=0.075 [-0.106, 0.222] go=False dist_from_seed=0.212
+               trial_sa_mean: rho(cut-resid)=-0.037 rho(cut+LS-resid)=-0.037 p=0.401
+                trial_sa_max: rho(cut-resid)=-0.027 rho(cut+LS-resid)=-0.027 p=0.537
+go_any=False  saved: results\2026-10-18\seed_value_pilot\v10_G15_K512_R16_cim2400_T0p5_seed1000_S3

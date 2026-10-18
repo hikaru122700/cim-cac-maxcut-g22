@@ -32,6 +32,9 @@ BOOT_SEED = 20261020
 FEATURES = ["eig_diff", "eig_a1", "eig_a2", "n_gain_minus2_to_0", "ls_n_gain_minus2_to_0",
             "n_zero_gain", "ls_n_zero_gain", "trial_sa_mean", "trial_sa_max"]
 GO_RELIABILITY = 0.3
+# SA が種を一度でも超えた候補がこの割合未満なら、ラベル ≈ 初期 cut で判定不能とする。
+# 残差の ptp による判定は、cut ~1e4 の最小二乗の丸め誤差で漏れる(G55 T=2 50 掃引)。
+MIN_IMPROVED_FRAC = 0.05
 
 
 def get_kind_root() -> Path:
@@ -87,8 +90,10 @@ def analyze_run(run_dir: Path) -> list[dict]:
             "c1_ci95": res["split_half_cut_ls_resid_sb_ci95"],
         }
         row["c1_go"] = bool(row["c1_sb"] >= GO_RELIABILITY and row["c1_ci95"][0] > 0)
-        if np.ptp(residual(label, cov)) < 1e-9:
-            # SA が種から動かず、ラベル = 初期 cut。C1 は判定不能(信頼性 1.0 は見かけ)。
+        improved = float((cuts > z["init_cut"][:, None]).any(axis=1).mean())
+        row["improved_frac"] = improved
+        if improved < MIN_IMPROVED_FRAC or np.ptp(residual(label, cov)) < 1e-9:
+            # SA がほぼ種を超えず、ラベル ≈ 初期 cut。C1 は判定不能(信頼性 1.0 は見かけ)。
             row["c1_go"] = None
             row["features"] = {}
             rows.append(row)
@@ -118,8 +123,9 @@ def main():
             row["run_dir"] = str(r.resolve().relative_to(ROOT))
             rows.append(row)
             f = row["features"]
+            mark = " undetermined" if row["c1_go"] is None else ""
             print(f"{row['dataset']:>4} T={row['t_start']:<4g} sweeps={row['sweeps']:<5} "
-                  f"C1={row['c1_sb']:+.2f} [{row['c1_ci95'][0]:+.2f}, {row['c1_ci95'][1]:+.2f}] "
+                  f"improved={row['improved_frac']:.2f}{mark} C1={row['c1_sb']:+.2f} [{row['c1_ci95'][0]:+.2f}, {row['c1_ci95'][1]:+.2f}] "
                   + " ".join(f"{k}={v['rho']:+.2f}" for k, v in f.items()), flush=True)
     kind_root = get_kind_root()
     out_dir = kind_root / f"v{next_version(kind_root)}_{args.tag}"
