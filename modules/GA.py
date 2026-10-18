@@ -39,6 +39,8 @@ from typing import Callable, Optional
 import numpy as np
 from numba import njit, prange
 
+from modules.tabu_bucket import max_weighted_degree, tabu_search_batch_bucket
+
 
 # tabu tenure の周期ステップパターン(15 ブロック, 100 iter ごと)。
 # tenure = alpha * pattern[(iter//100) % 15]。{alpha,2a,4a,8a} を巡回。
@@ -259,6 +261,47 @@ def _parse_tie_break(tie_break: str) -> bool:
     return tie_break == "random"
 
 
+# バケット版 TS のバケット配列 (2*offset+1, n) int32 の上限
+TS_BUCKET_MAX_BYTES = 64 * 2**20
+
+
+def _resolve_ts_impl(ts_impl: str, random_ties: bool, n: int, indptr, data) -> int:
+    """TS の実装を決め、バケット版なら利得の上限(offset)、走査版なら -1 を返す。
+
+    "auto" は tie_break="random"・重みが整数・配列が上限内のときバケット版。
+    "scan" は走査版(2026-10-18 以前の実装。10/16〜10/18 の random 結果の再現用)。
+    """
+    if ts_impl not in ("auto", "bucket", "scan"):
+        raise ValueError(f"ts_impl must be 'auto', 'bucket' or 'scan', got {ts_impl!r}")
+    if ts_impl == "scan":
+        return -1
+    integral = bool(np.all(data == np.round(data)))
+    offset = max_weighted_degree(n, indptr, data)
+    fits = (2 * offset + 1) * n * 4 <= TS_BUCKET_MAX_BYTES
+    if ts_impl == "bucket":
+        if not random_ties:
+            raise ValueError("bucket TS supports tie_break='random' only")
+        if not integral:
+            raise ValueError("bucket TS needs integer edge weights")
+        return offset
+    return offset if (random_ties and integral and fits) else -1
+
+
+def _ts_batch(n, indptr, indices, data, s_batch, ts_iters, cr, gamma_pert,
+              alpha_tenure, seeds, random_ties, offset):
+    """offset >= 0 ならバケット版、-1 なら走査版で TS をかける。"""
+    if offset >= 0:
+        signs, cuts, _ = tabu_search_batch_bucket(
+            n, indptr, indices, data, s_batch, ts_iters, cr, gamma_pert,
+            alpha_tenure, seeds, offset, False
+        )
+        return signs, cuts
+    return _tabu_search_batch(
+        n, indptr, indices, data, s_batch, ts_iters, cr, gamma_pert,
+        alpha_tenure, seeds, random_ties
+    )
+
+
 @njit(cache=True)
 def _cut_of(n, indptr, indices, data, s):
     """解 s のカット値(検証・スコア用)。"""
@@ -393,6 +436,7 @@ def simulate_ga_batch(
     alpha_tenure: int = 15,
     beta_quality: float = 0.6,
     tie_break: str = "random",
+    ts_impl: str = "auto",
     time_budget: Optional[float] = None,
     init_signs: Optional[np.ndarray] = None,
     init_population: Optional[np.ndarray] = None,
@@ -415,6 +459,8 @@ def simulate_ga_batch(
         tie_break       : "random"(同点の手を等確率に選ぶ、Wu & Hao 2012)
                           または "first"(旧実装)。旧結果の再現は
                           tie_break="first", gamma_pert=max(50, int(0.05*n))。
+        ts_impl         : "auto"(既定。可能ならバケット版 TS)、"bucket"、"scan"(走査版)。
+                          2026-10-16〜18 の random 結果の再現は "scan"。
         time_budget     : 秒。指定時はこの実時間で世代ループを打ち切る
         init_signs      : (num_trials, n) or (n,) の warm-start 初期解(±1 or 0/1)。
                           各 run の集団 1 個体目に投入。ハイブリッド用。
@@ -473,6 +519,7 @@ def simulate_ga_batch(
     if gamma_pert is None:
         gamma_pert = DEFAULT_GAMMA_PERT
     random_ties = _parse_tie_break(tie_break)
+    ts_offset = _resolve_ts_impl(ts_impl, random_ties, n, indptr, data)
 
     if init_signs is not None and init_population is not None:
         raise ValueError("init_signs and init_population are mutually exclusive")
@@ -524,9 +571,9 @@ def simulate_ga_batch(
         population_observer(-1, init_batch.reshape(num_trials, pop_size, n).copy(),
                             initial_fits.reshape(num_trials, pop_size).copy())
     init_seeds = (seeds.repeat(pop_size) + np.arange(num_trials * pop_size)) % (2**31)
-    signs0, cuts0 = _tabu_search_batch(
+    signs0, cuts0 = _ts_batch(
         n, indptr, indices, data, init_batch, ts_iters, cr, gamma_pert,
-        alpha_tenure, init_seeds.astype(np.int64), random_ties
+        alpha_tenure, init_seeds.astype(np.int64), random_ties, ts_offset
     )
     pops = signs0.reshape(num_trials, pop_size, n).copy()
     fits = cuts0.reshape(num_trials, pop_size).copy()
@@ -571,9 +618,9 @@ def simulate_ga_batch(
             rec["child_raw_spins"] = children.copy()
         child_seeds = ((seeds + 7919 * (gen + 1)) % (2**31)).astype(np.int64)
         # 子をまとめて TS 磨き
-        cs, cc = _tabu_search_batch(
+        cs, cc = _ts_batch(
             n, indptr, indices, data, children, ts_iters, cr, gamma_pert,
-            alpha_tenure, child_seeds, random_ties
+            alpha_tenure, child_seeds, random_ties, ts_offset
         )
         # DisQual で各 run のプール更新
         for t in range(num_trials):
@@ -616,11 +663,12 @@ def tabu_refine_batch(
     alpha_tenure: int = 15,
     seeds: Optional[np.ndarray] = None,
     tie_break: str = "random",
+    ts_impl: str = "auto",
 ):
     """与えた初期解 init_signs (num,n) を Tabu Search のみで磨く。
 
     ハイブリッド(CIM/CAC → TS)や、GA の「局所探索のみ」アブレーション用。
-    init_signs は ±1 でも 0/1 でも可。gamma_pert・tie_break は simulate_ga_batch と同じ。
+    init_signs は ±1 でも 0/1 でも可。gamma_pert・tie_break・ts_impl は simulate_ga_batch と同じ。
     """
     edges_np = np.asarray(edges, dtype=np.int64)
     edge_a = np.ascontiguousarray(edges_np[:, 0])
@@ -642,9 +690,10 @@ def tabu_refine_batch(
     if gamma_pert is None:
         gamma_pert = DEFAULT_GAMMA_PERT
     random_ties = _parse_tie_break(tie_break)
+    ts_offset = _resolve_ts_impl(ts_impl, random_ties, n, indptr, data)
 
-    signs, cuts = _tabu_search_batch(
+    signs, cuts = _ts_batch(
         n, indptr, indices, data, s_batch, ts_iters, cr, gamma_pert,
-        alpha_tenure, seeds, random_ties
+        alpha_tenure, seeds, random_ties, ts_offset
     )
     return cuts, signs.astype(bool)
