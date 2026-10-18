@@ -1,0 +1,17 @@
+{
+  "dataset": "G1",
+  "n": 800,
+  "bks": 11624,
+  "runs": 4096,
+  "sweeps": [
+    500
+  ],
+  "t_start": 2.0,
+  "t_end": 0.001,
+  "init_seed": 777,
+  "sa_seed_offset": 8000000,
+  "sa_time_s": {
+    "500": 31.40125199998147
+  },
+  "threads": "24"
+}

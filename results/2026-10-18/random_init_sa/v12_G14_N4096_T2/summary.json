@@ -1,0 +1,17 @@
+{
+  "dataset": "G14",
+  "n": 800,
+  "bks": 3064,
+  "runs": 4096,
+  "sweeps": [
+    500
+  ],
+  "t_start": 2.0,
+  "t_end": 0.001,
+  "init_seed": 777,
+  "sa_seed_offset": 8000000,
+  "sa_time_s": {
+    "500": 13.119805299997097
+  },
+  "threads": "24"
+}

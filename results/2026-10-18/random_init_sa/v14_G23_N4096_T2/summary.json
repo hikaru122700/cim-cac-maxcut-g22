@@ -1,0 +1,17 @@
+{
+  "dataset": "G23",
+  "n": 2000,
+  "bks": 13344,
+  "runs": 4096,
+  "sweeps": [
+    500
+  ],
+  "t_start": 2.0,
+  "t_end": 0.001,
+  "init_seed": 777,
+  "sa_seed_offset": 8000000,
+  "sa_time_s": {
+    "500": 41.95840620002127
+  },
+  "threads": "24"
+}

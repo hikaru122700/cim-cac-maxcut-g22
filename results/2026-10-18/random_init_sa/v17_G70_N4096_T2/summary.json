@@ -1,0 +1,17 @@
+{
+  "dataset": "G70",
+  "n": 10000,
+  "bks": 9591,
+  "runs": 4096,
+  "sweeps": [
+    500
+  ],
+  "t_start": 2.0,
+  "t_end": 0.001,
+  "init_seed": 777,
+  "sa_seed_offset": 8000000,
+  "sa_time_s": {
+    "500": 68.92966709999018
+  },
+  "threads": "24"
+}

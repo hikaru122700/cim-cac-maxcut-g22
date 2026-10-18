@@ -1,0 +1,662 @@
+{
+  "t_start": 0.5,
+  "sweeps": 5000,
+  "pool": 256,
+  "m": 16,
+  "mc": 4000,
+  "baseline": "cim_ls",
+  "models": {
+    "model_all": [
+      "n_gain_minus2_to_0",
+      "ls_n_gain_minus2_to_0",
+      "n_zero_gain",
+      "ls_n_zero_gain",
+      "eig_diff",
+      "eig_a1",
+      "eig_a2"
+    ],
+    "model_local": [
+      "n_gain_minus2_to_0",
+      "ls_n_gain_minus2_to_0",
+      "n_zero_gain",
+      "ls_n_zero_gain"
+    ],
+    "model_eig": [
+      "eig_diff",
+      "eig_a1",
+      "eig_a2"
+    ]
+  },
+  "ridge": 1.0,
+  "target_quantile": 0.99,
+  "excluded": [
+    "G15",
+    "G39"
+  ],
+  "per_problem": {
+    "G22": {
+      "target": 13341.0,
+      "bks": 13359,
+      "total_time_s": 7.695419354697435,
+      "runs_per_strategy": {
+        "cim_random": 16,
+        "cim_cut": 16,
+        "cim_ls": 11,
+        "cim_div": 11,
+        "cim_trial": 9,
+        "random_init": 154,
+        "model_all": 11,
+        "model_local": 11,
+        "model_eig": 11
+      },
+      "strategies": {
+        "cim_random": {
+          "mean_best": 13336.45175,
+          "se": 0.102336664907427,
+          "p_target": 0.196,
+          "gap_to_bks_pct": 0.16878696010180272
+        },
+        "cim_cut": {
+          "mean_best": 13349.4625,
+          "se": 0.07846670273115852,
+          "p_target": 0.9755,
+          "gap_to_bks_pct": 0.07139381690246549
+        },
+        "cim_ls": {
+          "mean_best": 13349.36075,
+          "se": 0.07915192580964156,
+          "p_target": 0.96775,
+          "gap_to_bks_pct": 0.07215547570926098
+        },
+        "cim_div": {
+          "mean_best": 13346.973,
+          "se": 0.07229241142747972,
+          "p_target": 0.9215,
+          "gap_to_bks_pct": 0.09002919380193161
+        },
+        "cim_trial": {
+          "mean_best": 13349.4505,
+          "se": 0.08027382784880763,
+          "p_target": 0.95925,
+          "gap_to_bks_pct": 0.07148364398532203
+        },
+        "random_init": {
+          "mean_best": 13357.99775,
+          "se": 0.0007491557748559375,
+          "p_target": 1.0,
+          "gap_to_bks_pct": 0.0075024328168242305
+        },
+        "model_all": {
+          "mean_best": 13349.26325,
+          "se": 0.07974482653674154,
+          "p_target": 0.9635,
+          "gap_to_bks_pct": 0.07288532075754195
+        },
+        "model_local": {
+          "mean_best": 13349.43775,
+          "se": 0.07890045142060342,
+          "p_target": 0.9685,
+          "gap_to_bks_pct": 0.07157908526087925
+        },
+        "model_eig": {
+          "mean_best": 13349.3045,
+          "se": 0.07836019357747913,
+          "p_target": 0.966,
+          "gap_to_bks_pct": 0.07257654016019022
+        }
+      }
+    },
+    "G23": {
+      "target": 13328.0,
+      "bks": 13344,
+      "total_time_s": 6.341776450580596,
+      "runs_per_strategy": {
+        "cim_random": 16,
+        "cim_cut": 16,
+        "cim_ls": 11,
+        "cim_div": 11,
+        "cim_trial": 10,
+        "random_init": 136,
+        "model_all": 11,
+        "model_local": 11,
+        "model_eig": 11
+      },
+      "strategies": {
+        "cim_random": {
+          "mean_best": 13324.689,
+          "se": 0.0510937349388357,
+          "p_target": 0.18025,
+          "gap_to_bks_pct": 0.14471672661870275
+        },
+        "cim_cut": {
+          "mean_best": 13330.1885,
+          "se": 0.027599672778857363,
+          "p_target": 0.92575,
+          "gap_to_bks_pct": 0.1035034472422047
+        },
+        "cim_ls": {
+          "mean_best": 13330.06325,
+          "se": 0.02730269875625851,
+          "p_target": 0.915,
+          "gap_to_bks_pct": 0.10444207134293133
+        },
+        "cim_div": {
+          "mean_best": 13329.18125,
+          "se": 0.038170336773141,
+          "p_target": 0.76975,
+          "gap_to_bks_pct": 0.1110517835731442
+        },
+        "cim_trial": {
+          "mean_best": 13329.97925,
+          "se": 0.02975239249833532,
+          "p_target": 0.882,
+          "gap_to_bks_pct": 0.10507156774580097
+        },
+        "random_init": {
+          "mean_best": 13342.2585,
+          "se": 0.03396202934896559,
+          "p_target": 1.0,
+          "gap_to_bks_pct": 0.01305080935251864
+        },
+        "model_all": {
+          "mean_best": 13328.95425,
+          "se": 0.031147459517190168,
+          "p_target": 0.766,
+          "gap_to_bks_pct": 0.11275292266186537
+        },
+        "model_local": {
+          "mean_best": 13329.777,
+          "se": 0.031169981552769645,
+          "p_target": 0.86425,
+          "gap_to_bks_pct": 0.106587230215827
+        },
+        "model_eig": {
+          "mean_best": 13329.4945,
+          "se": 0.02895673388868296,
+          "p_target": 0.874,
+          "gap_to_bks_pct": 0.10870428657073818
+        }
+      }
+    },
+    "G32": {
+      "target": 1400.1800000000003,
+      "bks": 1410,
+      "total_time_s": 4.980846250382058,
+      "runs_per_strategy": {
+        "cim_random": 16,
+        "cim_cut": 16,
+        "cim_ls": 12,
+        "cim_div": 12,
+        "cim_trial": 10,
+        "random_init": 84,
+        "model_all": 12,
+        "model_local": 12,
+        "model_eig": 12
+      },
+      "strategies": {
+        "cim_random": {
+          "mean_best": 1398.822,
+          "se": 0.03501541089291971,
+          "p_target": 0.1525,
+          "gap_to_bks_pct": 0.7927659574468164
+        },
+        "cim_cut": {
+          "mean_best": 1401.242,
+          "se": 0.028475586034355817,
+          "p_target": 0.534,
+          "gap_to_bks_pct": 0.6211347517730523
+        },
+        "cim_ls": {
+          "mean_best": 1401.0575,
+          "se": 0.030694843825958783,
+          "p_target": 0.50075,
+          "gap_to_bks_pct": 0.6342198581560361
+        },
+        "cim_div": {
+          "mean_best": 1400.6055,
+          "se": 0.03334804998047112,
+          "p_target": 0.3865,
+          "gap_to_bks_pct": 0.6662765957446884
+        },
+        "cim_trial": {
+          "mean_best": 1401.0255,
+          "se": 0.03143783449126228,
+          "p_target": 0.52625,
+          "gap_to_bks_pct": 0.6364893617021301
+        },
+        "random_init": {
+          "mean_best": 1401.362,
+          "se": 0.029115957823846364,
+          "p_target": 0.65875,
+          "gap_to_bks_pct": 0.6126241134751716
+        },
+        "model_all": {
+          "mean_best": 1400.9325,
+          "se": 0.030460809862838514,
+          "p_target": 0.45475,
+          "gap_to_bks_pct": 0.6430851063829864
+        },
+        "model_local": {
+          "mean_best": 1401.0335,
+          "se": 0.030565003476198067,
+          "p_target": 0.4935,
+          "gap_to_bks_pct": 0.6359219858156026
+        },
+        "model_eig": {
+          "mean_best": 1400.9045,
+          "se": 0.030622213138504537,
+          "p_target": 0.4545,
+          "gap_to_bks_pct": 0.6450709219858086
+        }
+      }
+    },
+    "G55": {
+      "target": 10264.0,
+      "bks": 10299,
+      "total_time_s": 8.799791795304486,
+      "runs_per_strategy": {
+        "cim_random": 16,
+        "cim_cut": 16,
+        "cim_ls": 13,
+        "cim_div": 13,
+        "cim_trial": 10,
+        "random_init": 114,
+        "model_all": 13,
+        "model_local": 13,
+        "model_eig": 13
+      },
+      "strategies": {
+        "cim_random": {
+          "mean_best": 10256.2015,
+          "se": 0.10294099978871392,
+          "p_target": 0.15,
+          "gap_to_bks_pct": 0.4155597630838022
+        },
+        "cim_cut": {
+          "mean_best": 10266.559,
+          "se": 0.0550738572282712,
+          "p_target": 0.8185,
+          "gap_to_bks_pct": 0.31499174677153813
+        },
+        "cim_ls": {
+          "mean_best": 10266.237,
+          "se": 0.056459788788127796,
+          "p_target": 0.78,
+          "gap_to_bks_pct": 0.31811826390912545
+        },
+        "cim_div": {
+          "mean_best": 10262.73225,
+          "se": 0.06964294640790981,
+          "p_target": 0.45575,
+          "gap_to_bks_pct": 0.3521482668220302
+        },
+        "cim_trial": {
+          "mean_best": 10265.69325,
+          "se": 0.056723351535104126,
+          "p_target": 0.73,
+          "gap_to_bks_pct": 0.3233979027089983
+        },
+        "random_init": {
+          "mean_best": 10274.6715,
+          "se": 0.07726672594008367,
+          "p_target": 0.99975,
+          "gap_to_bks_pct": 0.23622196329740383
+        },
+        "model_all": {
+          "mean_best": 10266.20925,
+          "se": 0.056281578774719884,
+          "p_target": 0.78425,
+          "gap_to_bks_pct": 0.3183877075444229
+        },
+        "model_local": {
+          "mean_best": 10266.18325,
+          "se": 0.05562411670647004,
+          "p_target": 0.788,
+          "gap_to_bks_pct": 0.3186401592387606
+        },
+        "model_eig": {
+          "mean_best": 10266.373,
+          "se": 0.05542195187829457,
+          "p_target": 0.796,
+          "gap_to_bks_pct": 0.31679774735411603
+        }
+      }
+    },
+    "G70": {
+      "target": 9545.09,
+      "bks": 9591,
+      "total_time_s": 13.29209067304788,
+      "runs_per_strategy": {
+        "cim_random": 16,
+        "cim_cut": 16,
+        "cim_ls": 13,
+        "cim_div": 13,
+        "cim_trial": 10,
+        "random_init": 112,
+        "model_all": 13,
+        "model_local": 13,
+        "model_eig": 13
+      },
+      "strategies": {
+        "cim_random": {
+          "mean_best": 9540.552,
+          "se": 0.07785370254522261,
+          "p_target": 0.144,
+          "gap_to_bks_pct": 0.5259931185486427
+        },
+        "cim_cut": {
+          "mean_best": 9545.5595,
+          "se": 0.053576953417491,
+          "p_target": 0.50275,
+          "gap_to_bks_pct": 0.4737827129600731
+        },
+        "cim_ls": {
+          "mean_best": 9544.9755,
+          "se": 0.05704581437318606,
+          "p_target": 0.45025,
+          "gap_to_bks_pct": 0.47987175477009214
+        },
+        "cim_div": {
+          "mean_best": 9544.5035,
+          "se": 0.06468285659662844,
+          "p_target": 0.39575,
+          "gap_to_bks_pct": 0.4847930351371003
+        },
+        "cim_trial": {
+          "mean_best": 9544.62425,
+          "se": 0.05806475251281968,
+          "p_target": 0.3945,
+          "gap_to_bks_pct": 0.4835340423313444
+        },
+        "random_init": {
+          "mean_best": 9534.64225,
+          "se": 0.04119394657440581,
+          "p_target": 0.0,
+          "gap_to_bks_pct": 0.5876107809404568
+        },
+        "model_all": {
+          "mean_best": 9544.98675,
+          "se": 0.05723323867627098,
+          "p_target": 0.44025,
+          "gap_to_bks_pct": 0.4797544573037219
+        },
+        "model_local": {
+          "mean_best": 9545.14825,
+          "se": 0.05687875688141401,
+          "p_target": 0.45825,
+          "gap_to_bks_pct": 0.478070587008652
+        },
+        "model_eig": {
+          "mean_best": 9545.00175,
+          "se": 0.054977829480391455,
+          "p_target": 0.43575,
+          "gap_to_bks_pct": 0.47959806068189503
+        }
+      }
+    },
+    "G1": {
+      "target": 11624.0,
+      "bks": 11624,
+      "total_time_s": 15.41531100019597,
+      "runs_per_strategy": {
+        "cim_random": 16,
+        "cim_cut": 16,
+        "cim_ls": 14,
+        "cim_div": 14,
+        "cim_trial": 12,
+        "random_init": 127,
+        "model_all": 14,
+        "model_local": 14,
+        "model_eig": 14
+      },
+      "strategies": {
+        "cim_random": {
+          "mean_best": 11621.18175,
+          "se": 0.03264857170497662,
+          "p_target": 0.28425,
+          "gap_to_bks_pct": 0.02424509635237665
+        },
+        "cim_cut": {
+          "mean_best": 11623.04775,
+          "se": 0.025228802674225347,
+          "p_target": 0.73225,
+          "gap_to_bks_pct": 0.008192102546457986
+        },
+        "cim_ls": {
+          "mean_best": 11623.03775,
+          "se": 0.025405830716097436,
+          "p_target": 0.731,
+          "gap_to_bks_pct": 0.008278131452172184
+        },
+        "cim_div": {
+          "mean_best": 11623.03075,
+          "se": 0.02556513464417897,
+          "p_target": 0.73075,
+          "gap_to_bks_pct": 0.008338351686167427
+        },
+        "cim_trial": {
+          "mean_best": 11623.034,
+          "se": 0.025675104673593834,
+          "p_target": 0.734,
+          "gap_to_bks_pct": 0.008310392291813053
+        },
+        "random_init": {
+          "mean_best": 11624.0,
+          "se": 0.0,
+          "p_target": 1.0,
+          "gap_to_bks_pct": 0.0
+        },
+        "model_all": {
+          "mean_best": 11620.36475,
+          "se": 0.015376178308506964,
+          "p_target": 0.059,
+          "gap_to_bks_pct": 0.03127365794906538
+        },
+        "model_local": {
+          "mean_best": 11620.26775,
+          "se": 0.011678612262379467,
+          "p_target": 0.029,
+          "gap_to_bks_pct": 0.03210813833447275
+        },
+        "model_eig": {
+          "mean_best": 11623.022,
+          "se": 0.02589650555576949,
+          "p_target": 0.73275,
+          "gap_to_bks_pct": 0.00841362697865757
+        }
+      }
+    },
+    "G14": {
+      "target": 3056.0,
+      "bks": 3064,
+      "total_time_s": 6.227269887687044,
+      "runs_per_strategy": {
+        "cim_random": 16,
+        "cim_cut": 16,
+        "cim_ls": 12,
+        "cim_div": 12,
+        "cim_trial": 10,
+        "random_init": 112,
+        "model_all": 12,
+        "model_local": 12,
+        "model_eig": 12
+      },
+      "strategies": {
+        "cim_random": {
+          "mean_best": 3053.34325,
+          "se": 0.0366347834629195,
+          "p_target": 0.17725,
+          "gap_to_bks_pct": 0.34780515665796674
+        },
+        "cim_cut": {
+          "mean_best": 3055.96275,
+          "se": 0.025597179715253788,
+          "p_target": 0.658,
+          "gap_to_bks_pct": 0.2623123368146168
+        },
+        "cim_ls": {
+          "mean_best": 3056.3255,
+          "se": 0.025858024624862593,
+          "p_target": 0.72125,
+          "gap_to_bks_pct": 0.25047323759791384
+        },
+        "cim_div": {
+          "mean_best": 3056.29225,
+          "se": 0.029718848974598595,
+          "p_target": 0.67475,
+          "gap_to_bks_pct": 0.25155842036553633
+        },
+        "cim_trial": {
+          "mean_best": 3055.563,
+          "se": 0.025590677013318734,
+          "p_target": 0.547,
+          "gap_to_bks_pct": 0.27535900783289485
+        },
+        "random_init": {
+          "mean_best": 3059.83325,
+          "se": 0.01763834202454981,
+          "p_target": 1.0,
+          "gap_to_bks_pct": 0.1359905352480374
+        },
+        "model_all": {
+          "mean_best": 3056.731,
+          "se": 0.027931339924894404,
+          "p_target": 0.7455,
+          "gap_to_bks_pct": 0.23723890339424863
+        },
+        "model_local": {
+          "mean_best": 3056.80925,
+          "se": 0.027800019952780614,
+          "p_target": 0.7675,
+          "gap_to_bks_pct": 0.23468505221932792
+        },
+        "model_eig": {
+          "mean_best": 3056.576,
+          "se": 0.028934080251495815,
+          "p_target": 0.723,
+          "gap_to_bks_pct": 0.24229765013054758
+        }
+      }
+    }
+  },
+  "compare_vs_baseline": {
+    "cim_random": {
+      "mean_diff_vs_baseline": -5.6879999999998745,
+      "wins": 0,
+      "losses": 7,
+      "wilcoxon_p": 0.015625,
+      "holm_p": 0.125
+    },
+    "cim_cut": {
+      "mean_diff_vs_baseline": 0.13782142857147456,
+      "wins": 6,
+      "losses": 1,
+      "wilcoxon_p": 0.21875,
+      "holm_p": 1.0
+    },
+    "cim_ls": {
+      "mean_diff_vs_baseline": 0.0,
+      "wins": 0,
+      "losses": 0,
+      "wilcoxon_p": null
+    },
+    "cim_div": {
+      "mean_diff_vs_baseline": -1.1055357142855493,
+      "wins": 0,
+      "losses": 7,
+      "wilcoxon_p": 0.015625,
+      "holm_p": 0.125
+    },
+    "cim_trial": {
+      "mean_diff_vs_baseline": -0.24107142857087638,
+      "wins": 1,
+      "losses": 6,
+      "wilcoxon_p": 0.109375,
+      "holm_p": 0.65625
+    },
+    "random_init": {
+      "mean_diff_vs_baseline": 3.3868571428576746,
+      "wins": 6,
+      "losses": 1,
+      "wilcoxon_p": 0.21875,
+      "holm_p": 1.0
+    },
+    "model_all": {
+      "mean_diff_vs_baseline": -0.5164999999995287,
+      "wins": 2,
+      "losses": 5,
+      "wilcoxon_p": 0.21875,
+      "holm_p": 1.0
+    },
+    "model_local": {
+      "mean_diff_vs_baseline": -0.34292857142827415,
+      "wins": 3,
+      "losses": 4,
+      "wilcoxon_p": 0.9375,
+      "holm_p": 1.0
+    },
+    "model_eig": {
+      "mean_diff_vs_baseline": -0.054428571428161376,
+      "wins": 3,
+      "losses": 4,
+      "wilcoxon_p": 0.8125,
+      "holm_p": 1.0
+    }
+  },
+  "primary": {
+    "H4a": {
+      "a": "model_all",
+      "b": "cim_ls",
+      "diffs": [
+        -0.09749999999985448,
+        -1.1089999999985594,
+        -0.125,
+        -0.027749999999286956,
+        0.011249999999563443,
+        -2.672999999998865,
+        0.40550000000030195
+      ],
+      "wins": 2,
+      "losses": 5,
+      "p_one_sided": 0.921875,
+      "holm_p": 1.0,
+      "supported": false
+    },
+    "H4b": {
+      "a": "cim_trial",
+      "b": "cim_ls",
+      "diffs": [
+        0.08975000000100408,
+        -0.08399999999892316,
+        -0.03199999999992542,
+        -0.5437499999989086,
+        -0.35124999999970896,
+        -0.003749999999854481,
+        -0.7624999999998181
+      ],
+      "wins": 1,
+      "losses": 6,
+      "p_one_sided": 0.9609375,
+      "holm_p": 1.0,
+      "supported": false
+    },
+    "H4c": {
+      "a": "cim_ls",
+      "b": "random_init",
+      "diffs": [
+        -8.637000000000626,
+        -12.19525000000067,
+        -0.3045000000001892,
+        -8.434500000001208,
+        10.33324999999968,
+        -0.9622500000004948,
+        -3.5077500000002146
+      ],
+      "wins": 1,
+      "losses": 6,
+      "p_one_sided": 0.921875,
+      "holm_p": 1.0,
+      "supported": false
+    }
+  }
+}

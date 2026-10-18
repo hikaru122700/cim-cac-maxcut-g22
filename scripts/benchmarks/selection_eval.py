@@ -4,8 +4,11 @@
 ステップ 3 の出力(候補ごとに独立な SA を R 回)から、選んだ候補の結果を 1 つずつ引いて
 新しい SA を回さずに比べる。総時間は実測の処理時間で揃える:
 
-  T = K·t_cim + m·t_sa(B)      (基準:CIM で K 個作り、そのまま m 個に SA)
-  余分な費用(指標の計算・試し打ち)を使う方法は、最後にかける SA の本数を減らす。
+  T = K·t_cim + m·t_sa(B)      (CIM で K 個作り、そのまま m 個に SA)
+  余分な費用(LS・指標の計算・試し打ち)を使う方法は、その分だけ最後にかける SA の本数を減らす。
+  LS と指標の費用は selection_costs.py の実測(1 スレッド)を PARALLEL で割る。CIM と SA の時間は
+  ステップ 3 の PARALLEL スレッドでの実測(1 本あたりに直した値)なので、同じ並列度に揃える。
+  費用は方法ごとに使う処理だけを数える(cim_ls は LS、model_eig は LS + 内積 + 固有ベクトル 1 回 など)。
   ランダム初期化の SA は、CIM の時間も SA に回す(T / t_sa(B) 本)。SA は同じ実装で反転数も
   同じなので、1 本の時間は CIM の種の場合と同じ t_sa(B)(ステップ 3 の実測)を使う。
 
@@ -14,7 +17,8 @@
 
 使い方(プロジェクトルートから):
   python scripts/benchmarks/selection_eval.py --runs <step3 dirs> --random <random_init_sa dirs> \
-      --t-start 0.5 --sweeps 5000 --pool 256 --m 16 --tag main
+      --costs <selection_costs.json> --t-start 0.5 --sweeps 5000 --pool 256 --m 16 --tag main
+  --free-costs を付けると LS・指標・試し打ちの費用を 0 にする(選別の効果の上限)。
 """
 
 from __future__ import annotations
@@ -40,6 +44,9 @@ LOCAL = ["n_gain_minus2_to_0", "ls_n_gain_minus2_to_0", "n_zero_gain", "ls_n_zer
 EIG = ["eig_diff", "eig_a1", "eig_a2"]
 MODELS = {"model_all": LOCAL + EIG, "model_local": LOCAL, "model_eig": EIG}
 BASELINE = "cim_ls"
+PARALLEL = 24  # ステップ 3 の NUMBA_NUM_THREADS
+# 主条件の判定(docs/20261018/step4_plan.md):(名前, 方法 A, 方法 B)で A − B > 0 を片側検定
+PRIMARY = [("H4a", "model_all", "cim_ls"), ("H4b", "cim_trial", "cim_ls"), ("H4c", "cim_ls", "random_init")]
 
 
 def get_kind_root() -> Path:
@@ -74,14 +81,13 @@ def load_problem(run_dir: Path, sweeps: int) -> dict:
     k, r = z[f"cuts_B{budget}"].shape
     trial_b = 50 * n
     t_sa = summary["budgets"][str(budget)]["sa_time_s"] / (k * r)
-    t_trial_run = summary["budgets"][str(trial_b)]["sa_time_s"] / (k * r)
+    t_trial_run = summary["budgets"][str(trial_b)]["sa_time_s"] / (k * r)  # 試し打ちと同じ予算の 1 本
     feats = {f: z[f"feat_{f}"].astype(float) for f in LOCAL + EIG + ["trial_sa_mean"] if f"feat_{f}" in z.files}
     return {
         "name": meta["dataset"], "n": n, "bks": meta["bks"], "t_start": meta["t_start"],
         "cuts": z[f"cuts_B{budget}"].astype(float), "init_cut": z["init_cut"].astype(float),
         "ls_cut": z["ls_cut"].astype(float), "signs": z["cim_signs"], "feats": feats,
-        "t_cim": meta["cim_time_s"] / k, "t_feat": meta["feature_time_s"] / k,
-        "t_sa": t_sa, "t_trial": meta.get("trial", {}).get("runs", 0) * t_trial_run,
+        "t_cim": meta["cim_time_s"] / k, "t_sa": t_sa, "t_trial": meta.get("trial", {}).get("runs", 0) * t_trial_run,
     }
 
 
@@ -123,14 +129,29 @@ def diverse_m(p: dict, pool: np.ndarray, m: int, rng) -> np.ndarray:
     return cand[chosen]
 
 
-def simulate(p: dict, rand_cuts: np.ndarray, scores: dict, K: int, m: int, rng) -> dict:
+def overheads(p: dict, cost: dict | None, K: int) -> dict:
+    """方法ごとの、K 候補に対する余分な費用(秒)。cost が None なら 0(選別の効果の上限)。"""
+    if cost is None:
+        free = {s: 0.0 for s in ["cim_random", "cim_cut", "cim_ls", "cim_div", "cim_trial", *MODELS]}
+        return {**free, "random_init": -K * p["t_cim"]}
+    ls = K * cost["t_ls"] / PARALLEL
+    local = K * cost["t_local"] / PARALLEL
+    eig = K * cost["t_eig"] / PARALLEL + cost["t_eig_once"]
+    return {"cim_random": 0.0, "cim_cut": 0.0, "cim_ls": ls, "cim_div": ls, "cim_trial": K * p["t_trial"],
+            "random_init": -K * p["t_cim"],  # CIM の時間も SA に回す
+            "model_all": ls + local + eig, "model_local": ls + local, "model_eig": ls + eig}
+
+
+def simulate(p: dict, rand_cuts: np.ndarray, scores: dict, cost: dict | None, K: int, m: int, rng) -> dict:
     """戦略ごとに MC 回の「最良値」を返す。"""
     total = K * p["t_cim"] + m * p["t_sa"]
-    m_feat = max(int((total - K * (p["t_cim"] + p["t_feat"])) // p["t_sa"]), 0)
-    m_trial = max(int((total - K * (p["t_cim"] + p["t_trial"])) // p["t_sa"]), 0)
-    m_rand = int(total // p["t_sa"])
-    budgets = {"cim_random": m, "cim_cut": m, "cim_ls": m_feat, "cim_div": m_feat,
-               "cim_trial": m_trial, "random_init": m_rand, **{k: m_feat for k in scores}}
+    over = overheads(p, cost, K)
+    budgets = {s: max(int((m * p["t_sa"] - o) // p["t_sa"] + 1e-9), 0) for s, o in over.items()}
+    budgets["cim_random"] = budgets["cim_cut"] = m
+    m_feat, m_trial, m_rand = budgets["cim_ls"], budgets["cim_trial"], budgets["random_init"]
+    if m_rand > len(rand_cuts):
+        # 復元抽出では最良値を過小に見積もるので、足りなければ止める
+        raise ValueError(f"{p['name']}: random-init needs {m_rand} runs but only {len(rand_cuts)} exist")
     k_all, r = p["cuts"].shape
     out = {s: np.empty(MC) for s in budgets}
     for i in range(MC):
@@ -139,10 +160,10 @@ def simulate(p: dict, rand_cuts: np.ndarray, scores: dict, K: int, m: int, rng) 
             "cim_random": rng.choice(pool, size=m, replace=False),
             "cim_cut": top_m(p["init_cut"], pool, m, rng),
             "cim_ls": top_m(p["ls_cut"] + 1e-6 * p["init_cut"], pool, m_feat, rng),
-            "cim_div": diverse_m(p, pool, m_feat, rng),
+            "cim_div": diverse_m(p, pool, budgets["cim_div"], rng) if budgets["cim_div"] > 0 else pool[:0],
             "cim_trial": top_m(p["feats"]["trial_sa_mean"], pool, m_trial, rng)
             if "trial_sa_mean" in p["feats"] else pool[:0],
-            **{k: top_m(v, pool, m_feat, rng) for k, v in scores.items()},
+            **{k: top_m(v, pool, budgets[k], rng) for k, v in scores.items()},
         }
         for s, idx in picks.items():
             if len(idx) == 0:
@@ -150,15 +171,41 @@ def simulate(p: dict, rand_cuts: np.ndarray, scores: dict, K: int, m: int, rng) 
                 continue
             draws = p["cuts"][idx, rng.integers(0, r, len(idx))]
             out[s][i] = draws.max()
-        out["random_init"][i] = rng.choice(rand_cuts, size=m_rand, replace=m_rand > len(rand_cuts)).max() \
-            if m_rand > 0 else np.nan
+        out["random_init"][i] = rng.choice(rand_cuts, size=m_rand, replace=False).max() if m_rand > 0 else np.nan
     return {"runs_per_strategy": budgets, "best": out, "total_time_s": total}
+
+
+def holm(pvals: dict) -> dict:
+    """Holm 補正。pvals は {名前: p}。"""
+    order = sorted(pvals, key=pvals.get)
+    out, running = {}, 0.0
+    for rank, k in enumerate(order):
+        running = max(running, pvals[k] * (len(order) - rank))
+        out[k] = float(min(1.0, running))
+    return out
+
+
+def primary_tests(per_problem: dict) -> dict:
+    """PRIMARY の各比較を、問題を単位にした片側 Wilcoxon 符号順位検定 + Holm で判定する。"""
+    res = {}
+    for name, a, b in PRIMARY:
+        d = np.array([v["strategies"][a]["mean_best"] - v["strategies"][b]["mean_best"] for v in per_problem.values()])
+        d = d[np.isfinite(d)]
+        p_val = float(wilcoxon(d, alternative="greater").pvalue) if np.any(d != 0) else 1.0
+        res[name] = {"a": a, "b": b, "diffs": d.tolist(), "wins": int((d > 0).sum()),
+                     "losses": int((d < 0).sum()), "p_one_sided": p_val}
+    for name, hp in holm({k: v["p_one_sided"] for k, v in res.items()}).items():
+        res[name]["holm_p"] = hp
+        res[name]["supported"] = hp < 0.05
+    return res
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--runs", type=Path, nargs="+", required=True)
     ap.add_argument("--random", type=Path, nargs="+", required=True)
+    ap.add_argument("--costs", type=Path, required=True, help="selection_costs.py の costs.json")
+    ap.add_argument("--free-costs", action="store_true", help="LS・指標・試し打ちの費用を 0 にする")
     ap.add_argument("--t-start", type=float, required=True)
     ap.add_argument("--sweeps", type=int, required=True)
     ap.add_argument("--pool", type=int, default=256)
@@ -178,9 +225,14 @@ def main():
     for d in args.random:
         meta = json.loads((d / "summary.json").read_text(encoding="utf-8"))
         z = np.load(d / "raw.npz")
-        if f"cuts_S{args.sweeps}" in z.files:
-            rand[meta["dataset"]] = z[f"cuts_S{args.sweeps}"]
+        key = f"cuts_S{args.sweeps}"
+        if key in z.files and len(z[key]) > len(rand.get(meta["dataset"], [])):
+            rand[meta["dataset"]] = z[key]  # 同じ問題が複数あれば本数の多いもの
     problems = [p for p in problems if p["name"] in rand]
+    costs = json.loads(args.costs.read_text(encoding="utf-8"))
+    missing = [p["name"] for p in problems if p["name"] not in costs]
+    if missing:
+        ap.error(f"no cost measurement for {missing}")
     if len(problems) < 2:
         ap.error("need at least two problems with random-init data")
     scores = {name: lopo_scores(problems, feats) for name, feats in MODELS.items()}
@@ -188,7 +240,8 @@ def main():
     rng = np.random.default_rng(MC_SEED)
     per_problem = {}
     for i, p in enumerate(problems):
-        sim = simulate(p, rand[p["name"]], {k: v[i] for k, v in scores.items()}, args.pool, args.m, rng)
+        cost = None if args.free_costs else costs[p["name"]]
+        sim = simulate(p, rand[p["name"]], {k: v[i] for k, v in scores.items()}, cost, args.pool, args.m, rng)
         target = np.quantile(p["cuts"], TARGET_QUANTILE)
         per_problem[p["name"]] = {
             "target": float(target), "bks": p["bks"], "total_time_s": sim["total_time_s"],
@@ -211,20 +264,25 @@ def main():
         p_val = float(wilcoxon(d[ok]).pvalue) if s != BASELINE and ok.sum() >= 5 and np.any(d[ok] != 0) else None
         compare[s] = {"mean_diff_vs_baseline": float(np.nanmean(d)), "wins": int((d > 0).sum()),
                       "losses": int((d < 0).sum()), "wilcoxon_p": p_val}
-    tested = sorted((v["wilcoxon_p"], s) for s, v in compare.items() if v["wilcoxon_p"] is not None)
-    for rank, (pv, s) in enumerate(tested):
-        compare[s]["holm_p"] = float(min(1.0, max(pv * (len(tested) - j) for j, (pv, _) in enumerate(tested[:rank + 1]))))
+    for s, hp in holm({s: v["wilcoxon_p"] for s, v in compare.items() if v["wilcoxon_p"] is not None}).items():
+        compare[s]["holm_p"] = hp
+    primary = primary_tests(per_problem)
     kind_root = get_kind_root()
-    out_dir = kind_root / f"v{next_version(kind_root)}_{args.tag}_T{args.t_start:g}_S{args.sweeps}_K{args.pool}_m{args.m}".replace(".", "p")
+    free = "_free" if args.free_costs else ""
+    out_dir = kind_root / f"v{next_version(kind_root)}_{args.tag}_T{args.t_start:g}_S{args.sweeps}_K{args.pool}_m{args.m}{free}".replace(".", "p")
     out_dir.mkdir(parents=True)
     result = {"t_start": args.t_start, "sweeps": args.sweeps, "pool": args.pool, "m": args.m,
               "mc": MC, "baseline": BASELINE, "models": MODELS, "ridge": RIDGE,
               "target_quantile": TARGET_QUANTILE, "excluded": args.exclude,
-              "per_problem": per_problem, "compare_vs_baseline": compare}
+              "costs": str(args.costs), "free_costs": args.free_costs, "parallel": PARALLEL,
+              "per_problem": per_problem, "compare_vs_baseline": compare, "primary": primary}
     (out_dir / "result.json").write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
     for s, v in compare.items():
         print(f"{s:>12}: diff={v['mean_diff_vs_baseline']:+.2f} W/L={v['wins']}/{v['losses']} "
               f"holm_p={v.get('holm_p')}")
+    for k, v in primary.items():
+        print(f"{k} {v['a']} - {v['b']}: W/L={v['wins']}/{v['losses']} p={v['p_one_sided']:.4f} "
+              f"holm={v['holm_p']:.4f} supported={v['supported']}")
     print(f"saved: {out_dir}")
 
 
