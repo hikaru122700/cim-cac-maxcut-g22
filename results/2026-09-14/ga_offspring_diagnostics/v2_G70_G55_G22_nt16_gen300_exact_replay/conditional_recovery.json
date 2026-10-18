@@ -1,0 +1,32 @@
+{
+  "G22_random": {
+    "damaged_children": 4013,
+    "recovered_to_better_parent": 2674,
+    "rate": 0.666334413157239
+  },
+  "G22_cim": {
+    "damaged_children": 4212,
+    "recovered_to_better_parent": 2603,
+    "rate": 0.6179962013295347
+  },
+  "G55_random": {
+    "damaged_children": 4791,
+    "recovered_to_better_parent": 1347,
+    "rate": 0.28115216030056356
+  },
+  "G55_cim": {
+    "damaged_children": 4800,
+    "recovered_to_better_parent": 152,
+    "rate": 0.03166666666666667
+  },
+  "G70_random": {
+    "damaged_children": 4648,
+    "recovered_to_better_parent": 3466,
+    "rate": 0.745697074010327
+  },
+  "G70_cim": {
+    "damaged_children": 4800,
+    "recovered_to_better_parent": 0,
+    "rate": 0.0
+  }
+}

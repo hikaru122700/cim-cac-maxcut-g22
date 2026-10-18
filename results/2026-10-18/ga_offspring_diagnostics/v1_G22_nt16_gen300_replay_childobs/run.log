@@ -1,0 +1,14 @@
+OUTPUT=C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-10-18\ga_offspring_diagnostics\v1_G22_nt16_gen300_replay_childobs
+G22_cim gen=1: crossover_delta=-1161.9, after_TS_delta=-7.6, accepted=14/16, elapsed=4.6s
+G22_cim gen=89: crossover_delta=-61.2, after_TS_delta=-0.8, accepted=10/16, elapsed=29.7s
+G22_cim gen=176: crossover_delta=-29.4, after_TS_delta=-0.2, accepted=12/16, elapsed=54.7s
+G22_cim gen=264: crossover_delta=-19.2, after_TS_delta=-0.4, accepted=12/16, elapsed=79.8s
+G22_cim gen=300: crossover_delta=-11.4, after_TS_delta=-0.2, accepted=12/16, elapsed=89.1s
+G22_cim COMPLETE: exact replay confirmed; 4800 offspring recorded
+G22_random gen=1: crossover_delta=-1395.0, after_TS_delta=17.9, accepted=16/16, elapsed=3.7s
+G22_random gen=99: crossover_delta=-49.7, after_TS_delta=-0.5, accepted=13/16, elapsed=28.7s
+G22_random gen=187: crossover_delta=-7.6, after_TS_delta=-0.1, accepted=14/16, elapsed=53.8s
+G22_random gen=273: crossover_delta=-28.7, after_TS_delta=-0.7, accepted=12/16, elapsed=78.8s
+G22_random gen=300: crossover_delta=-7.6, after_TS_delta=-0.2, accepted=13/16, elapsed=86.8s
+G22_random COMPLETE: exact replay confirmed; 4800 offspring recorded
+COMPLETE: all conditions and all stage scores verified

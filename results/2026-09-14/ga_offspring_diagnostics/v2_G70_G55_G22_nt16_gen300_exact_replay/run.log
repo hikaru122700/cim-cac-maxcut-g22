@@ -1,0 +1,69 @@
+OUTPUT=C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-09-14\ga_offspring_diagnostics\v2_G70_G55_G22_nt16_gen300_exact_replay
+G70_cim gen=1: crossover_delta=-1619.0, after_TS_delta=-168.1, accepted=0/16, elapsed=9.6s
+G70_cim gen=23: crossover_delta=-1495.2, after_TS_delta=-155.4, accepted=0/16, elapsed=35.3s
+G70_cim gen=45: crossover_delta=-1468.0, after_TS_delta=-153.2, accepted=0/16, elapsed=60.8s
+G70_cim gen=67: crossover_delta=-1364.4, after_TS_delta=-142.1, accepted=0/16, elapsed=86.5s
+G70_cim gen=89: crossover_delta=-1762.8, after_TS_delta=-175.0, accepted=0/16, elapsed=111.9s
+G70_cim gen=111: crossover_delta=-1640.4, after_TS_delta=-170.2, accepted=0/16, elapsed=137.6s
+G70_cim gen=133: crossover_delta=-1426.0, after_TS_delta=-148.6, accepted=0/16, elapsed=163.3s
+G70_cim gen=155: crossover_delta=-1715.7, after_TS_delta=-168.3, accepted=0/16, elapsed=189.4s
+G70_cim gen=177: crossover_delta=-1666.9, after_TS_delta=-159.4, accepted=0/16, elapsed=215.3s
+G70_cim gen=199: crossover_delta=-1651.1, after_TS_delta=-172.5, accepted=0/16, elapsed=241.5s
+G70_cim gen=221: crossover_delta=-1595.4, after_TS_delta=-161.1, accepted=0/16, elapsed=267.0s
+G70_cim gen=243: crossover_delta=-1513.7, after_TS_delta=-155.9, accepted=0/16, elapsed=292.8s
+G70_cim gen=265: crossover_delta=-1634.3, after_TS_delta=-166.7, accepted=0/16, elapsed=318.6s
+G70_cim gen=287: crossover_delta=-1602.4, after_TS_delta=-163.2, accepted=0/16, elapsed=344.1s
+G70_cim gen=300: crossover_delta=-1423.2, after_TS_delta=-147.5, accepted=0/16, elapsed=359.3s
+G70_cim COMPLETE: exact replay confirmed; 4800 offspring recorded
+G70_random gen=1: crossover_delta=-1982.5, after_TS_delta=64.5, accepted=16/16, elapsed=10.3s
+G70_random gen=23: crossover_delta=-1112.6, after_TS_delta=5.1, accepted=16/16, elapsed=36.0s
+G70_random gen=45: crossover_delta=-732.4, after_TS_delta=-4.6, accepted=15/16, elapsed=61.4s
+G70_random gen=67: crossover_delta=-497.5, after_TS_delta=-1.6, accepted=15/16, elapsed=87.0s
+G70_random gen=89: crossover_delta=-280.2, after_TS_delta=-2.7, accepted=14/16, elapsed=112.9s
+G70_random gen=111: crossover_delta=-94.3, after_TS_delta=-0.8, accepted=16/16, elapsed=138.8s
+G70_random gen=133: crossover_delta=-30.1, after_TS_delta=0.8, accepted=16/16, elapsed=164.9s
+G70_random gen=155: crossover_delta=-10.8, after_TS_delta=0.2, accepted=14/16, elapsed=191.0s
+G70_random gen=177: crossover_delta=-8.9, after_TS_delta=-0.2, accepted=15/16, elapsed=216.8s
+G70_random gen=199: crossover_delta=-6.5, after_TS_delta=-0.4, accepted=13/16, elapsed=242.4s
+G70_random gen=221: crossover_delta=-4.6, after_TS_delta=0.0, accepted=16/16, elapsed=268.0s
+G70_random gen=243: crossover_delta=-3.8, after_TS_delta=-0.1, accepted=14/16, elapsed=293.5s
+G70_random gen=265: crossover_delta=-3.2, after_TS_delta=-0.1, accepted=16/16, elapsed=319.0s
+G70_random gen=287: crossover_delta=-2.5, after_TS_delta=0.0, accepted=16/16, elapsed=345.0s
+G70_random gen=300: crossover_delta=-2.9, after_TS_delta=0.0, accepted=16/16, elapsed=360.2s
+G70_random COMPLETE: exact replay confirmed; 4800 offspring recorded
+G55_cim gen=1: crossover_delta=-1289.8, after_TS_delta=-61.0, accepted=0/16, elapsed=5.8s
+G55_cim gen=31: crossover_delta=-1324.6, after_TS_delta=-65.3, accepted=3/16, elapsed=31.2s
+G55_cim gen=61: crossover_delta=-1254.0, after_TS_delta=-62.7, accepted=1/16, elapsed=56.8s
+G55_cim gen=91: crossover_delta=-1360.3, after_TS_delta=-68.9, accepted=4/16, elapsed=82.0s
+G55_cim gen=121: crossover_delta=-1589.7, after_TS_delta=-73.0, accepted=5/16, elapsed=107.2s
+G55_cim gen=151: crossover_delta=-1280.2, after_TS_delta=-53.1, accepted=6/16, elapsed=132.4s
+G55_cim gen=181: crossover_delta=-1112.3, after_TS_delta=-45.8, accepted=5/16, elapsed=157.6s
+G55_cim gen=211: crossover_delta=-1361.7, after_TS_delta=-61.8, accepted=5/16, elapsed=182.9s
+G55_cim gen=241: crossover_delta=-1324.1, after_TS_delta=-60.5, accepted=7/16, elapsed=208.3s
+G55_cim gen=270: crossover_delta=-1164.1, after_TS_delta=-42.6, accepted=5/16, elapsed=233.3s
+G55_cim gen=299: crossover_delta=-1361.9, after_TS_delta=-60.0, accepted=6/16, elapsed=258.8s
+G55_cim gen=300: crossover_delta=-1182.3, after_TS_delta=-58.2, accepted=7/16, elapsed=259.7s
+G55_cim COMPLETE: exact replay confirmed; 4800 offspring recorded
+G55_random gen=1: crossover_delta=-1767.9, after_TS_delta=65.9, accepted=16/16, elapsed=5.8s
+G55_random gen=31: crossover_delta=-826.2, after_TS_delta=-5.7, accepted=11/16, elapsed=31.3s
+G55_random gen=61: crossover_delta=-850.1, after_TS_delta=-20.8, accepted=11/16, elapsed=56.7s
+G55_random gen=91: crossover_delta=-406.5, after_TS_delta=-3.1, accepted=9/16, elapsed=82.5s
+G55_random gen=120: crossover_delta=-371.8, after_TS_delta=-9.6, accepted=13/16, elapsed=107.5s
+G55_random gen=150: crossover_delta=-452.5, after_TS_delta=-16.6, accepted=9/16, elapsed=133.0s
+G55_random gen=180: crossover_delta=-373.8, after_TS_delta=-17.4, accepted=9/16, elapsed=158.6s
+G55_random gen=210: crossover_delta=-264.6, after_TS_delta=-7.0, accepted=10/16, elapsed=184.1s
+G55_random gen=241: crossover_delta=-289.9, after_TS_delta=-12.8, accepted=10/16, elapsed=209.6s
+G55_random gen=271: crossover_delta=-208.3, after_TS_delta=-7.1, accepted=12/16, elapsed=234.7s
+G55_random gen=300: crossover_delta=-221.8, after_TS_delta=-8.7, accepted=9/16, elapsed=259.2s
+G55_random COMPLETE: exact replay confirmed; 4800 offspring recorded
+G22_cim gen=1: crossover_delta=-1161.9, after_TS_delta=-7.6, accepted=14/16, elapsed=3.7s
+G22_cim gen=105: crossover_delta=-20.1, after_TS_delta=-0.8, accepted=11/16, elapsed=28.8s
+G22_cim gen=207: crossover_delta=-32.6, after_TS_delta=-0.4, accepted=10/16, elapsed=53.9s
+G22_cim gen=300: crossover_delta=-11.4, after_TS_delta=-0.2, accepted=12/16, elapsed=76.9s
+G22_cim COMPLETE: exact replay confirmed; 4800 offspring recorded
+G22_random gen=1: crossover_delta=-1395.0, after_TS_delta=17.9, accepted=16/16, elapsed=3.6s
+G22_random gen=102: crossover_delta=-67.0, after_TS_delta=-0.4, accepted=14/16, elapsed=28.8s
+G22_random gen=204: crossover_delta=-38.2, after_TS_delta=-0.5, accepted=11/16, elapsed=54.0s
+G22_random gen=300: crossover_delta=-7.6, after_TS_delta=-0.2, accepted=13/16, elapsed=77.8s
+G22_random COMPLETE: exact replay confirmed; 4800 offspring recorded
+COMPLETE: all conditions and all stage scores verified

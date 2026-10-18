@@ -434,7 +434,12 @@ def simulate_ga_batch(
                           parent_a / parent_b(親の cut)、pop_min / pop_max(更新前の
                           集団の cut)、child_raw(交叉直後)、child_ts(TS 後)、
                           accepted(集団に採用されたか)、n_disagree(親の不一致頂点数)。
-                          観測によって乱数列は変わらない。
+                          解そのものの追跡用に、parent_idx (num_trials, 2)、
+                          parent_spins (num_trials, 2, n)、child_raw_spins /
+                          child_ts_spins (num_trials, n)(いずれも 0/1)、
+                          pop_fits_before / pop_fits_after (num_trials, pop_size)、
+                          best_before (num_trials,) も入る。
+                          配列はコピーを渡す。観測によって乱数列は変わらない。
 
     Returns:
         best_cuts  : (num_trials,)
@@ -547,6 +552,9 @@ def simulate_ga_batch(
                 "pop_min": fits.min(axis=1).copy(), "pop_max": fits.max(axis=1).copy(),
                 "n_disagree": np.zeros(num_trials, dtype=np.int64),
                 "accepted": np.zeros(num_trials, dtype=bool),
+                "parent_idx": np.zeros((num_trials, 2), dtype=np.int64),
+                "parent_spins": np.zeros((num_trials, 2, n), dtype=np.int8),
+                "pop_fits_before": fits.copy(), "best_before": best_cuts.copy(),
             }
         for t in range(num_trials):
             ia, ib = rngs[t].choice(pop_size, size=2, replace=False)
@@ -554,10 +562,13 @@ def simulate_ga_batch(
             if child_observer is not None:
                 rec["parent_a"][t] = fits[t, ia]
                 rec["parent_b"][t] = fits[t, ib]
+                rec["parent_idx"][t] = (ia, ib)
+                rec["parent_spins"][t] = pops[t, [ia, ib]]
                 agree = int(np.sum(pops[t, ia] == pops[t, ib]))
                 rec["n_disagree"][t] = min(agree, n - agree)
         if child_observer is not None:
             rec["child_raw"] = _cut_batch(n, indptr, indices, data, children)
+            rec["child_raw_spins"] = children.copy()
         child_seeds = ((seeds + 7919 * (gen + 1)) % (2**31)).astype(np.int64)
         # 子をまとめて TS 磨き
         cs, cc = _tabu_search_batch(
@@ -575,6 +586,8 @@ def simulate_ga_batch(
         gen += 1
         if child_observer is not None:
             rec["child_ts"] = np.asarray(cc, dtype=np.float64).copy()
+            rec["child_ts_spins"] = np.asarray(cs, dtype=np.int8).copy()
+            rec["pop_fits_after"] = fits.copy()
             child_observer(gen, rec)
         if population_observer is not None:
             population_observer(gen, pops.copy(), fits.copy())
