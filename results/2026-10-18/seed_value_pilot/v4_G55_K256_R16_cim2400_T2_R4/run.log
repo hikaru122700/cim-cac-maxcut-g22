@@ -1,0 +1,43 @@
+G55 CIM K=256 rounds=2400: 17.0s cut mean=10177.4 min=10144 max=10225 distinct=66
+greedy LS: cut mean=10177.6 (+0.2) corr(init, ls)=1.000
+features: 0.33s  low eigenvalues of A: [-5.0351, -4.9596]
+B=   250,000: 7.9s label=10177.4 between_sd=15.29 noise_se=0.00 beyond_cut_sd=0.00 beyond_cut+LS_sd=0.00 rel(cut)=nan rel(cut+LS)=1.000 [1.000, 1.000] go=True dist_from_seed=0.000
+                  n_pos_gain: rho(cut-resid)=+nan rho(cut+LS-resid)=+0.050 p=0.424
+                 n_zero_gain: rho(cut-resid)=+nan rho(cut+LS-resid)=+0.016 p=0.8
+                sum_pos_gain: rho(cut-resid)=+nan rho(cut+LS-resid)=+0.050 p=0.424
+        largest_zero_cluster: rho(cut-resid)=+nan rho(cut+LS-resid)=-0.090 p=0.153
+          n_gain_minus2_to_0: rho(cut-resid)=+nan rho(cut+LS-resid)=+0.001 p=0.993
+                     ls_gain: rho(cut-resid)=+nan rho(cut+LS-resid)=+0.050 p=0.424
+              ls_n_zero_gain: rho(cut-resid)=+nan rho(cut+LS-resid)=+0.013 p=0.83
+     ls_largest_zero_cluster: rho(cut-resid)=+nan rho(cut+LS-resid)=-0.090 p=0.153
+       ls_n_gain_minus2_to_0: rho(cut-resid)=+nan rho(cut+LS-resid)=+0.002 p=0.979
+                      eig_a1: rho(cut-resid)=+nan rho(cut+LS-resid)=-0.078 p=0.215
+                      eig_a2: rho(cut-resid)=+nan rho(cut+LS-resid)=+0.053 p=0.397
+                    eig_diff: rho(cut-resid)=+nan rho(cut+LS-resid)=-0.068 p=0.278
+B= 2,500,000: 73.0s label=10179.5 between_sd=13.17 noise_se=1.38 beyond_cut_sd=1.69 beyond_cut+LS_sd=1.69 rel(cut)=0.678 rel(cut+LS)=0.681 [0.559, 0.777] go=True dist_from_seed=0.073
+                  n_pos_gain: rho(cut-resid)=+0.007 rho(cut+LS-resid)=+0.025 p=0.694
+                 n_zero_gain: rho(cut-resid)=-0.096 rho(cut+LS-resid)=-0.099 p=0.115
+                sum_pos_gain: rho(cut-resid)=+0.007 rho(cut+LS-resid)=+0.025 p=0.694
+        largest_zero_cluster: rho(cut-resid)=-0.008 rho(cut+LS-resid)=-0.007 p=0.914
+          n_gain_minus2_to_0: rho(cut-resid)=-0.107 rho(cut+LS-resid)=-0.104 p=0.098
+                     ls_gain: rho(cut-resid)=+0.007 rho(cut+LS-resid)=+0.025 p=0.694
+              ls_n_zero_gain: rho(cut-resid)=-0.097 rho(cut+LS-resid)=-0.100 p=0.11
+     ls_largest_zero_cluster: rho(cut-resid)=-0.008 rho(cut+LS-resid)=-0.007 p=0.914
+       ls_n_gain_minus2_to_0: rho(cut-resid)=-0.105 rho(cut+LS-resid)=-0.102 p=0.104
+                      eig_a1: rho(cut-resid)=+0.008 rho(cut+LS-resid)=+0.012 p=0.848
+                      eig_a2: rho(cut-resid)=+0.057 rho(cut+LS-resid)=+0.054 p=0.388
+                    eig_diff: rho(cut-resid)=-0.021 rho(cut+LS-resid)=-0.017 p=0.782
+B=25,000,000: 777.9s label=10247.2 between_sd=2.70 noise_se=2.65 beyond_cut_sd=0.49 beyond_cut+LS_sd=0.46 rel(cut)=0.070 rel(cut+LS)=0.069 [-0.201, 0.277] go=False dist_from_seed=0.429
+                  n_pos_gain: rho(cut-resid)=+0.078 rho(cut+LS-resid)=-0.005 p=0.936
+                 n_zero_gain: rho(cut-resid)=+0.083 rho(cut+LS-resid)=+0.080 p=0.203
+                sum_pos_gain: rho(cut-resid)=+0.078 rho(cut+LS-resid)=-0.005 p=0.936
+        largest_zero_cluster: rho(cut-resid)=-0.047 rho(cut+LS-resid)=-0.058 p=0.357
+          n_gain_minus2_to_0: rho(cut-resid)=-0.054 rho(cut+LS-resid)=-0.070 p=0.267
+                     ls_gain: rho(cut-resid)=+0.078 rho(cut+LS-resid)=-0.005 p=0.936
+              ls_n_zero_gain: rho(cut-resid)=+0.080 rho(cut+LS-resid)=+0.080 p=0.2
+     ls_largest_zero_cluster: rho(cut-resid)=-0.047 rho(cut+LS-resid)=-0.058 p=0.357
+       ls_n_gain_minus2_to_0: rho(cut-resid)=-0.053 rho(cut+LS-resid)=-0.070 p=0.267
+                      eig_a1: rho(cut-resid)=+0.008 rho(cut+LS-resid)=-0.008 p=0.901
+                      eig_a2: rho(cut-resid)=+0.038 rho(cut+LS-resid)=+0.049 p=0.438
+                    eig_diff: rho(cut-resid)=-0.016 rho(cut+LS-resid)=-0.030 p=0.637
+go_any=True  saved: results\2026-10-18\seed_value_pilot\v4_G55_K256_R16_cim2400_T2_R4

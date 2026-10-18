@@ -1,0 +1,50 @@
+{
+  "label": "R2",
+  "run_dir": "results\\2026-10-18\\seed_value_pilot\\v2_G22_K256_R16_cim600_T4p21405_seed256_R2",
+  "budget": 10000000,
+  "candidates": 256,
+  "repeats": 16,
+  "primary": {
+    "spearman_E_vs_residual": -0.020887128040401846,
+    "ci95": [
+      -0.14139572369448375,
+      0.10432556238961169
+    ],
+    "replicated": false
+  },
+  "pearson_r2_E_vs_residual": 7.562712606085712e-05,
+  "residual_split_half_reliability_sb": -0.006705325864207207,
+  "share_of_reliable_residual": null,
+  "spearman_E_vs_init_cut": 0.12466890090934833,
+  "bimodality": {
+    "delta_bic_1_minus_2": -18.339275275769978,
+    "gmm2_means": [
+      13337.932339918929,
+      13342.853807206367
+    ],
+    "gmm2_sds": [
+      3.4174523435296846,
+      3.420262473603127
+    ],
+    "gmm2_weights": [
+      0.4752970267289487,
+      0.5247029732710513
+    ],
+    "ashman_d": 1.4395063273151478,
+    "bimodal": false
+  },
+  "exploratory_spearman_vs_residual": {
+    "eig_a1": -0.013006957144495578,
+    "eig_a2": 0.02572314493203427,
+    "n_zero_gain": -0.05062854005463516,
+    "n_gain_minus2_to_0": -0.03958199079234333,
+    "ls_n_zero_gain": -0.023402243995367323,
+    "ls_largest_zero_cluster": -0.08332483604598835,
+    "largest_zero_cluster": -0.0553030388628174,
+    "n_pos_gain": -0.00725345625356334
+  },
+  "low_eigenvalues_A": [
+    -9.115217772253306,
+    -9.05361613159674
+  ]
+}
