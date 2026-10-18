@@ -1,0 +1,29 @@
+OUTPUT=C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-10-18\ga_diversity_trajectory\v1_G22_G55_G70_nt16_gen300_fixedTS
+G22 CIM: 240 independent solutions, 4800 rounds
+G22 random: gen=0, D=0.4295, pool_best_gap=32.375, elapsed=2.4s
+G22 random: gen=100, D=0.0244, pool_best_gap=1.000, elapsed=27.6s
+G22 random: gen=203, D=0.0224, pool_best_gap=0.938, elapsed=52.8s
+G22 random: gen=300, D=0.0234, pool_best_gap=0.938, elapsed=76.7s
+G22 cim: gen=0, D=0.3640, pool_best_gap=6.375, elapsed=2.3s
+G22 cim: gen=97, D=0.0184, pool_best_gap=1.000, elapsed=27.6s
+G22 cim: gen=196, D=0.0174, pool_best_gap=1.000, elapsed=52.8s
+G22 cim: gen=300, D=0.0224, pool_best_gap=0.875, elapsed=77.9s
+G55 CIM: 96 independent solutions, 9600 rounds
+G55 random: gen=0, D=0.4789, pool_best_gap=263.625, elapsed=0.9s
+G55 random: gen=106, D=0.1490, pool_best_gap=76.812, elapsed=26.2s
+G55 random: gen=212, D=0.1193, pool_best_gap=65.750, elapsed=51.2s
+G55 random: gen=300, D=0.1064, pool_best_gap=63.062, elapsed=71.7s
+G55 cim: gen=0, D=0.3657, pool_best_gap=86.875, elapsed=0.9s
+G55 cim: gen=105, D=0.3116, pool_best_gap=73.375, elapsed=25.9s
+G55 cim: gen=213, D=0.2827, pool_best_gap=59.875, elapsed=51.0s
+G55 cim: gen=300, D=0.2576, pool_best_gap=56.250, elapsed=71.3s
+G70 CIM: 128 independent solutions, 4800 rounds
+G70 random: gen=0, D=0.4891, pool_best_gap=387.000, elapsed=0.8s
+G70 random: gen=118, D=0.1147, pool_best_gap=103.688, elapsed=25.9s
+G70 random: gen=230, D=0.0900, pool_best_gap=94.000, elapsed=51.0s
+G70 random: gen=300, D=0.0830, pool_best_gap=92.250, elapsed=70.6s
+G70 cim: gen=0, D=0.3820, pool_best_gap=92.188, elapsed=1.3s
+G70 cim: gen=105, D=0.2344, pool_best_gap=83.438, elapsed=26.4s
+G70 cim: gen=208, D=0.1680, pool_best_gap=74.438, elapsed=51.5s
+G70 cim: gen=300, D=0.1550, pool_best_gap=72.375, elapsed=73.1s
+COMPLETE: all snapshot scores and final scores verified; plots saved
