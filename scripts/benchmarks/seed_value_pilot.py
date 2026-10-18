@@ -37,6 +37,7 @@ import numpy as np
 from numba import njit
 from scipy.sparse import csr_matrix
 from scipy.sparse.csgraph import connected_components
+from scipy.sparse.linalg import eigsh
 from scipy.stats import spearmanr
 
 matplotlib.use("Agg")
@@ -81,6 +82,8 @@ def build_description(args) -> str:
         f"cim{args.cim_rounds}",
         f"T{args.t_start:g}",
     ]
+    if args.cim_seed_start:
+        parts.append(f"seed{args.cim_seed_start}")
     if args.tag:
         parts.append(args.tag)
     return "_".join(parts).replace(".", "p")
@@ -154,6 +157,28 @@ def candidate_features(A: csr_matrix, signs_pm: np.ndarray) -> dict[str, np.ndar
         "largest_zero_cluster": largest_zero,
         "n_gain_minus2_to_0": ((gains >= -2 - 1e-9) & (gains <= 1e-9)).sum(axis=1).astype(float),
     }
+
+
+EIG_K = 2  # 固有ベクトル指標で使う本数(2026-10-18 の事前登録で固定)
+
+
+def low_eigvecs(A: csr_matrix, k: int = EIG_K) -> tuple[np.ndarray, np.ndarray]:
+    """A の最小固有値側 k 本(CIM の結合 J = c·A, c<0 の最大側)。昇順に並べて返す。"""
+    v0 = np.random.default_rng(0).standard_normal(A.shape[0])
+    vals, vecs = eigsh(A.astype(np.float64), k=k, which="SA", v0=v0)
+    order = np.argsort(vals)
+    return vals[order], vecs[:, order]
+
+
+def eig_alignment(signs_pm: np.ndarray, vecs: np.ndarray) -> np.ndarray:
+    """各解と sign(u_j) の重なり |<s, sign(u_j)>|/n(全反転を同一視)。shape (K, k)。"""
+    s = signs_pm.astype(np.float64)
+    return np.abs(s @ np.sign(vecs)) / s.shape[1]
+
+
+def eig_features(signs_pm: np.ndarray, vecs: np.ndarray) -> dict[str, np.ndarray]:
+    al = eig_alignment(signs_pm, vecs)
+    return {"eig_a1": al[:, 0], "eig_a2": al[:, 1], "eig_diff": al[:, 0] - al[:, 1]}
 
 
 def aligned_distance(a: np.ndarray, b: np.ndarray) -> np.ndarray:
@@ -312,6 +337,8 @@ def main():
     ap.add_argument("--budgets", type=int, nargs="+", default=[100_000, 1_000_000, 10_000_000])
     ap.add_argument("--t-start", type=float, default=0.5)
     ap.add_argument("--t-end", type=float, default=0.001)
+    ap.add_argument("--cim-seed-start", type=int, default=0)
+    ap.add_argument("--sa-seed-offset", type=int, default=SA_SEED_OFFSET)
     ap.add_argument("--tag", default="")
     args = ap.parse_args()
     assert args.repeats % 2 == 0, "split-half のため R は偶数"
@@ -331,7 +358,8 @@ def main():
     K, R = args.candidates, args.repeats
 
     t0 = time.perf_counter()
-    _, cim_signs = run_cim(ctx, args.cim_rounds, K, np.arange(K, dtype=np.int64))
+    cim_seeds = args.cim_seed_start + np.arange(K, dtype=np.int64)
+    _, cim_signs = run_cim(ctx, args.cim_rounds, K, cim_seeds)
     cim_time = time.perf_counter() - t0
     signs_pm = np.where(np.asarray(cim_signs) > 0, 1, -1).astype(np.int8)
     init_cut = ctx.score(signs_pm).astype(float)
@@ -354,16 +382,18 @@ def main():
     for name, f in candidate_features(A, ls_signs).items():
         if name in ("n_zero_gain", "largest_zero_cluster", "n_gain_minus2_to_0"):
             features[f"ls_{name}"] = f
+    eig_vals, eig_vecs = low_eigvecs(A)
+    features.update(eig_features(signs_pm, eig_vecs))
     feat_time = time.perf_counter() - t0
-    log(f"features: {feat_time:.2f}s")
+    log(f"features: {feat_time:.2f}s  low eigenvalues of A: {np.round(eig_vals, 4).tolist()}")
 
     # 候補 c の r 回目は init=候補 c、seed=OFFSET + c*R + r。全て異なる乱数。
     init_rep = np.repeat(signs_pm, R, axis=0)
-    sa_seeds = SA_SEED_OFFSET + np.arange(K * R, dtype=np.int64)
+    sa_seeds = args.sa_seed_offset + np.arange(K * R, dtype=np.int64)
     simulate_sa_warm(ctx.n, ctx.edges, ctx.weights, init_rep[:2], 100,
                      t_start=args.t_start, t_end=args.t_end, seeds=sa_seeds[:2])
 
-    raw, results = {}, {}
+    raw, results, out_align = {}, {}, {}
     for b in args.budgets:
         t0 = time.perf_counter()
         _, out_signs = simulate_sa_warm(
@@ -374,6 +404,7 @@ def main():
         cuts_cr = ctx.score(out_signs).reshape(K, R).astype(float)
         dist = aligned_distance(init_rep, out_signs).reshape(K, R)
         raw[b] = cuts_cr
+        out_align[b] = eig_alignment(out_signs, eig_vecs).reshape(K, R, EIG_K)
         res = analyze_budget(cuts_cr, init_cut, ls_cut, features, seed=20261016 + b % 997)
         res["mean_distance_from_seed"] = float(dist.mean())
         res["sa_time_s"] = sa_time
@@ -404,8 +435,9 @@ def main():
             "candidates": K,
             "repeats": R,
             "cim_rounds": args.cim_rounds,
-            "cim_seeds": [0, K - 1],
-            "sa_seed_rule": f"{SA_SEED_OFFSET} + c*R + r",
+            "cim_seeds": [int(cim_seeds[0]), int(cim_seeds[-1])],
+            "sa_seed_rule": f"{args.sa_seed_offset} + c*R + r",
+            "low_eigenvalues_A": eig_vals.tolist(),
             "t_start": args.t_start,
             "t_end": args.t_end,
             "budgets": args.budgets,
@@ -439,6 +471,8 @@ def main():
         ls_cut=ls_cut,
         cim_signs=signs_pm,
         **{f"cuts_B{b}": raw[b] for b in args.budgets},
+        **{f"out_eig_align_B{b}": out_align[b] for b in args.budgets},
+        eig_vals=eig_vals,
         **{f"feat_{k}": v for k, v in features.items()},
     )
     plot_overview(
