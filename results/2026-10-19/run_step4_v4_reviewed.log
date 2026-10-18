@@ -1,0 +1,366 @@
+ G22 cim_random=13336.7 cim_cut=13349.4 cim_ls=13349.4 cim_div=13347.3 cim_trial=13349.3 random_init=13358.0 model_all=13349.4 model_local=13349.4 model_eig=13349.3
+ G23 cim_random=13324.8 cim_cut=13330.1 cim_ls=13330.1 cim_div=13329.0 cim_trial=13329.8 random_init=13342.1 model_all=13329.2 model_local=13330.1 model_eig=13329.5
+ G32 cim_random=1398.8 cim_cut=1401.2 cim_ls=1401.2 cim_div=1400.7 cim_trial=1401.0 random_init=1401.9 model_all=1401.1 model_local=1401.3 model_eig=1401.0
+ G55 cim_random=10256.0 cim_cut=10266.6 cim_ls=10266.5 cim_div=10262.5 cim_trial=10265.6 random_init=10274.5 model_all=10266.4 model_local=10266.3 model_eig=10266.6
+ G70 cim_random=9540.7 cim_cut=9545.7 cim_ls=9545.4 cim_div=9544.6 cim_trial=9544.6 random_init=9534.8 model_all=9545.3 model_local=9545.3 model_eig=9545.4
+  G1 cim_random=11621.3 cim_cut=11623.1 cim_ls=11623.1 cim_div=11623.1 cim_trial=11623.0 random_init=11624.0 model_all=11620.6 model_local=11620.4 model_eig=11623.0
+ G14 cim_random=3053.3 cim_cut=3056.0 cim_ls=3056.6 cim_div=3056.5 cim_trial=3055.3 random_init=3060.1 model_all=3057.0 model_local=3057.0 model_eig=3056.7
+  cim_random: diff=-5.84 W/L=0/7 holm_p=0.125
+     cim_cut: diff=-0.02 W/L=5/2 holm_p=1.0
+      cim_ls: diff=+0.00 W/L=0/0 holm_p=None
+     cim_div: diff=-1.24 W/L=1/6 holm_p=0.1875
+   cim_trial: diff=-0.52 W/L=0/7 holm_p=0.125
+ random_init: diff=+3.32 W/L=6/1 holm_p=0.875
+   model_all: diff=-0.49 W/L=1/6 holm_p=0.78125
+ model_local: diff=-0.35 W/L=3/3 holm_p=1.0
+   model_eig: diff=-0.09 W/L=3/4 holm_p=1.0
+H4a model_all - cim_ls: W/L=1/6 p=0.9453 holm=1.0000 supported=False
+H4b cim_trial - cim_ls: W/L=0/7 p=1.0000 holm=1.0000 supported=False
+H4c cim_ls - random_init: W/L=1/6 p=0.9219 holm=1.0000 supported=False
+saved: C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-10-19\selection_eval\v17_main_T0p5_S5000_K256_m16
+C:\Users\owner\igarashi\cim-cac-maxcut-g22\scripts\benchmarks\selection_eval.py:277: RuntimeWarning: Mean of empty slice
+  "strategies": {s: {"mean_best": float(np.nanmean(v)),
+C:\Python313\Lib\site-packages\numpy\lib\_nanfunctions_impl.py:2019: RuntimeWarning: Degrees of freedom <= 0 for slice.
+  var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+C:\Users\owner\igarashi\cim-cac-maxcut-g22\scripts\benchmarks\selection_eval.py:279: RuntimeWarning: Mean of empty slice
+  "p_target": float(np.nanmean(np.where(np.isnan(v), np.nan, v >= target))),
+C:\Users\owner\igarashi\cim-cac-maxcut-g22\scripts\benchmarks\selection_eval.py:280: RuntimeWarning: Mean of empty slice
+  "gap_to_bks_pct": float((p["bks"] - np.nanmean(v)) / p["bks"] * 100)}
+ G22 cim_random=13329.9 cim_cut=13341.2 cim_ls=13341.3 cim_div=13340.4 cim_trial=nan random_init=13321.7 model_all=13341.2 model_local=13341.3 model_eig=13341.2
+ G23 cim_random=13318.0 cim_cut=13324.9 cim_ls=13325.0 cim_div=13323.2 cim_trial=nan random_init=13313.3 model_all=13324.5 model_local=13324.8 model_eig=13324.9
+ G32 cim_random=1394.2 cim_cut=1398.0 cim_ls=1398.0 cim_div=1397.7 cim_trial=nan random_init=1395.9 model_all=1397.9 model_local=1398.0 model_eig=1397.9
+ G55 cim_random=10222.9 cim_cut=10238.1 cim_ls=10238.0 cim_div=10235.7 cim_trial=nan random_init=10210.7 model_all=10238.1 model_local=10238.1 model_eig=10238.0
+ G70 cim_random=9498.7 cim_cut=9508.5 cim_ls=9508.4 cim_div=9507.9 cim_trial=nan random_init=9432.9 model_all=9508.4 model_local=9508.4 model_eig=9508.4
+  G1 cim_random=11618.9 cim_cut=11621.8 cim_ls=11621.8 cim_div=11621.8 cim_trial=nan random_init=11621.3 model_all=11619.7 model_local=11620.3 model_eig=11621.8
+ G14 cim_random=3046.6 cim_cut=3051.0 cim_ls=3051.1 cim_div=3051.0 cim_trial=nan random_init=3056.6 model_all=3051.2 model_local=3051.2 model_eig=3051.2
+C:\Users\owner\igarashi\cim-cac-maxcut-g22\scripts\benchmarks\selection_eval.py:293: RuntimeWarning: Mean of empty slice
+  compare[s] = {"mean_diff_vs_baseline": float(np.nanmean(d)), "wins": int((d > 0).sum()),
+warning: H4b uses 0 of 7 problems (others have no runs)
+  cim_random: diff=-7.77 W/L=0/7 holm_p=0.109375
+     cim_cut: diff=-0.01 W/L=3/4 holm_p=1.0
+      cim_ls: diff=+0.00 W/L=0/0 holm_p=None
+     cim_div: diff=-0.84 W/L=0/7 holm_p=0.109375
+   cim_trial: diff=+nan W/L=0/0 holm_p=None
+ random_init: diff=-18.77 W/L=1/6 holm_p=0.390625
+   model_all: diff=-0.38 W/L=3/4 holm_p=1.0
+ model_local: diff=-0.22 W/L=5/2 holm_p=1.0
+   model_eig: diff=-0.04 W/L=2/5 holm_p=0.875
+H4a model_all - cim_ls: W/L=3/4 p=0.8516 holm=1.0000 supported=False
+H4b cim_trial - cim_ls: W/L=0/0 p=1.0000 holm=1.0000 supported=False
+H4c cim_ls - random_init: W/L=6/1 p=0.0391 holm=0.1172 supported=False
+saved: C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-10-19\selection_eval\v18_sub_T0p5_S500_K256_m16
+ G22 cim_random=13329.7 cim_cut=13341.2 cim_ls=13341.2 cim_div=13340.4 cim_trial=13341.1 model_all=13341.2 model_local=13341.2 model_eig=13341.0 random_init=13321.7
+ G23 cim_random=13318.0 cim_cut=13325.0 cim_ls=13325.0 cim_div=13323.3 cim_trial=13325.0 model_all=13324.6 model_local=13324.9 model_eig=13324.9 random_init=13313.3
+ G32 cim_random=1394.3 cim_cut=1398.0 cim_ls=1398.0 cim_div=1397.7 cim_trial=1398.2 model_all=1398.0 model_local=1398.0 model_eig=1398.1 random_init=1395.8
+ G55 cim_random=10222.7 cim_cut=10238.0 cim_ls=10237.8 cim_div=10236.0 cim_trial=10237.8 model_all=10237.9 model_local=10237.8 model_eig=10238.0 random_init=10210.4
+ G70 cim_random=9498.7 cim_cut=9508.4 cim_ls=9508.5 cim_div=9508.0 cim_trial=9508.4 model_all=9508.4 model_local=9508.4 model_eig=9508.5 random_init=9432.9
+  G1 cim_random=11618.8 cim_cut=11621.8 cim_ls=11621.9 cim_div=11621.8 cim_trial=11621.8 model_all=11620.1 model_local=11620.4 model_eig=11621.8 random_init=11621.3
+ G14 cim_random=3046.5 cim_cut=3051.0 cim_ls=3051.1 cim_div=3051.1 cim_trial=3051.1 model_all=3051.2 model_local=3051.2 model_eig=3051.2 random_init=3056.6
+  cim_random: diff=-7.83 W/L=0/7 holm_p=0.125
+     cim_cut: diff=-0.01 W/L=1/6 holm_p=1.0
+      cim_ls: diff=+0.00 W/L=0/0 holm_p=None
+     cim_div: diff=-0.76 W/L=0/7 holm_p=0.125
+   cim_trial: diff=+0.01 W/L=3/4 holm_p=1.0
+   model_all: diff=-0.29 W/L=2/5 holm_p=1.0
+ model_local: diff=-0.22 W/L=3/3 holm_p=1.0
+   model_eig: diff=+0.01 W/L=4/3 holm_p=1.0
+ random_init: diff=-18.77 W/L=1/6 holm_p=0.46875
+H4a model_all - cim_ls: W/L=2/5 p=0.8125 holm=1.0000 supported=False
+H4b cim_trial - cim_ls: W/L=3/4 p=0.5312 holm=1.0000 supported=False
+H4c cim_ls - random_init: W/L=6/1 p=0.0391 holm=0.1172 supported=False
+saved: C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-10-19\selection_eval\v19_sub_T0p5_S500_K256_m16_free
+C:\Users\owner\igarashi\cim-cac-maxcut-g22\scripts\benchmarks\selection_eval.py:277: RuntimeWarning: Mean of empty slice
+  "strategies": {s: {"mean_best": float(np.nanmean(v)),
+C:\Python313\Lib\site-packages\numpy\lib\_nanfunctions_impl.py:2019: RuntimeWarning: Degrees of freedom <= 0 for slice.
+  var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+C:\Users\owner\igarashi\cim-cac-maxcut-g22\scripts\benchmarks\selection_eval.py:279: RuntimeWarning: Mean of empty slice
+  "p_target": float(np.nanmean(np.where(np.isnan(v), np.nan, v >= target))),
+C:\Users\owner\igarashi\cim-cac-maxcut-g22\scripts\benchmarks\selection_eval.py:280: RuntimeWarning: Mean of empty slice
+  "gap_to_bks_pct": float((p["bks"] - np.nanmean(v)) / p["bks"] * 100)}
+ G22 cim_random=13318.0 cim_cut=13336.3 cim_ls=13336.2 cim_div=13335.2 cim_trial=nan random_init=13312.7 model_all=nan model_local=13336.1 model_eig=nan
+ G23 cim_random=13312.5 cim_cut=13321.7 cim_ls=13321.5 cim_div=13320.7 cim_trial=nan random_init=13307.9 model_all=nan model_local=13321.0 model_eig=nan
+ G32 cim_random=1390.8 cim_cut=1395.4 cim_ls=1395.1 cim_div=1394.8 cim_trial=nan random_init=1393.2 model_all=nan model_local=1395.2 model_eig=nan
+ G55 cim_random=10212.3 cim_cut=10230.6 cim_ls=10230.3 cim_div=10229.3 cim_trial=nan random_init=10203.2 model_all=nan model_local=10230.4 model_eig=nan
+ G70 cim_random=9491.7 cim_cut=9503.9 cim_ls=9503.8 cim_div=9503.6 cim_trial=nan random_init=9427.9 model_all=nan model_local=9503.8 model_eig=nan
+  G1 cim_random=11610.2 cim_cut=11620.1 cim_ls=11620.0 cim_div=11619.9 cim_trial=nan random_init=11613.2 model_all=nan model_local=11619.4 model_eig=nan
+ G14 cim_random=3042.8 cim_cut=3048.1 cim_ls=3048.1 cim_div=3047.9 cim_trial=nan random_init=3053.8 model_all=3047.3 model_local=3048.3 model_eig=3047.1
+C:\Users\owner\igarashi\cim-cac-maxcut-g22\scripts\benchmarks\selection_eval.py:293: RuntimeWarning: Mean of empty slice
+  compare[s] = {"mean_diff_vs_baseline": float(np.nanmean(d)), "wins": int((d > 0).sum()),
+warning: H4a uses 1 of 7 problems (others have no runs)
+warning: H4b uses 0 of 7 problems (others have no runs)
+  cim_random: diff=-10.97 W/L=0/7 holm_p=0.078125
+     cim_cut: diff=+0.15 W/L=7/0 holm_p=0.078125
+      cim_ls: diff=+0.00 W/L=0/0 holm_p=None
+     cim_div: diff=-0.53 W/L=0/7 holm_p=0.078125
+   cim_trial: diff=+nan W/L=0/0 holm_p=None
+ random_init: diff=-20.45 W/L=1/6 holm_p=0.09375
+   model_all: diff=-0.86 W/L=0/1 holm_p=None
+ model_local: diff=-0.13 W/L=3/4 holm_p=0.6875
+   model_eig: diff=-1.02 W/L=0/1 holm_p=None
+H4a model_all - cim_ls: W/L=0/1 p=1.0000 holm=1.0000 supported=False
+H4b cim_trial - cim_ls: W/L=0/0 p=1.0000 holm=1.0000 supported=False
+H4c cim_ls - random_init: W/L=6/1 p=0.0234 holm=0.0703 supported=False
+saved: C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-10-19\selection_eval\v20_sub_T0p5_S500_K64_m4
+ G22 cim_random=13318.4 cim_cut=13336.3 cim_ls=13336.3 cim_div=13335.5 cim_trial=13336.4 model_all=13336.3 model_local=13336.3 model_eig=13336.3 random_init=13312.7
+ G23 cim_random=13312.5 cim_cut=13321.6 cim_ls=13321.7 cim_div=13321.0 cim_trial=13321.8 model_all=13321.2 model_local=13321.4 model_eig=13321.6 random_init=13308.0
+ G32 cim_random=1390.7 cim_cut=1395.4 cim_ls=1395.4 cim_div=1395.0 cim_trial=1395.6 model_all=1395.4 model_local=1395.5 model_eig=1395.5 random_init=1393.2
+ G55 cim_random=10212.3 cim_cut=10230.8 cim_ls=10230.8 cim_div=10229.5 cim_trial=10230.8 model_all=10230.7 model_local=10230.7 model_eig=10230.8 random_init=10203.3
+ G70 cim_random=9491.8 cim_cut=9504.1 cim_ls=9504.1 cim_div=9503.8 cim_trial=9504.0 model_all=9504.1 model_local=9504.0 model_eig=9504.1 random_init=9427.9
+  G1 cim_random=11610.3 cim_cut=11620.1 cim_ls=11620.1 cim_div=11620.0 cim_trial=11620.1 model_all=11619.5 model_local=11619.6 model_eig=11620.1 random_init=11613.0
+ G14 cim_random=3042.9 cim_cut=3048.1 cim_ls=3048.2 cim_div=3048.1 cim_trial=3048.4 model_all=3048.4 model_local=3048.5 model_eig=3048.4 random_init=3053.8
+  cim_random: diff=-11.11 W/L=0/7 holm_p=0.125
+     cim_cut: diff=-0.02 W/L=2/5 holm_p=1.0
+      cim_ls: diff=+0.00 W/L=0/0 holm_p=None
+     cim_div: diff=-0.52 W/L=0/7 holm_p=0.125
+   cim_trial: diff=+0.09 W/L=6/1 holm_p=0.390625
+   model_all: diff=-0.16 W/L=2/5 holm_p=1.0
+ model_local: diff=-0.10 W/L=2/5 holm_p=1.0
+   model_eig: diff=+0.02 W/L=4/3 holm_p=1.0
+ random_init: diff=-20.66 W/L=1/6 holm_p=0.28125
+H4a model_all - cim_ls: W/L=2/5 p=0.8906 holm=0.8906 supported=False
+H4b cim_trial - cim_ls: W/L=6/1 p=0.0391 holm=0.0781 supported=False
+H4c cim_ls - random_init: W/L=6/1 p=0.0234 holm=0.0703 supported=False
+saved: C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-10-19\selection_eval\v21_sub_T0p5_S500_K64_m4_free
+ G22 cim_random=13336.5 cim_cut=13349.6 cim_ls=13349.5 cim_div=13347.7 cim_trial=13349.5 model_all=13349.5 model_local=13349.6 model_eig=13349.6 random_init=13358.0
+ G23 cim_random=13324.7 cim_cut=13330.1 cim_ls=13330.1 cim_div=13329.1 cim_trial=13330.2 model_all=13329.3 model_local=13330.2 model_eig=13329.5 random_init=13342.2
+ G32 cim_random=1398.8 cim_cut=1401.2 cim_ls=1401.2 cim_div=1400.7 cim_trial=1401.4 model_all=1401.1 model_local=1401.3 model_eig=1401.1 random_init=1401.8
+ G55 cim_random=10256.4 cim_cut=10266.6 cim_ls=10266.6 cim_div=10262.6 cim_trial=10266.6 model_all=10266.5 model_local=10266.3 model_eig=10266.7 random_init=10274.8
+ G70 cim_random=9540.5 cim_cut=9545.6 cim_ls=9545.6 cim_div=9544.9 cim_trial=9545.3 model_all=9545.5 model_local=9545.6 model_eig=9545.6 random_init=9534.8
+  G1 cim_random=11621.2 cim_cut=11623.0 cim_ls=11623.1 cim_div=11623.1 cim_trial=11623.1 model_all=11620.9 model_local=11620.7 model_eig=11623.0 random_init=11624.0
+ G14 cim_random=3053.4 cim_cut=3056.0 cim_ls=3056.7 cim_div=3056.6 cim_trial=3056.0 model_all=3057.1 model_local=3057.0 model_eig=3056.8 random_init=3060.1
+  cim_random: diff=-5.89 W/L=0/7 holm_p=0.125
+     cim_cut: diff=-0.09 W/L=3/4 holm_p=1.0
+      cim_ls: diff=+0.00 W/L=0/0 holm_p=None
+     cim_div: diff=-1.14 W/L=1/6 holm_p=0.328125
+   cim_trial: diff=-0.08 W/L=5/2 holm_p=1.0
+   model_all: diff=-0.41 W/L=2/5 holm_p=1.0
+ model_local: diff=-0.31 W/L=4/3 holm_p=1.0
+   model_eig: diff=-0.04 W/L=4/3 holm_p=1.0
+ random_init: diff=+3.28 W/L=6/1 holm_p=1.0
+H4a model_all - cim_ls: W/L=2/5 p=0.9219 holm=1.0000 supported=False
+H4b cim_trial - cim_ls: W/L=5/2 p=0.4688 holm=1.0000 supported=False
+H4c cim_ls - random_init: W/L=1/6 p=0.9219 holm=1.0000 supported=False
+saved: C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-10-19\selection_eval\v22_sub_T0p5_S5000_K256_m16_free
+ G22 cim_random=13325.8 cim_cut=13342.4 cim_ls=13342.1 cim_div=13340.2 cim_trial=13341.7 random_init=13357.6 model_all=13341.9 model_local=13342.0 model_eig=13342.0
+ G23 cim_random=13320.1 cim_cut=13326.7 cim_ls=13326.3 cim_div=13325.3 cim_trial=13325.8 random_init=13338.1 model_all=13325.4 model_local=13325.9 model_eig=13326.0
+ G32 cim_random=1395.7 cim_cut=1398.7 cim_ls=1398.2 cim_div=1397.7 cim_trial=1397.7 random_init=1399.1 model_all=1398.1 model_local=1398.2 model_eig=1398.1
+ G55 cim_random=10247.1 cim_cut=10259.9 cim_ls=10259.1 cim_div=10256.1 cim_trial=10257.6 random_init=10269.1 model_all=10259.3 model_local=10259.0 model_eig=10259.3
+ G70 cim_random=9533.3 cim_cut=9540.1 cim_ls=9538.9 cim_div=9537.9 cim_trial=9537.6 random_init=9529.8 model_all=9538.8 model_local=9538.8 model_eig=9539.2
+  G1 cim_random=11614.6 cim_cut=11621.0 cim_ls=11620.9 cim_div=11621.2 cim_trial=11620.8 random_init=11623.9 model_all=11620.2 model_local=11620.2 model_eig=11621.0
+ G14 cim_random=3050.4 cim_cut=3053.2 cim_ls=3053.3 cim_div=3053.1 cim_trial=3051.1 random_init=3058.4 model_all=3053.8 model_local=3053.8 model_eig=3053.6
+  cim_random: diff=-7.41 W/L=0/7 holm_p=0.125
+     cim_cut: diff=+0.45 W/L=6/1 holm_p=0.234375
+      cim_ls: diff=+0.00 W/L=0/0 holm_p=None
+     cim_div: diff=-1.06 W/L=1/6 holm_p=0.1875
+   cim_trial: diff=-0.95 W/L=0/7 holm_p=0.125
+ random_init: diff=+5.33 W/L=6/1 holm_p=0.4375
+   model_all: diff=-0.19 W/L=2/5 holm_p=0.890625
+ model_local: diff=-0.13 W/L=2/5 holm_p=0.890625
+   model_eig: diff=+0.03 W/L=4/3 holm_p=0.890625
+H4a model_all - cim_ls: W/L=2/5 p=0.8516 holm=1.0000 supported=False
+H4b cim_trial - cim_ls: W/L=0/7 p=1.0000 holm=1.0000 supported=False
+H4c cim_ls - random_init: W/L=1/6 p=0.9609 holm=1.0000 supported=False
+saved: C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-10-19\selection_eval\v23_sub_T0p5_S5000_K64_m4
+ G22 cim_random=13325.2 cim_cut=13342.5 cim_ls=13342.5 cim_div=13341.1 cim_trial=13342.7 model_all=13342.4 model_local=13342.5 model_eig=13342.5 random_init=13357.5
+ G23 cim_random=13320.1 cim_cut=13326.6 cim_ls=13326.7 cim_div=13325.9 cim_trial=13326.8 model_all=13325.7 model_local=13326.5 model_eig=13326.2 random_init=13338.1
+ G32 cim_random=1395.7 cim_cut=1398.6 cim_ls=1398.6 cim_div=1398.2 cim_trial=1398.9 model_all=1398.5 model_local=1398.7 model_eig=1398.5 random_init=1399.3
+ G55 cim_random=10246.9 cim_cut=10260.1 cim_ls=10260.0 cim_div=10256.9 cim_trial=10260.0 model_all=10259.9 model_local=10259.8 model_eig=10260.2 random_init=10268.9
+ G70 cim_random=9533.2 cim_cut=9540.1 cim_ls=9539.9 cim_div=9539.1 cim_trial=9540.0 model_all=9539.7 model_local=9540.0 model_eig=9540.1 random_init=9529.7
+  G1 cim_random=11614.6 cim_cut=11621.0 cim_ls=11621.0 cim_div=11621.2 cim_trial=11621.0 model_all=11620.5 model_local=11620.5 model_eig=11621.1 random_init=11624.0
+ G14 cim_random=3050.4 cim_cut=3053.1 cim_ls=3053.6 cim_div=3053.5 cim_trial=3053.1 model_all=3054.1 model_local=3054.1 model_eig=3053.8 random_init=3058.4
+  cim_random: diff=-8.04 W/L=0/7 holm_p=0.125
+     cim_cut: diff=-0.03 W/L=4/3 holm_p=1.0
+      cim_ls: diff=+0.00 W/L=0/0 holm_p=None
+     cim_div: diff=-0.91 W/L=1/6 holm_p=0.328125
+   cim_trial: diff=+0.02 W/L=5/2 holm_p=1.0
+   model_all: diff=-0.20 W/L=1/6 holm_p=1.0
+ model_local: diff=-0.04 W/L=4/3 holm_p=1.0
+   model_eig: diff=+0.02 W/L=5/2 holm_p=1.0
+ random_init: diff=+4.78 W/L=6/1 holm_p=0.9375
+H4a model_all - cim_ls: W/L=1/6 p=0.9219 holm=1.0000 supported=False
+H4b cim_trial - cim_ls: W/L=5/2 p=0.2344 holm=0.7031 supported=False
+H4c cim_ls - random_init: W/L=1/6 p=0.9453 holm=1.0000 supported=False
+saved: C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-10-19\selection_eval\v24_sub_T0p5_S5000_K64_m4_free
+C:\Users\owner\igarashi\cim-cac-maxcut-g22\scripts\benchmarks\selection_eval.py:277: RuntimeWarning: Mean of empty slice
+  "strategies": {s: {"mean_best": float(np.nanmean(v)),
+C:\Python313\Lib\site-packages\numpy\lib\_nanfunctions_impl.py:2019: RuntimeWarning: Degrees of freedom <= 0 for slice.
+  var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+C:\Users\owner\igarashi\cim-cac-maxcut-g22\scripts\benchmarks\selection_eval.py:279: RuntimeWarning: Mean of empty slice
+  "p_target": float(np.nanmean(np.where(np.isnan(v), np.nan, v >= target))),
+C:\Users\owner\igarashi\cim-cac-maxcut-g22\scripts\benchmarks\selection_eval.py:280: RuntimeWarning: Mean of empty slice
+  "gap_to_bks_pct": float((p["bks"] - np.nanmean(v)) / p["bks"] * 100)}
+ G22 cim_random=13332.9 cim_cut=13343.7 cim_ls=13343.7 cim_div=13341.9 cim_trial=nan random_init=13322.1 model_all=13342.8 model_local=13343.8 model_eig=13342.8
+ G23 cim_random=13317.5 cim_cut=13321.8 cim_ls=13321.7 cim_div=13321.6 cim_trial=nan random_init=13313.5 model_all=13320.6 model_local=13321.9 model_eig=13320.7
+ G32 cim_random=1387.9 cim_cut=1391.7 cim_ls=1391.7 cim_div=1391.7 cim_trial=nan random_init=1395.8 model_all=1391.6 model_local=1391.6 model_eig=1391.6
+ G55 cim_random=10207.9 cim_cut=10222.0 cim_ls=10222.0 cim_div=10222.0 cim_trial=nan random_init=10211.5 model_all=10222.0 model_local=10222.0 model_eig=10222.0
+ G70 cim_random=9497.8 cim_cut=9507.9 cim_ls=9507.9 cim_div=9507.7 cim_trial=nan random_init=9433.1 model_all=9507.9 model_local=9507.9 model_eig=9507.9
+  G1 cim_random=11622.2 cim_cut=11623.6 cim_ls=11623.5 cim_div=11623.6 cim_trial=nan random_init=11621.4 model_all=11622.8 model_local=11623.2 model_eig=11623.3
+ G14 cim_random=3046.7 cim_cut=3047.0 cim_ls=3046.7 cim_div=3047.2 cim_trial=nan random_init=3056.5 model_all=3047.0 model_local=3047.2 model_eig=3046.9
+C:\Users\owner\igarashi\cim-cac-maxcut-g22\scripts\benchmarks\selection_eval.py:293: RuntimeWarning: Mean of empty slice
+  compare[s] = {"mean_diff_vs_baseline": float(np.nanmean(d)), "wins": int((d > 0).sum()),
+warning: H4b uses 0 of 7 problems (others have no runs)
+  cim_random: diff=-6.32 W/L=1/6 holm_p=0.21875
+     cim_cut: diff=+0.06 W/L=5/0 holm_p=0.375
+      cim_ls: diff=+0.00 W/L=0/0 holm_p=None
+     cim_div: diff=-0.22 W/L=2/5 holm_p=0.9375
+   cim_trial: diff=+nan W/L=0/0 holm_p=None
+ random_init: diff=-14.73 W/L=2/5 holm_p=0.9375
+   model_all: diff=-0.36 W/L=1/4 holm_p=0.9375
+ model_local: diff=+0.05 W/L=3/2 holm_p=0.9375
+   model_eig: diff=-0.28 W/L=1/4 holm_p=0.9375
+H4a model_all - cim_ls: W/L=1/4 p=0.9375 holm=1.0000 supported=False
+H4b cim_trial - cim_ls: W/L=0/0 p=1.0000 holm=1.0000 supported=False
+H4c cim_ls - random_init: W/L=5/2 p=0.1094 holm=0.3281 supported=False
+saved: C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-10-19\selection_eval\v25_sub_T2_S500_K256_m16
+ G22 cim_random=13332.6 cim_cut=13344.0 cim_ls=13343.9 cim_div=13342.3 cim_trial=13343.9 model_all=13343.8 model_local=13344.0 model_eig=13344.1 random_init=13321.9
+ G23 cim_random=13317.5 cim_cut=13321.9 cim_ls=13321.8 cim_div=13321.7 cim_trial=13321.8 model_all=13321.1 model_local=13322.0 model_eig=13321.4 random_init=13313.4
+ G32 cim_random=1387.9 cim_cut=1391.7 cim_ls=1391.7 cim_div=1391.8 cim_trial=1391.7 model_all=1391.8 model_local=1391.7 model_eig=1391.8 random_init=1395.9
+ G55 cim_random=10207.7 cim_cut=10221.9 cim_ls=10221.9 cim_div=10221.9 cim_trial=10221.9 model_all=10221.9 model_local=10221.9 model_eig=10221.9 random_init=10211.5
+ G70 cim_random=9497.9 cim_cut=9507.9 cim_ls=9507.9 cim_div=9507.8 cim_trial=9507.9 model_all=9507.9 model_local=9507.9 model_eig=9507.9 random_init=9433.2
+  G1 cim_random=11622.3 cim_cut=11623.6 cim_ls=11623.6 cim_div=11623.6 cim_trial=11623.6 model_all=11623.2 model_local=11623.2 model_eig=11623.5 random_init=11621.5
+ G14 cim_random=3046.7 cim_cut=3046.9 cim_ls=3046.9 cim_div=3047.2 cim_trial=3046.9 model_all=3047.3 model_local=3047.4 model_eig=3047.2 random_init=3056.6
+  cim_random: diff=-6.42 W/L=0/7 holm_p=0.125
+     cim_cut: diff=+0.02 W/L=2/3 holm_p=1.0
+      cim_ls: diff=+0.00 W/L=0/0 holm_p=None
+     cim_div: diff=-0.19 W/L=3/4 holm_p=1.0
+   cim_trial: diff=+0.02 W/L=4/1 holm_p=0.875
+   model_all: diff=-0.11 W/L=2/3 holm_p=1.0
+ model_local: diff=+0.06 W/L=3/2 holm_p=1.0
+   model_eig: diff=+0.02 W/L=3/2 holm_p=1.0
+ random_init: diff=-14.82 W/L=2/5 holm_p=1.0
+H4a model_all - cim_ls: W/L=2/3 p=0.8438 holm=0.8438 supported=False
+H4b cim_trial - cim_ls: W/L=4/1 p=0.0625 holm=0.1875 supported=False
+H4c cim_ls - random_init: W/L=5/2 p=0.1094 holm=0.2188 supported=False
+saved: C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-10-19\selection_eval\v26_sub_T2_S500_K256_m16_free
+C:\Users\owner\igarashi\cim-cac-maxcut-g22\scripts\benchmarks\selection_eval.py:277: RuntimeWarning: Mean of empty slice
+  "strategies": {s: {"mean_best": float(np.nanmean(v)),
+C:\Python313\Lib\site-packages\numpy\lib\_nanfunctions_impl.py:2019: RuntimeWarning: Degrees of freedom <= 0 for slice.
+  var = nanvar(a, axis=axis, dtype=dtype, out=out, ddof=ddof,
+C:\Users\owner\igarashi\cim-cac-maxcut-g22\scripts\benchmarks\selection_eval.py:279: RuntimeWarning: Mean of empty slice
+  "p_target": float(np.nanmean(np.where(np.isnan(v), np.nan, v >= target))),
+C:\Users\owner\igarashi\cim-cac-maxcut-g22\scripts\benchmarks\selection_eval.py:280: RuntimeWarning: Mean of empty slice
+  "gap_to_bks_pct": float((p["bks"] - np.nanmean(v)) / p["bks"] * 100)}
+ G22 cim_random=13319.4 cim_cut=13336.9 cim_ls=13336.2 cim_div=13335.0 cim_trial=nan random_init=13312.8 model_all=nan model_local=13336.3 model_eig=nan
+ G23 cim_random=13311.7 cim_cut=13318.4 cim_ls=13318.2 cim_div=13318.2 cim_trial=nan random_init=13308.1 model_all=nan model_local=13318.2 model_eig=nan
+ G32 cim_random=1384.2 cim_cut=1388.0 cim_ls=1387.9 cim_div=1387.8 cim_trial=nan random_init=1393.2 model_all=nan model_local=1387.8 model_eig=nan
+ G55 cim_random=10196.2 cim_cut=10216.5 cim_ls=10216.5 cim_div=10216.5 cim_trial=nan random_init=10204.0 model_all=nan model_local=10216.5 model_eig=nan
+ G70 cim_random=9490.9 cim_cut=9503.5 cim_ls=9503.5 cim_div=9503.5 cim_trial=nan random_init=9428.1 model_all=nan model_local=9503.5 model_eig=nan
+  G1 cim_random=11614.7 cim_cut=11621.5 cim_ls=11620.8 cim_div=11620.8 cim_trial=nan random_init=11613.7 model_all=nan model_local=11620.1 model_eig=nan
+ G14 cim_random=3042.4 cim_cut=3043.6 cim_ls=3043.1 cim_div=3043.2 cim_trial=nan random_init=3053.8 model_all=3041.1 model_local=3043.3 model_eig=3041.0
+C:\Users\owner\igarashi\cim-cac-maxcut-g22\scripts\benchmarks\selection_eval.py:293: RuntimeWarning: Mean of empty slice
+  compare[s] = {"mean_diff_vs_baseline": float(np.nanmean(d)), "wins": int((d > 0).sum()),
+warning: H4a uses 1 of 7 problems (others have no runs)
+warning: H4b uses 0 of 7 problems (others have no runs)
+  cim_random: diff=-9.54 W/L=0/7 holm_p=0.078125
+     cim_cut: diff=+0.31 W/L=6/0 holm_p=0.125
+      cim_ls: diff=+0.00 W/L=0/0 holm_p=None
+     cim_div: diff=-0.17 W/L=3/4 holm_p=1.0
+   cim_trial: diff=+nan W/L=0/0 holm_p=None
+ random_init: diff=-16.07 W/L=2/5 holm_p=0.46875
+   model_all: diff=-1.99 W/L=0/1 holm_p=None
+ model_local: diff=-0.07 W/L=2/5 holm_p=1.0
+   model_eig: diff=-2.07 W/L=0/1 holm_p=None
+H4a model_all - cim_ls: W/L=0/1 p=1.0000 holm=1.0000 supported=False
+H4b cim_trial - cim_ls: W/L=0/0 p=1.0000 holm=1.0000 supported=False
+H4c cim_ls - random_init: W/L=5/2 p=0.0781 holm=0.2344 supported=False
+saved: C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-10-19\selection_eval\v27_sub_T2_S500_K64_m4
+ G22 cim_random=13319.9 cim_cut=13337.0 cim_ls=13336.9 cim_div=13335.9 cim_trial=13337.0 model_all=13337.0 model_local=13337.0 model_eig=13337.1 random_init=13312.8
+ G23 cim_random=13311.7 cim_cut=13318.5 cim_ls=13318.4 cim_div=13318.5 cim_trial=13318.4 model_all=13317.7 model_local=13318.3 model_eig=13318.0 random_init=13308.2
+ G32 cim_random=1384.2 cim_cut=1388.0 cim_ls=1388.0 cim_div=1388.0 cim_trial=1388.1 model_all=1388.1 model_local=1388.0 model_eig=1388.0 random_init=1393.3
+ G55 cim_random=10195.9 cim_cut=10216.5 cim_ls=10216.5 cim_div=10216.4 cim_trial=10216.5 model_all=10216.5 model_local=10216.5 model_eig=10216.5 random_init=10204.2
+ G70 cim_random=9491.1 cim_cut=9503.5 cim_ls=9503.5 cim_div=9503.5 cim_trial=9503.5 model_all=9503.5 model_local=9503.5 model_eig=9503.5 random_init=9428.3
+  G1 cim_random=11614.8 cim_cut=11621.3 cim_ls=11621.3 cim_div=11621.5 cim_trial=11621.5 model_all=11620.8 model_local=11620.9 model_eig=11621.3 random_init=11613.6
+ G14 cim_random=3042.5 cim_cut=3043.6 cim_ls=3043.7 cim_div=3043.8 cim_trial=3043.6 model_all=3043.8 model_local=3043.8 model_eig=3043.8 random_init=3053.8
+  cim_random: diff=-9.76 W/L=0/7 holm_p=0.125
+     cim_cut: diff=-0.00 W/L=2/3 holm_p=1.0
+      cim_ls: diff=+0.00 W/L=0/0 holm_p=None
+     cim_div: diff=-0.13 W/L=3/4 holm_p=1.0
+   cim_trial: diff=+0.02 W/L=4/2 holm_p=1.0
+   model_all: diff=-0.15 W/L=3/4 holm_p=1.0
+ model_local: diff=-0.04 W/L=2/5 holm_p=1.0
+   model_eig: diff=-0.02 W/L=3/4 holm_p=1.0
+ random_init: diff=-16.32 W/L=2/5 holm_p=0.765625
+H4a model_all - cim_ls: W/L=3/4 p=0.6562 holm=0.6562 supported=False
+H4b cim_trial - cim_ls: W/L=4/2 p=0.2188 holm=0.4375 supported=False
+H4c cim_ls - random_init: W/L=5/2 p=0.0547 holm=0.1641 supported=False
+saved: C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-10-19\selection_eval\v28_sub_T2_S500_K64_m4_free
+ G22 cim_random=13356.4 cim_cut=13357.4 cim_ls=13357.4 cim_div=13357.2 cim_trial=13356.7 random_init=13358.0 model_all=13357.4 model_local=13357.3 model_eig=13357.2
+ G23 cim_random=13336.4 cim_cut=13337.2 cim_ls=13337.1 cim_div=13336.9 cim_trial=13335.4 random_init=13342.2 model_all=13336.1 model_local=13336.7 model_eig=13336.7
+ G32 cim_random=1398.3 cim_cut=1397.6 cim_ls=1397.6 cim_div=1397.5 cim_trial=1396.8 random_init=1401.8 model_all=1397.7 model_local=1397.7 model_eig=1397.7
+ G55 cim_random=10265.8 cim_cut=10264.8 cim_ls=10264.5 cim_div=10264.8 cim_trial=10262.3 random_init=10274.6 model_all=10264.9 model_local=10264.1 model_eig=10265.5
+ G70 cim_random=9527.6 cim_cut=9529.3 cim_ls=9529.1 cim_div=9527.7 cim_trial=9527.9 random_init=9534.9 model_all=9527.5 model_local=9529.0 model_eig=9528.0
+  G1 cim_random=11624.0 cim_cut=11624.0 cim_ls=11624.0 cim_div=11624.0 cim_trial=11624.0 random_init=11624.0 model_all=11624.0 model_local=11624.0 model_eig=11624.0
+ G14 cim_random=3057.8 cim_cut=3058.0 cim_ls=3058.2 cim_div=3058.3 cim_trial=3057.1 random_init=3060.1 model_all=3058.3 model_local=3058.2 model_eig=3058.3
+  cim_random: diff=-0.21 W/L=2/5 holm_p=1.0
+     cim_cut: diff=+0.08 W/L=5/1 holm_p=1.0
+      cim_ls: diff=+0.00 W/L=0/0 holm_p=None
+     cim_div: diff=-0.18 W/L=2/4 holm_p=1.0
+   cim_trial: diff=-1.08 W/L=0/6 holm_p=0.25
+ random_init: diff=+3.95 W/L=6/0 holm_p=0.25
+   model_all: diff=-0.26 W/L=4/2 holm_p=1.0
+ model_local: diff=-0.11 W/L=2/4 holm_p=1.0
+   model_eig: diff=-0.08 W/L=3/3 holm_p=1.0
+H4a model_all - cim_ls: W/L=4/2 p=0.5781 holm=1.0000 supported=False
+H4b cim_trial - cim_ls: W/L=0/6 p=1.0000 holm=1.0000 supported=False
+H4c cim_ls - random_init: W/L=0/6 p=1.0000 holm=1.0000 supported=False
+saved: C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-10-19\selection_eval\v29_sub_T2_S5000_K256_m16
+ G22 cim_random=13356.3 cim_cut=13357.4 cim_ls=13357.4 cim_div=13357.3 cim_trial=13357.4 model_all=13357.4 model_local=13357.4 model_eig=13357.3 random_init=13358.0
+ G23 cim_random=13336.3 cim_cut=13337.2 cim_ls=13337.1 cim_div=13337.1 cim_trial=13337.1 model_all=13336.4 model_local=13336.8 model_eig=13336.8 random_init=13342.2
+ G32 cim_random=1398.2 cim_cut=1397.7 cim_ls=1397.7 cim_div=1397.7 cim_trial=1397.7 model_all=1397.8 model_local=1397.8 model_eig=1397.8 random_init=1401.8
+ G55 cim_random=10265.8 cim_cut=10264.7 cim_ls=10264.8 cim_div=10265.1 cim_trial=10264.7 model_all=10265.3 model_local=10264.5 model_eig=10265.3 random_init=10274.7
+ G70 cim_random=9527.7 cim_cut=9529.3 cim_ls=9529.3 cim_div=9528.1 cim_trial=9529.4 model_all=9528.0 model_local=9529.2 model_eig=9528.2 random_init=9534.8
+  G1 cim_random=11624.0 cim_cut=11624.0 cim_ls=11624.0 cim_div=11624.0 cim_trial=11624.0 model_all=11624.0 model_local=11624.0 model_eig=11624.0 random_init=11624.0
+ G14 cim_random=3057.7 cim_cut=3058.0 cim_ls=3058.4 cim_div=3058.5 cim_trial=3058.0 model_all=3058.4 model_local=3058.3 model_eig=3058.4 random_init=3060.1
+  cim_random: diff=-0.39 W/L=2/5 holm_p=1.0
+     cim_cut: diff=-0.06 W/L=1/5 holm_p=1.0
+      cim_ls: diff=+0.00 W/L=0/0 holm_p=None
+     cim_div: diff=-0.14 W/L=3/3 holm_p=1.0
+   cim_trial: diff=-0.05 W/L=3/3 holm_p=1.0
+   model_all: diff=-0.19 W/L=4/2 holm_p=1.0
+ model_local: diff=-0.10 W/L=1/5 holm_p=1.0
+   model_eig: diff=-0.13 W/L=2/4 holm_p=1.0
+ random_init: diff=+3.85 W/L=6/0 holm_p=0.25
+H4a model_all - cim_ls: W/L=4/2 p=0.5781 holm=1.0000 supported=False
+H4b cim_trial - cim_ls: W/L=3/3 p=0.6562 holm=1.0000 supported=False
+H4c cim_ls - random_init: W/L=0/6 p=1.0000 holm=1.0000 supported=False
+saved: C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-10-19\selection_eval\v30_sub_T2_S5000_K256_m16_free
+ G22 cim_random=13349.1 cim_cut=13354.7 cim_ls=13353.7 cim_div=13353.2 cim_trial=13351.4 random_init=13357.6 model_all=13354.0 model_local=13353.6 model_eig=13353.5
+ G23 cim_random=13331.3 cim_cut=13331.8 cim_ls=13330.7 cim_div=13330.5 cim_trial=13328.8 random_init=13338.1 model_all=13329.3 model_local=13330.8 model_eig=13330.1
+ G32 cim_random=1395.1 cim_cut=1394.9 cim_ls=1394.2 cim_div=1394.2 cim_trial=1393.1 random_init=1399.1 model_all=1394.3 model_local=1394.2 model_eig=1394.3
+ G55 cim_random=10258.2 cim_cut=10257.9 cim_ls=10255.3 cim_div=10256.2 cim_trial=10252.4 random_init=10269.0 model_all=10255.8 model_local=10255.6 model_eig=10256.0
+ G70 cim_random=9520.0 cim_cut=9521.1 cim_ls=9519.4 cim_div=9518.7 cim_trial=9516.8 random_init=9529.7 model_all=9518.2 model_local=9518.8 model_eig=9518.4
+  G1 cim_random=11621.7 cim_cut=11624.0 cim_ls=11623.9 cim_div=11623.9 cim_trial=11623.7 random_init=11624.0 model_all=11623.9 model_local=11623.9 model_eig=11623.9
+ G14 cim_random=3054.8 cim_cut=3054.8 cim_ls=3054.1 cim_div=3054.2 cim_trial=3052.7 random_init=3058.3 model_all=3054.3 model_local=3054.1 model_eig=3054.3
+  cim_random: diff=-0.14 W/L=5/2 holm_p=1.0
+     cim_cut: diff=+1.15 W/L=7/0 holm_p=0.125
+      cim_ls: diff=+0.00 W/L=0/0 holm_p=None
+     cim_div: diff=-0.05 W/L=3/4 holm_p=1.0
+   cim_trial: diff=-1.77 W/L=0/7 holm_p=0.125
+ random_init: diff=+6.37 W/L=7/0 holm_p=0.125
+   model_all: diff=-0.22 W/L=4/3 holm_p=1.0
+ model_local: diff=-0.03 W/L=3/4 holm_p=1.0
+   model_eig: diff=-0.11 W/L=3/3 holm_p=1.0
+H4a model_all - cim_ls: W/L=4/3 p=0.5312 holm=1.0000 supported=False
+H4b cim_trial - cim_ls: W/L=0/7 p=1.0000 holm=1.0000 supported=False
+H4c cim_ls - random_init: W/L=0/7 p=1.0000 holm=1.0000 supported=False
+saved: C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-10-19\selection_eval\v31_sub_T2_S5000_K64_m4
+ G22 cim_random=13349.1 cim_cut=13354.8 cim_ls=13354.8 cim_div=13354.4 cim_trial=13354.8 model_all=13355.0 model_local=13354.7 model_eig=13354.7 random_init=13357.5
+ G23 cim_random=13331.3 cim_cut=13332.1 cim_ls=13331.8 cim_div=13331.8 cim_trial=13332.1 model_all=13330.9 model_local=13332.0 model_eig=13331.3 random_init=13338.1
+ G32 cim_random=1395.1 cim_cut=1394.9 cim_ls=1394.9 cim_div=1394.8 cim_trial=1394.9 model_all=1395.0 model_local=1394.9 model_eig=1395.0 random_init=1399.1
+ G55 cim_random=10258.1 cim_cut=10257.5 cim_ls=10257.7 cim_div=10258.1 cim_trial=10257.7 model_all=10257.6 model_local=10257.6 model_eig=10257.8 random_init=10268.8
+ G70 cim_random=9519.9 cim_cut=9521.2 cim_ls=9521.2 cim_div=9520.4 cim_trial=9521.0 model_all=9520.0 model_local=9521.0 model_eig=9520.2 random_init=9529.8
+  G1 cim_random=11621.7 cim_cut=11624.0 cim_ls=11624.0 cim_div=11624.0 cim_trial=11624.0 model_all=11624.0 model_local=11624.0 model_eig=11624.0 random_init=11624.0
+ G14 cim_random=3054.9 cim_cut=3054.8 cim_ls=3054.9 cim_div=3055.0 cim_trial=3054.9 model_all=3055.2 model_local=3055.0 model_eig=3055.1 random_init=3058.3
+  cim_random: diff=-1.32 W/L=2/5 holm_p=1.0
+     cim_cut: diff=-0.01 W/L=2/5 holm_p=1.0
+      cim_ls: diff=+0.00 W/L=0/0 holm_p=None
+     cim_div: diff=-0.12 W/L=2/5 holm_p=1.0
+   cim_trial: diff=+0.01 W/L=3/4 holm_p=1.0
+   model_all: diff=-0.24 W/L=3/4 holm_p=1.0
+ model_local: diff=-0.03 W/L=3/4 holm_p=1.0
+   model_eig: diff=-0.19 W/L=3/4 holm_p=1.0
+ random_init: diff=+5.19 W/L=6/1 holm_p=0.25
+H4a model_all - cim_ls: W/L=3/4 p=0.7109 holm=1.0000 supported=False
+H4b cim_trial - cim_ls: W/L=3/4 p=0.6562 holm=1.0000 supported=False
+H4c cim_ls - random_init: W/L=1/6 p=0.9922 holm=1.0000 supported=False
+saved: C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-10-19\selection_eval\v32_sub_T2_S5000_K64_m4_free

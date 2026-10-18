@@ -39,8 +39,9 @@ def judge(rows: list[dict]) -> dict:
 
     h3a = {}
     for ds, rs in by_ds.items():
-        diverse = rs[0]["distinct_states"] >= rs[0]["candidates"] / 2
-        h3a[ds] = {"distinct_states": rs[0]["distinct_states"], "diverse": diverse,
+        ref = next((r for r in rs if r["t_start"] == 0.5), rs[0])  # H3a は開始温度 0.5 の実行で決める
+        diverse = ref["distinct_states"] >= ref["candidates"] / 2
+        h3a[ds] = {"distinct_states": ref["distinct_states"], "diverse": diverse,
                    "c1_at_T0.5": [r["sweeps"] for r in rs if r["t_start"] == 0.5 and r["c1_go"]]}
 
     def per_condition(feature: str, cond) -> list[dict]:

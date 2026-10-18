@@ -194,7 +194,114 @@ def fig_ga(out: Path):
     save(fig, out, "fig_ga")
 
 
-FIGS = {"prereg": fig_prereg, "small": fig_small, "ga": fig_ga}
+GSET_ORDER = ["G1", "G22", "G23", "G55", "G70", "G14", "G15", "G39", "G32"]
+GSET_COLS = [(0.5, 50), (0.5, 500), (0.5, 5000), (2.0, 50), (2.0, 500), (2.0, 5000)]
+
+
+def gset_grid(rows: list[dict], key) -> tuple[np.ndarray, np.ndarray]:
+    """問題 × (温度, 掃引) の値と状態(0: C1 なし, 1: C1 あり, 2: 判定不能)。"""
+    val = np.full((len(GSET_ORDER), len(GSET_COLS)), np.nan)
+    state = np.zeros_like(val)
+    for r in rows:
+        i, j = GSET_ORDER.index(r["dataset"]), GSET_COLS.index((r["t_start"], r["sweeps"]))
+        state[i, j] = 2 if r["c1_go"] is None else int(r["c1_go"])
+        val[i, j] = key(r)
+    return val, state
+
+
+def draw_grid(ax, val, state, title, only_go):
+    shown = np.where((state == 1) | ((not only_go) & (state == 0)), val, np.nan)
+    ax.imshow(np.ma.masked_invalid(shown), cmap="RdBu_r", vmin=-1, vmax=1, aspect="auto")
+    for i in range(val.shape[0]):
+        for j in range(val.shape[1]):
+            if state[i, j] == 2:
+                ax.text(j, i, "×", ha="center", va="center", fontsize=16, color=MUTED)
+            elif only_go and state[i, j] == 0:
+                ax.text(j, i, "—", ha="center", va="center", fontsize=14, color=MUTED)
+            elif np.isfinite(val[i, j]):
+                ax.text(j, i, f"{val[i, j]:.2f}", ha="center", va="center", fontsize=13,
+                        color="white" if abs(val[i, j]) > 0.6 else INK)
+    ax.set_xticks(range(len(GSET_COLS)), [str(s) for _, s in GSET_COLS], fontsize=20)
+    ax.set_yticks(range(len(GSET_ORDER)), GSET_ORDER, fontsize=20)
+    ax.axvline(2.5, color=INK, lw=2)
+    ax.set_title(title)
+    ax.set_xlabel("掃引数（左：$T_0=0.5$，右：$T_0=2.0$）")
+    ax.tick_params(direction="in", which="both", top=True, right=True)
+
+
+def fig_gset(out: Path):
+    r = json.loads((RESULTS / "gset_seed_analysis/v2_step3/result.json").read_text(encoding="utf-8"))
+    rows = r["rows"]
+    fig, axes = plt.subplots(2, 2, figsize=(20, 18))
+    panels = [(lambda x: x["c1_sb"], "(a) 残差の信頼性 C1", False),
+              (lambda x: x["features"].get("eig_diff", {}).get("rho", np.nan), "(b) $\\rho(E, r)$", True),
+              (lambda x: x["features"].get("trial_sa_mean", {}).get("rho", np.nan), "(c) $\\rho$(試し打ち, $r$)", True),
+              (lambda x: x["features"].get("ls_n_gain_minus2_to_0", {}).get("rho", np.nan),
+               "(d) $\\rho$(LS後の利得−2〜0の数, $r$)", True)]
+    for ax, (key, title, only_go) in zip(axes.flat, panels):
+        val, state = gset_grid(rows, key)
+        draw_grid(ax, val, state, title, only_go)
+    fig.tight_layout()
+    save(fig, out, "fig_gset")
+
+
+SEL_NAMES = [("cim_random", "無作為"), ("cim_cut", "cut上位"), ("cim_ls", "LS後cut上位"), ("cim_div", "多様性"),
+             ("cim_trial", "試し打ち"), ("model_all", "学習（全指標）"), ("model_eig", "学習（固有）"),
+             ("random_init", "ランダム初期化")]
+
+
+SELECTION_DIR = ROOT / "results" / "2026-10-19" / "selection_eval"  # ほかの計算がない状態の時間で評価した版
+
+
+def selection_result(prefix: str) -> dict:
+    d = next(SELECTION_DIR.glob(f"{prefix}_*"))
+    return json.loads((d / "result.json").read_text(encoding="utf-8"))
+
+
+def mean_gap(r: dict, s: str) -> float:
+    """全問題で実行できた方法だけ平均する(1 問題でも本数 0 なら NaN)。"""
+    g = [v["strategies"][s]["gap_to_bks_pct"] for v in r["per_problem"].values()]
+    return float(np.mean(g)) if np.all(np.isfinite(g)) else np.nan
+
+
+def fig_selection(out: Path):
+    s500, s5000 = selection_result("v18"), selection_result("v17")
+    t2_500, t2_5000 = selection_result("v25"), selection_result("v29")
+    fig, axes = plt.subplots(1, 2, figsize=(22, 8.5), gridspec_kw={"width_ratios": [1.1, 1]})
+    ax = axes[0]
+    y = np.arange(len(SEL_NAMES))[::-1]
+    for off, r, color, name in [(0.2, s500, BLUE, "500掃引"), (-0.2, s5000, ACCENT, "5000掃引")]:
+        g = np.array([mean_gap(r, s) for s, _ in SEL_NAMES])
+        ax.barh(y + off, np.nan_to_num(g), height=0.38, color=color, label=name)
+        for yy, gg in zip(y + off, g):
+            ax.text((gg if np.isfinite(gg) else 0) + 0.005, yy, f"{gg:.3f}" if np.isfinite(gg) else "実行不能",
+                    va="center", fontsize=13)
+    ax.set_yticks(y, [n for _, n in SEL_NAMES], fontsize=20)
+    ax.set_xlabel("BKSとの差（%，7問題の平均）")
+    ax.set_title("(a) 同じ総時間での比較（$T_0=0.5$）")
+    ax.set_xlim(0, 0.85)
+    ax.legend(loc="upper right")
+    style(ax)
+    ax = axes[1]
+    probs = list(s5000["per_problem"])
+    x = np.arange(len(probs))
+    for r, color, marker, name in [(s500, BLUE, "o", "500掃引，$T_0=0.5$"), (t2_500, BLUE, "s", "500掃引，$T_0=2.0$"),
+                                   (s5000, ACCENT, "o", "5000掃引，$T_0=0.5$"), (t2_5000, ACCENT, "s", "5000掃引，$T_0=2.0$")]:
+        d = [r["per_problem"][k]["strategies"]["random_init"]["gap_to_bks_pct"]
+             - r["per_problem"][k]["strategies"]["cim_ls"]["gap_to_bks_pct"] for k in probs]
+        ax.plot(x, d, marker=marker, ms=11, ls="none", color=color, mfc=color if marker == "o" else "white",
+                mew=2.2, label=name)
+    ax.axhline(0, color=INK, lw=1)
+    ax.set_xticks(x, probs, fontsize=20)
+    ax.set_ylabel("ランダム初期化 − CIM（%）")
+    ax.set_title("(b) 正なら CIM の種が良い")
+    ax.legend(loc="upper left", fontsize=20)
+    style(ax)
+    fig.tight_layout()
+    save(fig, out, "fig_selection")
+
+
+FIGS = {"prereg": fig_prereg, "small": fig_small, "ga": fig_ga, "gset": fig_gset, "selection": fig_selection}
 
 
 def main():

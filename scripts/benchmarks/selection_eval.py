@@ -44,7 +44,8 @@ LOCAL = ["n_gain_minus2_to_0", "ls_n_gain_minus2_to_0", "n_zero_gain", "ls_n_zer
 EIG = ["eig_diff", "eig_a1", "eig_a2"]
 MODELS = {"model_all": LOCAL + EIG, "model_local": LOCAL, "model_eig": EIG}
 BASELINE = "cim_ls"
-PARALLEL = 24  # ステップ 3 の NUMBA_NUM_THREADS
+PARALLEL = 24
+RANDOM_T_START = 2.0  # ランダム初期化の SA の開始温度(step4_plan.md)  # ステップ 3 の NUMBA_NUM_THREADS
 # 主条件の判定(docs/20261018/step4_plan.md):(名前, 方法 A, 方法 B)で A − B > 0 を片側検定
 PRIMARY = [("H4a", "model_all", "cim_ls"), ("H4b", "cim_trial", "cim_ls"), ("H4c", "cim_ls", "random_init")]
 
@@ -70,6 +71,14 @@ def zscore(x: np.ndarray) -> np.ndarray:
     return (x - x.mean()) / sd if sd > 0 else np.zeros_like(x)
 
 
+def with_timing(p: dict, timing: dict) -> dict:
+    """pipeline_timing.py の実測(ほかの計算がない状態)で t_cim・t_sa・t_trial を置き換えた新しい dict。"""
+    t = timing[p["name"]]
+    t_sa = t["t_sa"]
+    return {**p, "t_cim": t["t_cim"], "t_sa": t_sa[f"T{p['t_start']:g}_S{p['sweeps']}"],
+            "t_trial": p["trial_runs"] * t_sa[f"T{p['t_start']:g}_S50"]}
+
+
 def load_problem(run_dir: Path, sweeps: int) -> dict:
     summary = json.loads((run_dir / "summary.json").read_text(encoding="utf-8"))
     meta = summary["meta"]
@@ -88,6 +97,7 @@ def load_problem(run_dir: Path, sweeps: int) -> dict:
         "cuts": z[f"cuts_B{budget}"].astype(float), "init_cut": z["init_cut"].astype(float),
         "ls_cut": z["ls_cut"].astype(float), "signs": z["cim_signs"], "feats": feats,
         "t_cim": meta["cim_time_s"] / k, "t_sa": t_sa, "t_trial": meta.get("trial", {}).get("runs", 0) * t_trial_run,
+        "sweeps": sweeps, "trial_runs": meta.get("trial", {}).get("runs", 0),
     }
 
 
@@ -116,9 +126,10 @@ def top_m(score: np.ndarray, pool: np.ndarray, m: int, rng) -> np.ndarray:
     return pool[order[:m]]
 
 
-def diverse_m(p: dict, pool: np.ndarray, m: int, rng) -> np.ndarray:
-    """LS 後 cut の上位 2m 個から、互いの距離(全反転を同一視)が大きくなるよう貪欲に m 個選ぶ。"""
-    cand = top_m(p["ls_cut"], pool, min(2 * m, len(pool)), rng)
+def diverse_m(p: dict, pool: np.ndarray, m: int, m_pool: int, rng) -> np.ndarray:
+    """LS 後 cut の上位 2·m_pool 個から、互いの距離(全反転を同一視)が大きくなるよう貪欲に m 個選ぶ。
+    m_pool は費用を引く前の本数(費用で m が減っても候補の幅は変えない)。"""
+    cand = top_m(p["ls_cut"], pool, min(2 * m_pool, len(pool)), rng)
     s = p["signs"][cand].astype(np.float64)
     overlap = np.abs(s @ s.T) / s.shape[1]
     chosen = [0]
@@ -146,7 +157,8 @@ def simulate(p: dict, rand_cuts: np.ndarray, scores: dict, cost: dict | None, K:
     """戦略ごとに MC 回の「最良値」を返す。"""
     total = K * p["t_cim"] + m * p["t_sa"]
     over = overheads(p, cost, K)
-    budgets = {s: max(int((m * p["t_sa"] - o) // p["t_sa"] + 1e-9), 0) for s, o in over.items()}
+    # 浮動小数の丸めで 1 本少なくならないよう、割った後に小さな余裕を足してから切り捨てる
+    budgets = {s: max(int(np.floor((m * p["t_sa"] - o) / p["t_sa"] + 1e-9)), 0) for s, o in over.items()}
     budgets["cim_random"] = budgets["cim_cut"] = m
     m_feat, m_trial, m_rand = budgets["cim_ls"], budgets["cim_trial"], budgets["random_init"]
     if m_rand > len(rand_cuts):
@@ -160,7 +172,7 @@ def simulate(p: dict, rand_cuts: np.ndarray, scores: dict, cost: dict | None, K:
             "cim_random": rng.choice(pool, size=m, replace=False),
             "cim_cut": top_m(p["init_cut"], pool, m, rng),
             "cim_ls": top_m(p["ls_cut"] + 1e-6 * p["init_cut"], pool, m_feat, rng),
-            "cim_div": diverse_m(p, pool, budgets["cim_div"], rng) if budgets["cim_div"] > 0 else pool[:0],
+            "cim_div": diverse_m(p, pool, budgets["cim_div"], m, rng) if budgets["cim_div"] > 0 else pool[:0],
             "cim_trial": top_m(p["feats"]["trial_sa_mean"], pool, m_trial, rng)
             if "trial_sa_mean" in p["feats"] else pool[:0],
             **{k: top_m(v, pool, budgets[k], rng) for k, v in scores.items()},
@@ -190,9 +202,12 @@ def primary_tests(per_problem: dict) -> dict:
     res = {}
     for name, a, b in PRIMARY:
         d = np.array([v["strategies"][a]["mean_best"] - v["strategies"][b]["mean_best"] for v in per_problem.values()])
+        n_all = len(d)
         d = d[np.isfinite(d)]
+        if len(d) < n_all:
+            print(f"warning: {name} uses {len(d)} of {n_all} problems (others have no runs)", flush=True)
         p_val = float(wilcoxon(d, alternative="greater").pvalue) if np.any(d != 0) else 1.0
-        res[name] = {"a": a, "b": b, "diffs": d.tolist(), "wins": int((d > 0).sum()),
+        res[name] = {"a": a, "b": b, "diffs": d.tolist(), "n_used": int(len(d)), "wins": int((d > 0).sum()),
                      "losses": int((d < 0).sum()), "p_one_sided": p_val}
     for name, hp in holm({k: v["p_one_sided"] for k, v in res.items()}).items():
         res[name]["holm_p"] = hp
@@ -206,6 +221,8 @@ def main():
     ap.add_argument("--random", type=Path, nargs="+", required=True)
     ap.add_argument("--costs", type=Path, required=True, help="selection_costs.py の costs.json")
     ap.add_argument("--free-costs", action="store_true", help="LS・指標・試し打ちの費用を 0 にする")
+    ap.add_argument("--timing", type=Path, default=None,
+                    help="pipeline_timing.py の timing.json(省略時はステップ 3 の実行で記録した時間)")
     ap.add_argument("--t-start", type=float, required=True)
     ap.add_argument("--sweeps", type=int, required=True)
     ap.add_argument("--pool", type=int, default=256)
@@ -226,10 +243,21 @@ def main():
         meta = json.loads((d / "summary.json").read_text(encoding="utf-8"))
         z = np.load(d / "raw.npz")
         key = f"cuts_S{args.sweeps}"
+        if abs(meta["t_start"] - RANDOM_T_START) > 1e-9:
+            continue  # ランダム初期化は開始温度 2.0 に固定(計画どおり)
         if key in z.files and len(z[key]) > len(rand.get(meta["dataset"], [])):
             rand[meta["dataset"]] = z[key]  # 同じ問題が複数あれば本数の多いもの
+    names = [p["name"] for p in problems]
+    if len(set(names)) != len(names):
+        ap.error(f"duplicate problems in --runs for t_start={args.t_start}: {names}")
     problems = [p for p in problems if p["name"] in rand]
     costs = json.loads(args.costs.read_text(encoding="utf-8"))
+    if args.timing is not None:
+        timing = json.loads(args.timing.read_text(encoding="utf-8"))
+        missing = [p["name"] for p in problems if p["name"] not in timing]
+        if missing:
+            ap.error(f"no timing for {missing}")
+        problems = [with_timing(p, timing) for p in problems]
     missing = [p["name"] for p in problems if p["name"] not in costs]
     if missing:
         ap.error(f"no cost measurement for {missing}")
@@ -248,7 +276,7 @@ def main():
             "runs_per_strategy": sim["runs_per_strategy"],
             "strategies": {s: {"mean_best": float(np.nanmean(v)),
                                "se": float(np.nanstd(v) / np.sqrt(np.isfinite(v).sum())),
-                               "p_target": float(np.nanmean(v >= target)),
+                               "p_target": float(np.nanmean(np.where(np.isnan(v), np.nan, v >= target))),
                                "gap_to_bks_pct": float((p["bks"] - np.nanmean(v)) / p["bks"] * 100)}
                            for s, v in sim["best"].items()},
         }
@@ -275,6 +303,8 @@ def main():
               "mc": MC, "baseline": BASELINE, "models": MODELS, "ridge": RIDGE,
               "target_quantile": TARGET_QUANTILE, "excluded": args.exclude,
               "costs": str(args.costs), "free_costs": args.free_costs, "parallel": PARALLEL,
+              "timing": str(args.timing) if args.timing else None,
+              "times": {p["name"]: {"t_cim": p["t_cim"], "t_sa": p["t_sa"], "t_trial": p["t_trial"]} for p in problems},
               "per_problem": per_problem, "compare_vs_baseline": compare, "primary": primary}
     (out_dir / "result.json").write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
     for s, v in compare.items():
