@@ -24,8 +24,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 from scipy.stats import mannwhitneyu, wilcoxon  # noqa: E402
 
-MULTIPLIERS = [1.0, 0.1, 0.0]
-EVAL_GENS = 300
+MULTIPLIERS = [1.0, 0.1, 0.0]  # ga_equal_time.py と同じ(世代数はこの全倍率で足りるように決めてある)
 NAMES = {"random": "ランダム", "cim_all": "CIM\n（選別なし）", "cim_cut": "CIM＋\nカット値",
          "cim_div": "CIM＋カット値＋\nハミング距離"}
 COLORS = {"random": "#8A9BA8", "cim_all": "#E0A030", "cim_cut": "#2F6B9A", "cim_div": "#C34436"}
@@ -66,8 +65,8 @@ def best_at(time_s: float, cond: str, c: float, z, info: dict, t: dict) -> np.nd
     return z["cim_cuts"][:, :made].max(axis=1).astype(float)  # 選別の有無によらず、作った分の最大
 
 
-def t_eval(info: dict, t: dict) -> float:
-    return info["K"] * t["t_cim"] + t["t_init_cim"] + EVAL_GENS * t["t_gen_cim"]
+def t_eval(info: dict, t: dict, eval_gens: int) -> float:
+    return info["K"] * t["t_cim"] + t["t_init_cim"] + eval_gens * t["t_gen_cim"]
 
 
 def holm(p: dict) -> dict:
@@ -81,11 +80,12 @@ def holm(p: dict) -> dict:
 
 def analyze(run: Path) -> dict:
     meta = json.loads((run / "meta.json").read_text(encoding="utf-8"))
-    res = {"run": str(run), "eval_gens": EVAL_GENS, "datasets": {}}
+    eval_gens = int(meta["args"]["eval_gens"])
+    res = {"run": str(run), "eval_gens": eval_gens, "datasets": {}}
     for ds, info in meta["datasets"].items():
         t = meta["timing"][ds]
         z = np.load(run / f"{ds}.npz")
-        te = t_eval(info, t)
+        te = t_eval(info, t, eval_gens)
         d = {"t_eval_s": te, "bks": info["bks"], "init": info["init"], "by_c": {}}
         for c in MULTIPLIERS:
             gaps = {cond: (info["bks"] - best_at(te, cond, c, z, info, t)) / info["bks"] * 100

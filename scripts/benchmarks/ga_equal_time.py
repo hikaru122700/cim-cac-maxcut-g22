@@ -9,7 +9,7 @@
 GA のパラメータと CIM のラウンド数は ga_diversity_trajectory.py と同じ。GA の seed は 4 通りで共通。
 時間は ga_cim_timing.py の 1 スレッド CPU 時間で数える(本スクリプトは世代ごとの最良値だけを保存し、
 時間への換算は ga_equal_time_analysis.py で行う)。全条件を同じ世代数 G まで回す。G は、cim_cut が CIM
-の時間(1 倍)を払った後に eval_gens 世代進む時刻まで、ランダム初期集団の GA が届く世代数。
+の時間(1 倍)を払った後に eval_gens 世代進む時刻まで、全条件・全倍率が届く世代数。
 
 出力:results/<日付>/ga_equal_time/v{N}_<説明>/ に <問題>.npz と meta.json。
 
@@ -45,6 +45,7 @@ from scripts.benchmarks.ga_diversity_trajectory import CIM_ROUNDS  # noqa: E402
 EXPERIMENT_KIND = "ga_equal_time"
 CONDITIONS = ["random", "cim_all", "cim_cut", "cim_div"]
 CIM_SEED_BASE = 3_000_000
+MULTIPLIERS = [1.0, 0.1, 0.0]  # CIM の時間の倍率(解析と同じ)
 
 
 def get_out_dir(desc: str) -> Path:
@@ -87,10 +88,13 @@ def mean_distance(signs: np.ndarray) -> float:
     return float(d[iu].mean())
 
 
-def generations_needed(t: dict, k: int, eval_gens: int) -> int:
+def generations_needed(t: dict, pop: int, k: int, eval_gens: int) -> int:
+    """T_eval に全条件・全倍率(CIM の時間 c 倍)が届く世代数。最も多く要るのは c=0 の CIM 条件か、ランダム。"""
     t_eval = k * t["t_cim"] + t["t_init_cim"] + eval_gens * t["t_gen_cim"]
-    g = (t_eval - t["t_init_random"]) / t["t_gen_random"]
-    return max(eval_gens, math.ceil(g * 1.05))  # 5% の余裕
+    need = [(t_eval - t["t_init_random"]) / t["t_gen_random"]]
+    for n_cim in (pop, k):
+        need += [(t_eval - c * n_cim * t["t_cim"] - t["t_init_cim"]) / t["t_gen_cim"] for c in MULTIPLIERS]
+    return max(eval_gens, math.ceil(max(need) * 1.05))  # 5% の余裕
 
 
 def run_dataset(ds: str, args, timing: dict, out: Path, log) -> dict:
@@ -98,7 +102,7 @@ def run_dataset(ds: str, args, timing: dict, out: Path, log) -> dict:
     gp = PARAMS[ds]["GA"]
     pop, T = gp["pop_size"], args.num_trials
     K = args.k_factor * pop
-    G = generations_needed(timing[ds], K, args.eval_gens)
+    G = generations_needed(timing[ds], pop, K, args.eval_gens)
     ga_seeds = np.arange(T, dtype=np.int64) + args.seed_offset
     cim_seeds = np.arange(T * K, dtype=np.int64) + CIM_SEED_BASE + args.seed_offset
     log(f"{ds}: pop={pop} K={K} generations={G}; CIM {T * K} runs x {CIM_ROUNDS[ds]} rounds")
