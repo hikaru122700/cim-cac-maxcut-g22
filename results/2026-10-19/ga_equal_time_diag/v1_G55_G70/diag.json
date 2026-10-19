@@ -1,0 +1,49 @@
+{
+  "run": "results\\2026-10-19\\ga_equal_time\\v2_G22_G55_G70_nt16_k4_eval300_main",
+  "datasets": {
+    "G55": {
+      "cim_all": {
+        "mean_pairwise": 0.3683575,
+        "mean_nearest": 0.27613125,
+        "min_pairwise": 0.21605000000000002
+      },
+      "cim_cut": {
+        "mean_pairwise": 0.32630333333333333,
+        "mean_nearest": 0.23523958333333334,
+        "min_pairwise": 0.1648375
+      },
+      "cim_div": {
+        "mean_pairwise": 0.39651000000000003,
+        "mean_nearest": 0.31985625,
+        "min_pairwise": 0.2880375
+      },
+      "all_K": {
+        "mean_pairwise": 0.36914565217391304,
+        "mean_nearest": 0.21858645833333332,
+        "min_pairwise": 0.1188375
+      }
+    },
+    "G70": {
+      "cim_all": {
+        "mean_pairwise": 0.3817111607142857,
+        "mean_nearest": 0.25683046875000004,
+        "min_pairwise": 0.19969375
+      },
+      "cim_cut": {
+        "mean_pairwise": 0.32467879464285715,
+        "mean_nearest": 0.21735937500000002,
+        "min_pairwise": 0.16680625
+      },
+      "cim_div": {
+        "mean_pairwise": 0.37418794642857145,
+        "mean_nearest": 0.28119453125000005,
+        "min_pairwise": 0.25278749999999994
+      },
+      "all_K": {
+        "mean_pairwise": 0.37766863659274197,
+        "mean_nearest": 0.2099744140625,
+        "min_pairwise": 0.13890625
+      }
+    }
+  }
+}

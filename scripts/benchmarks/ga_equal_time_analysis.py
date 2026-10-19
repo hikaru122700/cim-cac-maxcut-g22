@@ -78,14 +78,29 @@ def holm(p: dict) -> dict:
     return out
 
 
-def analyze(run: Path) -> dict:
+def timing_variant(timing: dict, variant: str, profile: Path | None) -> dict:
+    """感度分析用に時間を差し替えた新しい dict。
+    primary:事前に固定した ga_cim_timing.py の値。median_cim:t_cim を 3 回の中央値に。
+    profile_slope:t_gen を ga_gen_cost_profile.py の長い実行の傾きに。"""
+    if variant == "primary":
+        return timing
+    if variant == "median_cim":
+        return {ds: {**t, "t_cim": float(np.median(t["raw"]["cim"]))} for ds, t in timing.items()}
+    prof = json.loads(profile.read_text(encoding="utf-8"))["datasets"]
+    return {ds: {**t, "t_gen_random": prof[ds]["random"]["t_gen_slope"],
+                 "t_gen_cim": prof[ds]["cim_cut"]["t_gen_slope"]} for ds, t in timing.items()}
+
+
+def analyze(run: Path, variant: str = "primary", profile: Path | None = None) -> tuple[dict, dict]:
     meta = json.loads((run / "meta.json").read_text(encoding="utf-8"))
+    primary = meta["timing"]
+    meta = {**meta, "timing": timing_variant(primary, variant, profile)}
     eval_gens = int(meta["args"]["eval_gens"])
-    res = {"run": str(run), "eval_gens": eval_gens, "datasets": {}}
+    res = {"run": str(run), "eval_gens": eval_gens, "timing_variant": variant, "datasets": {}}
     for ds, info in meta["datasets"].items():
         t = meta["timing"][ds]
         z = np.load(run / f"{ds}.npz")
-        te = t_eval(info, t, eval_gens)
+        te = t_eval(info, primary[ds], eval_gens)  # 評価時刻は事前に固定した時間で決め、感度分析でも動かさない
         d = {"t_eval_s": te, "bks": info["bks"], "init": info["init"], "by_c": {}}
         for c in MULTIPLIERS:
             gaps = {cond: (info["bks"] - best_at(te, cond, c, z, info, t)) / info["bks"] * 100
@@ -155,13 +170,17 @@ def fig_curves(res: dict, meta: dict, run: Path, out: Path):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--run", type=Path, required=True)
+    ap.add_argument("--timing-variant", choices=["primary", "median_cim", "profile_slope"], default="primary")
+    ap.add_argument("--profile", type=Path, default=None, help="ga_gen_cost_profile.py の profile.json")
     args = ap.parse_args()
+    if args.timing_variant == "profile_slope" and (args.profile is None or not args.profile.is_file()):
+        ap.error("--timing-variant profile_slope needs --profile")
     if not (args.run / "meta.json").is_file():
         ap.error(f"meta.json not found in {args.run}")
-    out = args.run / "analysis"
+    out = args.run / ("analysis" if args.timing_variant == "primary" else f"analysis_{args.timing_variant}")
     if out.exists():
         raise SystemExit(f"refuse to overwrite {out}")
-    res, meta = analyze(args.run)
+    res, meta = analyze(args.run, args.timing_variant, args.profile)
     out.mkdir()
     (out / "result.json").write_text(json.dumps(res, indent=2, ensure_ascii=False), encoding="utf-8")
     for ds, d in res["datasets"].items():

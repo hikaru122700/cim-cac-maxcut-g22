@@ -1,0 +1,235 @@
+{
+  "args": {
+    "timing": "results\\2026-10-19\\ga_cim_timing\\v1_G22_G55_G70_rep3\\timing.json",
+    "datasets": "['G22', 'G55', 'G70']",
+    "num_trials": "16",
+    "k_factor": "4",
+    "eval_gens": "300",
+    "seed_offset": "20000",
+    "tag": "main"
+  },
+  "conditions": [
+    "random",
+    "cim_all",
+    "cim_cut",
+    "cim_div"
+  ],
+  "threads": "16",
+  "timing": {
+    "G22": {
+      "n": 2000,
+      "pop_size": 15,
+      "cim_rounds": 4800,
+      "t_cim": 0.578125,
+      "t_init_random": 0.234375,
+      "t_gen_random": 0.0178125,
+      "t_init_cim": 0.265625,
+      "t_gen_cim": 0.01796875,
+      "raw": {
+        "cim": [
+          0.671875,
+          0.578125,
+          0.765625
+        ],
+        "init_random": [
+          0.265625,
+          0.234375,
+          0.265625
+        ],
+        "gen_random": [
+          0.0178125,
+          0.018125,
+          0.018046875
+        ],
+        "init_cim": [
+          0.28125,
+          0.296875,
+          0.265625
+        ],
+        "gen_cim": [
+          0.018515625,
+          0.019453125,
+          0.01796875
+        ]
+      }
+    },
+    "G55": {
+      "n": 5000,
+      "pop_size": 6,
+      "cim_rounds": 9600,
+      "t_cim": 1.671875,
+      "t_init_random": 0.0625,
+      "t_gen_random": 0.0140625,
+      "t_init_cim": 0.09375,
+      "t_gen_cim": 0.013515625,
+      "raw": {
+        "cim": [
+          1.90625,
+          1.671875,
+          1.8125
+        ],
+        "init_random": [
+          0.09375,
+          0.0625,
+          0.078125
+        ],
+        "gen_random": [
+          0.014296875,
+          0.0140625,
+          0.015234375
+        ],
+        "init_cim": [
+          0.109375,
+          0.09375,
+          0.09375
+        ],
+        "gen_cim": [
+          0.013515625,
+          0.014375,
+          0.014609375
+        ]
+      }
+    },
+    "G70": {
+      "n": 10000,
+      "pop_size": 8,
+      "cim_rounds": 4800,
+      "t_cim": 1.59375,
+      "t_init_random": 0.0625,
+      "t_gen_random": 0.013046875,
+      "t_init_cim": 0.09375,
+      "t_gen_cim": 0.010859375,
+      "raw": {
+        "cim": [
+          1.59375,
+          1.75,
+          1.859375
+        ],
+        "init_random": [
+          0.078125,
+          0.078125,
+          0.0625
+        ],
+        "gen_random": [
+          0.013046875,
+          0.013828125,
+          0.013828125
+        ],
+        "init_cim": [
+          0.09375,
+          0.125,
+          0.109375
+        ],
+        "gen_cim": [
+          0.011484375,
+          0.01125,
+          0.010859375
+        ]
+      }
+    }
+  },
+  "datasets": {
+    "G22": {
+      "pop_size": 15,
+      "K": 60,
+      "generations": 2365,
+      "bks": 13359,
+      "n": 2000,
+      "cim_rounds": 4800,
+      "ga_params": {
+        "pop_size": 15,
+        "ts_iters": 35238,
+        "cr": 2159,
+        "alpha_tenure": 40,
+        "beta_quality": 0.8373501301265787
+      },
+      "init": {
+        "cim_all": {
+          "mean_cut": 13295.979166666668,
+          "best_cut": 13327.9375,
+          "mean_distance": 0.35544345238095243
+        },
+        "cim_cut": {
+          "mean_cut": 13318.154166666665,
+          "best_cut": 13333.5625,
+          "mean_distance": 0.2096005952380952
+        },
+        "cim_div": {
+          "mean_cut": 13306.566666666666,
+          "best_cut": 13333.5625,
+          "mean_distance": 0.3461964285714286
+        }
+      }
+    },
+    "G55": {
+      "pop_size": 6,
+      "K": 24,
+      "generations": 3433,
+      "bks": 10299,
+      "n": 5000,
+      "cim_rounds": 9600,
+      "ga_params": {
+        "pop_size": 6,
+        "ts_iters": 58453,
+        "cr": 930,
+        "alpha_tenure": 13,
+        "beta_quality": 0.43297527070849817
+      },
+      "init": {
+        "cim_all": {
+          "mean_cut": 10180.84375,
+          "best_cut": 10196.625,
+          "mean_distance": 0.3683575
+        },
+        "cim_cut": {
+          "mean_cut": 10200.208333333334,
+          "best_cut": 10212.75,
+          "mean_distance": 0.3263033333333333
+        },
+        "cim_div": {
+          "mean_cut": 10193.010416666666,
+          "best_cut": 10212.75,
+          "mean_distance": 0.39651000000000003
+        }
+      }
+    },
+    "G70": {
+      "pop_size": 8,
+      "K": 32,
+      "generations": 5247,
+      "bks": 9591,
+      "n": 10000,
+      "cim_rounds": 4800,
+      "ga_params": {
+        "pop_size": 8,
+        "ts_iters": 41152,
+        "cr": 521,
+        "alpha_tenure": 11,
+        "beta_quality": 0.6617624429773965
+      },
+      "init": {
+        "cim_all": {
+          "mean_cut": 9478.28125,
+          "best_cut": 9492.375,
+          "mean_distance": 0.3817111607142857
+        },
+        "cim_cut": {
+          "mean_cut": 9492.9375,
+          "best_cut": 9500.4375,
+          "mean_distance": 0.3246787946428572
+        },
+        "cim_div": {
+          "mean_cut": 9487.921875,
+          "best_cut": 9500.4375,
+          "mean_distance": 0.37418794642857145
+        }
+      }
+    }
+  },
+  "sha256": {
+    "scripts\\benchmarks\\ga_equal_time.py": "17db795895f2f4894989b926139169b4af85afad41fe48c101225fe0d01691ee",
+    "modules\\GA.py": "4b415f79517b66794248457343e63b4b4580d5a068e2a15cd271c1e11a386c40",
+    "modules\\CIM.py": "c7dd3fb061413ef4eb2a9acaa322c59cb490e1446cb29f35e3275ad84727a948",
+    "scripts\\benchmarks\\algo_registry.py": "e5aa8b821104274989adec89ac2628023378e323649520db46784152efdb8a4e"
+  }
+}

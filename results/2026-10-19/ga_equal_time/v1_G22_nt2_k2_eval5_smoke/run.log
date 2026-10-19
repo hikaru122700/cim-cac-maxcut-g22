@@ -1,0 +1,7 @@
+G22: pop=15 K=30 generations=1030; CIM 60 runs x 4800 rounds
+G22: CIM done in 5s wall
+G22 random: final gap mean=1.00, gen0 gap=31.50, 24s wall
+G22 cim_all: final gap mean=1.00, gen0 gap=6.00, 24s wall
+G22 cim_cut: final gap mean=1.00, gen0 gap=3.00, 24s wall
+G22 cim_div: final gap mean=1.00, gen0 gap=4.50, 24s wall
+saved: C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-10-19\ga_equal_time\v1_G22_nt2_k2_eval5_smoke
