@@ -1,0 +1,14 @@
+verified: sa_traj final best == simulate_sa_warm for 32 runs at both start temperatures
+verified: pool 0 reproduces the CIM cuts of the reference run
+CIM pool 1/2: 8s mean=13295.2 top16=13326.5
+verified: pool 1 reproduces the CIM cuts of the reference run
+CIM pool 2/2: 17s mean=13295.9 top16=13330.0
+S=5 cim_T0p5: 0s mean=13328.66 sd=4.29 best_of_16=13336.00
+S=5 random_T2: 0s mean=12751.12 sd=40.08 best_of_16=12826.50
+S=5 cim_T2: 0s mean=13328.25 sd=4.44 best_of_16=13335.50
+S=5 random_T0p5: 0s mean=12750.78 sd=34.27 best_of_16=12803.00
+S=5 main_cimT0p5_vs_randomT2: mean diff=+577.53 [575.06, 580.0] p=0.333 | best-of-16 diff=+509.50 [500.0, 519.0] p=0.333
+S=5 same_T2_cim_vs_random: mean diff=+577.12 [574.56, 579.69] p=0.333 | best-of-16 diff=+509.00 [500.0, 518.0] p=0.333
+S=5 same_T0p5_cim_vs_random: mean diff=+577.88 [573.94, 581.81] p=0.333 | best-of-16 diff=+533.00 [526.0, 540.0] p=0.333
+S=5 cim_T2_vs_T0p5: mean diff=-0.41 [-3.81, 3.0] p=0.667 | best-of-16 diff=-0.50 [-2.0, 1.0] p=1
+saved: C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-11-01\sa_trajectory\v2_G22_P2_K256_m16_cim2400_S5_smoke

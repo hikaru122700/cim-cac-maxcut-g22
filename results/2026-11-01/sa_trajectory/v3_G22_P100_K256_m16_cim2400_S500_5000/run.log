@@ -1,0 +1,31 @@
+verified: sa_traj final best == simulate_sa_warm for 32 runs at both start temperatures
+verified: pool 0 reproduces the CIM cuts of the reference run
+CIM pool 1/100: 7s mean=13295.2 top16=13326.5
+verified: pool 1 reproduces the CIM cuts of the reference run
+CIM pool 11/100: 79s mean=13295.1 top16=13329.8
+CIM pool 21/100: 149s mean=13296.3 top16=13327.8
+CIM pool 31/100: 219s mean=13296.5 top16=13327.2
+CIM pool 41/100: 291s mean=13296.4 top16=13329.3
+CIM pool 51/100: 359s mean=13297.2 top16=13329.9
+CIM pool 61/100: 429s mean=13297.5 top16=13328.9
+CIM pool 71/100: 499s mean=13296.4 top16=13330.2
+CIM pool 81/100: 574s mean=13299.5 top16=13330.1
+CIM pool 91/100: 642s mean=13295.7 top16=13329.7
+CIM pool 100/100: 706s mean=13297.4 top16=13332.1
+S=500 cim_T0p5: 15s mean=13333.10 sd=5.73 best_of_16=13344.53
+S=500 random_T2: 15s mean=13244.60 sd=23.54 best_of_16=13287.90
+S=500 cim_T2: 15s mean=13332.25 sd=6.52 best_of_16=13346.18
+S=500 random_T0p5: 17s mean=13120.09 sd=30.58 best_of_16=13176.37
+S=500 main_cimT0p5_vs_randomT2: mean diff=+88.49 [87.26, 89.71] p=2.55e-34 | best-of-16 diff=+56.63 [53.85, 59.26] p=2.35e-34
+S=500 same_T2_cim_vs_random: mean diff=+87.64 [86.41, 88.85] p=2.56e-34 | best-of-16 diff=+58.28 [55.55, 60.9] p=2.26e-34
+S=500 same_T0p5_cim_vs_random: mean diff=+213.01 [211.64, 214.39] p=2.55e-34 | best-of-16 diff=+168.16 [164.61, 171.82] p=2.36e-34
+S=500 cim_T2_vs_T0p5: mean diff=-0.85 [-1.44, -0.25] p=0.00448 | best-of-16 diff=+1.65 [0.49, 2.85] p=0.0273
+S=5000 cim_T0p5: 150s mean=13338.43 sd=6.53 best_of_16=13350.94
+S=5000 random_T2: 174s mean=13329.21 sd=19.23 best_of_16=13356.47
+S=5000 cim_T2: 144s mean=13345.99 sd=9.55 best_of_16=13357.35
+S=5000 random_T0p5: 146s mean=13212.46 sd=26.86 best_of_16=13261.39
+S=5000 main_cimT0p5_vs_randomT2: mean diff=+9.23 [8.17, 10.28] p=3.66e-29 | best-of-16 diff=-5.53 [-6.58, -4.52] p=7.59e-17
+S=5000 same_T2_cim_vs_random: mean diff=+16.78 [15.73, 17.85] p=7.29e-34 | best-of-16 diff=+0.88 [0.52, 1.25] p=1.4e-05
+S=5000 same_T0p5_cim_vs_random: mean diff=+125.98 [124.6, 127.33] p=2.55e-34 | best-of-16 diff=+89.55 [85.94, 93.12] p=2.38e-34
+S=5000 cim_T2_vs_T0p5: mean diff=+7.55 [6.92, 8.17] p=1.39e-32 | best-of-16 diff=+6.41 [5.45, 7.43] p=5.73e-24
+saved: C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-11-01\sa_trajectory\v3_G22_P100_K256_m16_cim2400_S500_5000

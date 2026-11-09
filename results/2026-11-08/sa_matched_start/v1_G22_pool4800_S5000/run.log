@@ -1,0 +1,8 @@
+pool: 4800 SA runs from random (T0=2.0), gap mean 0.2242% (283s)
+matched: |cut diff| mean 3.633, max 7, exact 0.183
+distance between matched SA start and CIM start: median 0.271
+sa-start T2 (T0=2.0): gap mean 0.1600% (95s)
+sa-start T0p5 (T0=0.5): gap mean 0.2357% (98s)
+cim_minus_sa_T2: +8.36 [+7.48, +9.22] p=6.40e-18
+cim_minus_sa_T0p5: +10.92 [+10.61, +11.23] p=3.88e-18
+saved: C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-11-08\sa_matched_start\v1_G22_pool4800_S5000

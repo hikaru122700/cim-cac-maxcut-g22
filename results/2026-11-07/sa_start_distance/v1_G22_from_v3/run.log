@@ -1,0 +1,21 @@
+S=500 cim_T0p5: verified 1600 runs (10s)
+S=500 random_T2: verified 1600 runs (10s)
+S=500 cim_T2: verified 1600 runs (10s)
+S=500 random_T0p5: verified 1600 runs (10s)
+S=5000 cim_T0p5: verified 1600 runs (99s)
+S=5000 random_T2: verified 1600 runs (98s)
+S=5000 cim_T2: verified 1600 runs (98s)
+S=5000 random_T0p5: verified 1600 runs (99s)
+reference best: 13359 (gap 0.0000%) from random_T2_S5000
+     cim_T0p5_S500: start 0.022 [0.015, 0.028] other-CIM 0.144 best 0.169 closer-to-own 0.97 rho(start,cut)=+0.25 gap 0.1939%
+    random_T2_S500: start 0.489 [0.482, 0.494] other-CIM 0.422 best 0.423 closer-to-own 0.08 rho(start,cut)=-0.00 gap 0.8563%
+       cim_T2_S500: start 0.000 [0.000, 0.089] other-CIM 0.144 best 0.164 closer-to-own 0.89 rho(start,cut)=+0.38 gap 0.2003%
+  random_T0p5_S500: start 0.450 [0.442, 0.457] other-CIM 0.455 best 0.458 closer-to-own 0.56 rho(start,cut)=+0.21 gap 1.7884%
+    cim_T0p5_S5000: start 0.048 [0.036, 0.057] other-CIM 0.148 best 0.169 closer-to-own 0.94 rho(start,cut)=+0.25 gap 0.1540%
+   random_T2_S5000: start 0.492 [0.487, 0.496] other-CIM 0.240 best 0.252 closer-to-own 0.03 rho(start,cut)=-0.00 gap 0.2230%
+      cim_T2_S5000: start 0.148 [0.107, 0.176] other-CIM 0.156 best 0.131 closer-to-own 0.55 rho(start,cut)=+0.22 gap 0.0974%
+ random_T0p5_S5000: start 0.468 [0.460, 0.474] other-CIM 0.442 best 0.444 closer-to-own 0.29 rho(start,cut)=+0.23 gap 1.0970%
+cim_start_vs_other_cim_start: median 0.143 [0.085, 0.167]
+cim_start_vs_best: median 0.168 [0.136, 0.179]
+random_start_vs_best: median 0.493 [0.487, 0.496]
+saved: C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-11-07\sa_start_distance\v1_G22_from_v3

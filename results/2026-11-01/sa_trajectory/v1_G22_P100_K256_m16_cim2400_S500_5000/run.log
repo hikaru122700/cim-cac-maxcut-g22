@@ -1,0 +1,17 @@
+verified: sa_traj final best == simulate_sa_warm for 32 runs at both start temperatures
+verified: pool 0 reproduces the CIM cuts of the reference run
+CIM pool 1/100: 7s mean=13295.2 top16=13326.5
+verified: pool 1 reproduces the CIM cuts of the reference run
+CIM pool 11/100: 86s mean=13295.1 top16=13329.8
+CIM pool 21/100: 168s mean=13296.3 top16=13327.8
+CIM pool 31/100: 244s mean=13296.5 top16=13327.2
+CIM pool 41/100: 317s mean=13296.4 top16=13329.3
+CIM pool 51/100: 381s mean=13297.2 top16=13329.9
+CIM pool 61/100: 444s mean=13297.5 top16=13328.9
+CIM pool 71/100: 508s mean=13296.4 top16=13330.2
+CIM pool 81/100: 585s mean=13299.5 top16=13330.1
+CIM pool 91/100: 753s mean=13295.7 top16=13329.7
+CIM pool 100/100: 905s mean=13297.4 top16=13332.1
+S=500: 41s cim=13333.10 (sd 5.73) random=13244.60 (sd 23.54) diff=+88.49 [87.25810937500032, 89.70626562499929] p=2.55e-34 crossover=None
+S=5000: 324s cim=13338.43 (sd 6.53) random=13329.21 (sd 19.23) diff=+9.23 [8.171234374999404, 10.27628124999901] p=3.66e-29 crossover=None
+saved: C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-11-01\sa_trajectory\v1_G22_P100_K256_m16_cim2400_S500_5000
