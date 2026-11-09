@@ -1,0 +1,10 @@
+G22 rep0: cim=0.422s, init_random=0.109s, gen_random=0.013s, init_cim=0.109s, gen_cim=0.013s
+G22 rep1: cim=0.453s, init_random=0.109s, gen_random=0.013s, init_cim=0.125s, gen_cim=0.013s
+G22 rep2: cim=0.406s, init_random=0.109s, gen_random=0.013s, init_cim=0.125s, gen_cim=0.013s
+G55 rep0: cim=1.297s, init_random=0.094s, gen_random=0.011s, init_cim=0.109s, gen_cim=0.011s
+G55 rep1: cim=1.328s, init_random=0.109s, gen_random=0.011s, init_cim=0.109s, gen_cim=0.011s
+G55 rep2: cim=1.312s, init_random=0.109s, gen_random=0.011s, init_cim=0.109s, gen_cim=0.012s
+G70 rep0: cim=1.109s, init_random=0.047s, gen_random=0.010s, init_cim=0.094s, gen_cim=0.008s
+G70 rep1: cim=1.188s, init_random=0.062s, gen_random=0.010s, init_cim=0.094s, gen_cim=0.009s
+G70 rep2: cim=1.141s, init_random=0.062s, gen_random=0.009s, init_cim=0.094s, gen_cim=0.008s
+saved: C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-11-09\ga_cim_timing\v1_G22_G55_G70_rep3_pop10

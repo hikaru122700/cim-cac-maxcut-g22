@@ -1,0 +1,19 @@
+G22: pop=10 K=40 generations=1668; CIM 640 runs x 4800 rounds
+G22: CIM done in 33s wall
+G22 random: final gap mean=2.31, gen0 gap=35.69, 39s wall
+G22 cim_all: final gap mean=0.75, gen0 gap=10.69, 39s wall
+G22 cim_cut: final gap mean=0.81, gen0 gap=2.62, 40s wall
+G22 cim_div: final gap mean=0.62, gen0 gap=8.44, 40s wall
+G55: pop=10 K=40 generations=5378; CIM 640 runs x 9600 rounds
+G55: CIM done in 89s wall
+G55 random: final gap mean=36.69, gen0 gap=263.56, 130s wall
+G55 cim_all: final gap mean=27.56, gen0 gap=81.62, 136s wall
+G55 cim_cut: final gap mean=25.69, gen0 gap=72.12, 136s wall
+G55 cim_div: final gap mean=29.06, gen0 gap=72.38, 139s wall
+G70: pop=10 K=40 generations=6340; CIM 640 runs x 4800 rounds
+G70: CIM done in 76s wall
+G70 random: final gap mean=78.88, gen0 gap=380.75, 157s wall
+G70 cim_all: final gap mean=52.56, gen0 gap=91.38, 160s wall
+G70 cim_cut: final gap mean=48.75, gen0 gap=84.00, 157s wall
+G70 cim_div: final gap mean=60.75, gen0 gap=84.50, 184s wall
+saved: C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-11-09\ga_equal_time\v1_G22_G55_G70_nt16_k4_eval300_pop10_main
