@@ -53,34 +53,43 @@ def time_cim(ctx, seed: int) -> float:
     return time.process_time() - t0
 
 
-def time_ga(ctx, seed: int, init_population: np.ndarray | None) -> tuple[float, float]:
+def ga_params(ds: str, pop_size: int | None) -> dict:
+    """GA のパラメータ。pop_size を与えたときは集団サイズだけ差し替える(他は PARAMS のまま)。"""
+    gp = dict(PARAMS[ds]["GA"])
+    if pop_size is not None:
+        gp["pop_size"] = pop_size
+    return gp
+
+
+def time_ga(ctx, gp: dict, seed: int, init_population: np.ndarray | None) -> tuple[float, float]:
     """(初期集団の TS の時間, 1 世代の時間) を返す。trial は 1 個。"""
     stamps = {}
 
     def observe(gen, pops, fits):
         stamps[gen] = time.process_time()
 
-    simulate_ga_batch(ctx.n, ctx.edges, ctx.weights, 1, **PARAMS[ctx.name]["GA"],
+    simulate_ga_batch(ctx.n, ctx.edges, ctx.weights, 1, **gp,
                       seeds=np.array([seed], dtype=np.int64), max_generations=CAL_GENERATIONS,
                       init_population=init_population, population_observer=observe)
     return stamps[0] - stamps[-1], (stamps[CAL_GENERATIONS] - stamps[0]) / CAL_GENERATIONS
 
 
-def measure(ds: str, repeats: int, log) -> dict:
+def measure(ds: str, repeats: int, log, pop_size: int | None = None) -> dict:
     ctx = load_context(ds)
-    pop = PARAMS[ds]["GA"]["pop_size"]
+    gp = ga_params(ds, pop_size)
+    pop = gp["pop_size"]
     # JIT のコンパイルを測定から外す
     run_cim(ctx, 10, 1, np.array([SEED], dtype=np.int64))
     _, cim_signs = run_cim(ctx, CIM_ROUNDS[ds], pop, np.arange(pop, dtype=np.int64) + SEED)
     cim_pop = cim_signs.reshape(1, pop, ctx.n)
-    time_ga(ctx, SEED, None)
+    time_ga(ctx, gp, SEED, None)
     rec = {"cim": [], "init_random": [], "gen_random": [], "init_cim": [], "gen_cim": []}
     for r in range(repeats):  # 交互に測る
         rec["cim"].append(time_cim(ctx, SEED + 100 + r))
-        a, b = time_ga(ctx, SEED + 200 + r, None)
+        a, b = time_ga(ctx, gp, SEED + 200 + r, None)
         rec["init_random"].append(a)
         rec["gen_random"].append(b)
-        a, b = time_ga(ctx, SEED + 300 + r, cim_pop)
+        a, b = time_ga(ctx, gp, SEED + 300 + r, cim_pop)
         rec["init_cim"].append(a)
         rec["gen_cim"].append(b)
         log(f"{ds} rep{r}: " + ", ".join(f"{k}={v[-1]:.3f}s" for k, v in rec.items()))
@@ -94,10 +103,14 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--datasets", nargs="+", default=list(CIM_ROUNDS), choices=list(CIM_ROUNDS))
     ap.add_argument("--repeats", type=int, default=3)
+    ap.add_argument("--pop-size", type=int, default=None, help="全問題の集団サイズをこの値にする(既定は PARAMS)")
     args = ap.parse_args()
     if args.repeats < 1:
         ap.error("--repeats must be >= 1")
-    out = get_out_dir(f"{'_'.join(args.datasets)}_rep{args.repeats}")
+    if args.pop_size is not None and args.pop_size < 2:
+        ap.error("--pop-size must be >= 2")
+    pop_tag = f"_pop{args.pop_size}" if args.pop_size is not None else ""
+    out = get_out_dir(f"{'_'.join(args.datasets)}_rep{args.repeats}{pop_tag}")
 
     def log(msg):
         print(msg, flush=True)
@@ -107,7 +120,7 @@ def main():
     res = {"unit": "process CPU seconds, NUMBA_NUM_THREADS=1, min over repeats",
            "cal_generations": CAL_GENERATIONS, "datasets": {}}
     for ds in args.datasets:
-        res["datasets"][ds] = measure(ds, args.repeats, log)
+        res["datasets"][ds] = measure(ds, args.repeats, log, args.pop_size)
         (out / "timing.json").write_text(json.dumps(res, indent=2), encoding="utf-8")
     log(f"saved: {out}")
 

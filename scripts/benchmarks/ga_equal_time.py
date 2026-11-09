@@ -99,8 +99,13 @@ def generations_needed(t: dict, pop: int, k: int, eval_gens: int) -> int:
 
 def run_dataset(ds: str, args, timing: dict, out: Path, log) -> dict:
     ctx = load_context(ds)
-    gp = PARAMS[ds]["GA"]
+    gp = dict(PARAMS[ds]["GA"])
+    if args.pop_size is not None:  # 集団サイズだけ差し替える(他のパラメータは PARAMS のまま)
+        gp["pop_size"] = args.pop_size
     pop, T = gp["pop_size"], args.num_trials
+    if timing[ds].get("pop_size") != pop:
+        raise ValueError(f"{ds}: timing.json was measured with pop_size={timing[ds].get('pop_size')}, "
+                         f"but this run uses {pop}; re-run ga_cim_timing.py with the same --pop-size")
     K = args.k_factor * pop
     G = generations_needed(timing[ds], pop, K, args.eval_gens)
     ga_seeds = np.arange(T, dtype=np.int64) + args.seed_offset
@@ -148,10 +153,13 @@ def main():
     ap.add_argument("--k-factor", type=int, default=4)
     ap.add_argument("--eval-gens", type=int, default=300)
     ap.add_argument("--seed-offset", type=int, default=20000)
+    ap.add_argument("--pop-size", type=int, default=None, help="全問題の集団サイズをこの値にする(既定は PARAMS)")
     ap.add_argument("--tag", default="")
     args = ap.parse_args()
     if args.num_trials < 2 or args.k_factor < 2 or args.eval_gens < 1:
         ap.error("need num_trials>=2, k_factor>=2, eval_gens>=1")
+    if args.pop_size is not None and args.pop_size < 2:
+        ap.error("--pop-size must be >= 2")
     if not args.timing.is_file():
         ap.error(f"not found: {args.timing}")
     timing = json.loads(args.timing.read_text(encoding="utf-8"))["datasets"]
@@ -159,6 +167,8 @@ def main():
     if missing:
         ap.error(f"no timing for {missing}")
     desc = f"{'_'.join(args.datasets)}_nt{args.num_trials}_k{args.k_factor}_eval{args.eval_gens}"
+    if args.pop_size is not None:
+        desc += f"_pop{args.pop_size}"
     out = get_out_dir(desc + (f"_{args.tag}" if args.tag else ""))
 
     def log(msg):
