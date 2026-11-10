@@ -1,0 +1,11 @@
+{
+  "dataset": "G22",
+  "rounds": 2400,
+  "seed": 1000,
+  "n": 2000,
+  "plotted_spins": 40,
+  "final_cut": 13279.0,
+  "best_cut": 13281.0,
+  "bks": 13359,
+  "final_gap_pct": 0.5988472191032262
+}

@@ -1,0 +1,180 @@
+{
+  "source": "results\\2026-11-10\\selection_eval\\v6_Kabl_T2_S5000_K16_m16\\result.json",
+  "t_start": 2.0,
+  "sweeps": 5000,
+  "pool": 16,
+  "m": 16,
+  "bootstrap": 400,
+  "mc_per_bootstrap": 1000,
+  "seed": 20261107,
+  "per_problem": {
+    "G22": {
+      "bks": 13359.0,
+      "n_candidates": 512,
+      "sa_per_candidate": 16,
+      "random_pool": 512,
+      "random_runs": 23,
+      "cim_gap_pct": 0.019507448162285855,
+      "cim_gap_pct_ci95": [
+        0.01784489857025767,
+        0.021267497567189382
+      ],
+      "random_gap_pct": 0.013739398438036059,
+      "random_gap_pct_ci95": [
+        0.011692998468351493,
+        0.016643360154676417
+      ],
+      "diff_cut": -0.7705537626625301,
+      "diff_cut_ci95": [
+        -1.120604679702592,
+        -0.3013590603973629
+      ],
+      "frac_cim_better": 0.0,
+      "frac_tie": 0.0
+    },
+    "G23": {
+      "bks": 13344.0,
+      "n_candidates": 512,
+      "sa_per_candidate": 16,
+      "random_pool": 512,
+      "random_runs": 23,
+      "cim_gap_pct": 0.056969424460437436,
+      "cim_gap_pct_ci95": [
+        0.05475719424460652,
+        0.05972515737409335
+      ],
+      "random_gap_pct": 0.05345174756561057,
+      "random_gap_pct_ci95": [
+        0.04285882343556644,
+        0.06720873673978364
+      ],
+      "diff_cut": -0.46939880484569585,
+      "diff_cut_ci95": [
+        -2.114406925312005,
+        1.3324009249788555
+      ],
+      "frac_cim_better": 0.3075,
+      "frac_tie": 0.0
+    },
+    "G32": {
+      "bks": 1410.0,
+      "n_candidates": 512,
+      "sa_per_candidate": 16,
+      "random_pool": 512,
+      "random_runs": 21,
+      "cim_gap_pct": 0.8385815602836929,
+      "cim_gap_pct_ci95": [
+        0.8201382978723387,
+        0.8510673758865319
+      ],
+      "random_gap_pct": 0.80626178693692,
+      "random_gap_pct_ci95": [
+        0.7493510123009265,
+        0.8645496799898872
+      ],
+      "diff_cut": -0.45570880418949855,
+      "diff_cut_ci95": [
+        -1.271447350533083,
+        0.4276245748126823
+      ],
+      "frac_cim_better": 0.17,
+      "frac_tie": 0.0
+    },
+    "G55": {
+      "bks": 10299.0,
+      "n_candidates": 512,
+      "sa_per_candidate": 16,
+      "random_pool": 512,
+      "random_runs": 22,
+      "cim_gap_pct": 0.32415768521215865,
+      "cim_gap_pct_ci95": [
+        0.3173215846198654,
+        0.32842363336246994
+      ],
+      "random_gap_pct": 0.3023763882498991,
+      "random_gap_pct_ci95": [
+        0.2859447883644242,
+        0.32184745207231097
+      ],
+      "diff_cut": -2.2432557741431083,
+      "diff_cut_ci95": [
+        -4.046915413142687,
+        0.041842803383087115
+      ],
+      "frac_cim_better": 0.03,
+      "frac_tie": 0.0
+    },
+    "G70": {
+      "bks": 9591.0,
+      "n_candidates": 512,
+      "sa_per_candidate": 16,
+      "random_pool": 512,
+      "random_runs": 22,
+      "cim_gap_pct": 0.6604733604420764,
+      "cim_gap_pct_ci95": [
+        0.655572411635905,
+        0.6664907204671168
+      ],
+      "random_gap_pct": 0.6523370380913409,
+      "random_gap_pct_ci95": [
+        0.6359193385623306,
+        0.6710207533935505
+      ],
+      "diff_cut": -0.7803546766590443,
+      "diff_cut_ci95": [
+        -2.580225998777178,
+        1.0156194087626318
+      ],
+      "frac_cim_better": 0.165,
+      "frac_tie": 0.0
+    },
+    "G1": {
+      "bks": 11624.0,
+      "n_candidates": 512,
+      "sa_per_candidate": 16,
+      "random_pool": 512,
+      "random_runs": 26,
+      "cim_gap_pct": 0.0,
+      "cim_gap_pct_ci95": [
+        0.0,
+        0.00019808155539054713
+      ],
+      "random_gap_pct": 0.0027489731199774837,
+      "random_gap_pct_ci95": [
+        0.0011208858442387595,
+        0.005892789217455096
+      ],
+      "diff_cut": 0.3195406354661827,
+      "diff_cut_ci95": [
+        0.12500743087612137,
+        0.6807871598680316
+      ],
+      "frac_cim_better": 1.0,
+      "frac_tie": 0.0
+    },
+    "G14": {
+      "bks": 3064.0,
+      "n_candidates": 512,
+      "sa_per_candidate": 16,
+      "random_pool": 512,
+      "random_runs": 23,
+      "cim_gap_pct": 0.20545039164491097,
+      "cim_gap_pct_ci95": [
+        0.19905270887729556,
+        0.21086977806788143
+      ],
+      "random_gap_pct": 0.20306042874252564,
+      "random_gap_pct_ci95": [
+        0.18144452893396765,
+        0.22371383222440752
+      ],
+      "diff_cut": -0.07322846332908739,
+      "diff_cut_ci95": [
+        -0.747539858827065,
+        0.5858406966362041
+      ],
+      "frac_cim_better": 0.4475,
+      "frac_tie": 0.0
+    }
+  }
+}
