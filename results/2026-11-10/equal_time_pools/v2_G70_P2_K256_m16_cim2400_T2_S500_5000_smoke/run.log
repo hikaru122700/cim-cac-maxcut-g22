@@ -1,0 +1,8 @@
+G70: random-start runs per pool {sweeps: runs} = {500: 1105, 5000: 123} (from selection_eval)
+CIM pool 1/2: 36s mean=9479.0 top16=9499.9
+CIM pool 2/2: 53s mean=9479.8 top16=9499.5
+pool 1/2 40s S500: cim 9509 rnd 9432 S5000: cim 9525 rnd 9537
+pool 2/2 80s S500: cim 9508 rnd 9438 S5000: cim 9532 rnd 9539
+S=500: CIM gap 0.8602% vs random 1.6265% (runs 1105) diff +73.50 cut [70.0, 77.0] p=0.333 | per-run CIM 0.9517% random 2.1267%
+S=5000: CIM gap 0.6517% vs random 0.5526% (runs 123) diff -9.50 cut [-14.0, -5.0] p=0.333 | per-run CIM 0.8331% random 0.8582%
+saved: C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-11-10\equal_time_pools\v2_G70_P2_K256_m16_cim2400_T2_S500_5000_smoke

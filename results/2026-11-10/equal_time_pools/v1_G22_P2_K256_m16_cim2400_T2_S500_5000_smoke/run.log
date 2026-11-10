@@ -1,0 +1,9 @@
+G22: random-start runs per pool {sweeps: runs} = {500: 1156, 5000: 134} (from selection_eval)
+CIM pools loaded from results\2026-11-01\sa_trajectory\v3_G22_P100_K256_m16_cim2400_S500_5000
+pool 1/2 17s S500: cim 13345 rnd 13319 S5000: cim 13357 rnd 13358
+pool 2/2 33s S500: cim 13352 rnd 13326 S5000: cim 13357 rnd 13358
+S=500: CIM-start finals reproduce best_cim_T2_S500
+S=5000: CIM-start finals reproduce best_cim_T2_S5000
+S=500: CIM gap 0.0786% vs random 0.2732% (runs 1156) diff +26.00 cut [19.0, 33.0] p=0.333 | per-run CIM 0.1960% random 0.8489%
+S=5000: CIM gap 0.0150% vs random 0.0075% (runs 134) diff -1.00 cut [-1.0, -1.0] p=0.194 | per-run CIM 0.0971% random 0.2331%
+saved: C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-11-10\equal_time_pools\v1_G22_P2_K256_m16_cim2400_T2_S500_5000_smoke
