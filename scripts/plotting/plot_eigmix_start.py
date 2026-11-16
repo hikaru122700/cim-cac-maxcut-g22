@@ -33,20 +33,27 @@ def load(path: Path) -> dict:
 
 def main() -> None:
     flags = sys.argv[3:]
-    if len(sys.argv) < 3 or flags not in ([], ["slide"]):
+    if len(sys.argv) < 3 or flags not in ([], ["slide"], ["deck"]):
         sys.exit(__doc__)
     plain, sel = load(Path(sys.argv[1])), load(Path(sys.argv[2]))
     ref = load(EIG_RUN)["reference_points"]
     lin = np.load(STAGE_RUN / "raw.npz")["d2_gap_linear_stop"]
-    rows = [("ランダム\n解", ref["random_T2_final_gap_mean"], BLUE),
-            ("10 本を\n混ぜる", plain["K10"]["final_gap"]["mean"], GRAY),
-            ("育ち方で\n混ぜる", plain["K50_grow"]["final_gap"]["mean"], GRAY),
-            ("育ち方＋\n上位選択", sel["K50_grow_sel"]["final_gap"]["mean"], GRAY),
-            ("sign\n($u_1$)", plain["K1"]["final_gap"]["mean"], ORANGE),
-            ("CIM の解", ref["cim_T2_final_gap_mean"], RED)]
-    if flags:
+    if flags == ["deck"]:   # 進捗報告の 3.1 インチ幅に貼る版：4 本だけ
+        rows = [("ランダム\n解", ref["random_T2_final_gap_mean"], BLUE),
+                ("固有ベクトル\nを混ぜる", sel["K50_grow_sel"]["final_gap"]["mean"], GRAY),
+                ("sign\n($u_1$)", plain["K1"]["final_gap"]["mean"], ORANGE),
+                ("CIM の解", ref["cim_T2_final_gap_mean"], RED)]
+    else:
+        rows = [("ランダム\n解", ref["random_T2_final_gap_mean"], BLUE),
+                ("10 本を\n混ぜる", plain["K10"]["final_gap"]["mean"], GRAY),
+                ("育ち方で\n混ぜる", plain["K50_grow"]["final_gap"]["mean"], GRAY),
+                ("育ち方＋\n上位選択", sel["K50_grow_sel"]["final_gap"]["mean"], GRAY),
+                ("sign\n($u_1$)", plain["K1"]["final_gap"]["mean"], ORANGE),
+                ("CIM の解", ref["cim_T2_final_gap_mean"], RED)]
+    if flags == ["slide"]:
         rows.insert(5, ("線形段で\n止めた CIM", float(lin.mean()), RED))
-    fig, ax = plt.subplots(figsize=(9.5, 4.8) if flags else (12, 5.2))
+    size = {"slide": (9.5, 4.8), "deck": (6.2, 4.6)}.get(flags[0] if flags else "", (12, 5.2))
+    fig, ax = plt.subplots(figsize=size)
     x = np.arange(len(rows))
     vals = [r[1] for r in rows]
     bars = ax.bar(x, vals, 0.62, color=[r[2] for r in rows], edgecolor="black", lw=0.6)
@@ -58,7 +65,7 @@ def main() -> None:
     ax.tick_params(axis="y", direction="in", which="both", right=True)
     ax.set_ylabel("SA 後の BKS との差 (%)")
     ax.set_ylim(0, max(vals) * 1.2)
-    out = Path(sys.argv[1]) / ("eigmix_gap_slide.png" if flags else "eigmix_gap.png")
+    out = Path(sys.argv[1]) / (f"eigmix_gap_{flags[0]}.png" if flags else "eigmix_gap.png")
     if out.exists():
         raise FileExistsError(out)
     fig.savefig(out, dpi=200, bbox_inches="tight")
