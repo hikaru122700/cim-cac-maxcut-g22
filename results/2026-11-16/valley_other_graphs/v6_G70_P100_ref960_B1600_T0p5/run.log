@@ -1,0 +1,14 @@
+G70: n=10000 edges=9999 BKS=9591; top eigenvalues [0.5438, 0.541, 0.5372]
+reused refs (1) and CIM solutions from results\2026-11-16\valley_other_graphs\v5_G70_P100_ref960_B1600_T1
+S: SA from 1600 CIM / random starts (598s): gap 0.6163% vs 0.9243%; start d median CIM 0.385 (raw 0.428), final d median CIM 0.385 random 0.464
+B2 d=0.00: final 0.1251% ± 0.0000, final d median 0.000 (297s)
+B2 d=0.05: final 0.3743% ± 0.0035, final d median 0.214 (294s)
+B2 d=0.10: final 0.3856% ± 0.0035, final d median 0.216 (291s)
+B2 d=0.20: final 0.4136% ± 0.0039, final d median 0.224 (292s)
+B2 d=0.30: final 0.5108% ± 0.0048, final d median 0.251 (293s)
+B2 d=0.40: final 0.7397% ± 0.0061, final d median 0.333 (295s)
+B2 d=0.50: final 0.9248% ± 0.0054, final d median 0.464 (296s)
+C2 sign(u1): start d 0.412 -> final 0.6931% (299s)
+C2 sign(u2): start d 0.384 -> final 0.7819% (294s)
+C1: refs ov1 0.177 ov2 0.231; CIM ov1 0.331 ov2 0.167; SA-after near/far AUC nan
+saved: C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-11-16\valley_other_graphs\v6_G70_P100_ref960_B1600_T0p5 (3262s)

@@ -1,0 +1,25 @@
+G70: n=10000 edges=9999 BKS=9591; top eigenvalues [0.5438, 0.541, 0.5372]
+R: 960 long SA, best 9579 (BKS 9591, gap 0.125%), 1 hits, 1 distinct (2000s)
+CIM pool 1/100: 33s mean=9479.0 top16=9499.9
+CIM pool 11/100: 336s mean=9479.1 top16=9499.4
+CIM pool 21/100: 632s mean=9478.3 top16=9501.0
+CIM pool 31/100: 929s mean=9479.1 top16=9499.6
+CIM pool 41/100: 1233s mean=9479.1 top16=9500.1
+CIM pool 51/100: 1535s mean=9479.5 top16=9498.8
+CIM pool 61/100: 1833s mean=9480.2 top16=9499.9
+CIM pool 71/100: 2155s mean=9479.0 top16=9500.7
+CIM pool 81/100: 2465s mean=9478.5 top16=9500.1
+CIM pool 91/100: 2757s mean=9479.9 top16=9501.1
+CIM pool 100/100: 3020s mean=9479.0 top16=9500.3
+S: SA from 1600 CIM / random starts (857s): gap 0.8117% vs 0.8222%; start d median CIM 0.385 (raw 0.428), final d median CIM 0.450 random 0.456
+B2 d=0.00: final 0.1251% ± 0.0000, final d median 0.000 (418s)
+B2 d=0.05: final 0.8191% ± 0.0053, final d median 0.453 (455s)
+B2 d=0.10: final 0.8234% ± 0.0056, final d median 0.456 (313s)
+B2 d=0.20: final 0.8258% ± 0.0052, final d median 0.455 (312s)
+B2 d=0.30: final 0.8191% ± 0.0054, final d median 0.457 (312s)
+B2 d=0.40: final 0.8211% ± 0.0054, final d median 0.455 (310s)
+B2 d=0.50: final 0.8268% ± 0.0054, final d median 0.456 (308s)
+C2 sign(u1): start d 0.411 -> final 0.8243% (312s)
+C2 sign(u2): start d 0.379 -> final 0.8242% (317s)
+C1: refs ov1 0.178 ov2 0.242; CIM ov1 0.332 ov2 0.166; SA-after near/far AUC nan
+saved: C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-11-16\valley_other_graphs\v5_G70_P100_ref960_B1600_T1 (8946s)
