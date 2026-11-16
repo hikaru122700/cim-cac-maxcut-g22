@@ -7,6 +7,11 @@
          ランダム開始は、同じ総時間で回せる本数(結果④と同じ本数)の SA を新しく回す → その最良値
   これを P 組(既定 100)くり返し、組を単位に比べる(Mann–Whitney 両側・ブートストラップ区間)。
 
+ランダム開始の時間の使い方は 2 通り(--random-mode):
+  runs   : 1 本のスイープ数は CIM 開始と同じにして、本数を増やす(既定。結果④の selection_eval と同じ本数)
+  sweeps : 本数は CIM 開始と同じ m 本にして、1 本のスイープ数を増やす。
+           スイープ数 = floor(S × T / (m × t_sa(S)))。SA の時間はスイープ数に比例するとみなす
+
 SA は modules/SA.py の simulate_sa_warm(T0 = 2.0 → 0.001、両者共通)。ランダム開始の本数は結果④の
 selection_eval の result.json(runs_per_strategy.random_init)から読む。総時間の定義は結果④と同じ。
 
@@ -48,6 +53,8 @@ T_START, T_END = 2.0, 0.001
 CIM_ROUNDS = 2400
 SA_SEED_CIM = 90_000_000  # sa_trajectory の cim_T2 と同じ(G22 で結果①を再現する)
 SA_SEED_RANDOM = 300_000_000  # ランダム開始(新規)。sweeps * 100_000 + 組 * 2000 + 本 を足す
+SA_SEED_RANDOM_LONG = 400_000_000  # --random-mode sweeps のランダム開始(足し方は同じ)
+POOLS_PER_CALL = {"runs": 1, "sweeps": 3}  # sweeps は 1 組 m 本しかないので、3 組まとめて並列に回す
 INIT_SEED_RANDOM = 20261110
 MAX_RANDOM_RUNS = 2000
 BOOTSTRAP, BOOTSTRAP_SEED = 10_000, 20261110
@@ -66,8 +73,8 @@ def next_version(kind_root: Path) -> int:
 
 
 def random_runs_from_evals(eval_dirs: list[Path], dataset: str, bks: float, sweeps: list[int], pool_size: int,
-                           m: int) -> dict:
-    """結果④の selection_eval から、各スイープ数でランダム開始が同じ総時間に回せる本数を読む。"""
+                           m: int, mode: str = "runs") -> dict:
+    """結果④の selection_eval から、各スイープ数でランダム開始が同じ総時間 T に回す本数とスイープ数を決める。"""
     runs = {}
     for d in eval_dirs:
         ev = json.loads((d / "result.json").read_text(encoding="utf-8"))
@@ -76,8 +83,11 @@ def random_runs_from_evals(eval_dirs: list[Path], dataset: str, bks: float, swee
         if dataset not in ev["per_problem"]:
             raise ValueError(f"{d}: no {dataset}")
         pp = ev["per_problem"][dataset]
-        runs[int(ev["sweeps"])] = {
-            "runs": int(pp["runs_per_strategy"]["random_init"]), "total_time_s": float(pp["total_time_s"]),
+        s_cim, total, t_sa = int(ev["sweeps"]), float(pp["total_time_s"]), float(ev["times"][dataset]["t_sa"])
+        n_r, s_r = ((int(pp["runs_per_strategy"]["random_init"]), s_cim) if mode == "runs"
+                    else (m, int(np.floor(s_cim * total / (m * t_sa) + 1e-9))))
+        runs[s_cim] = {
+            "runs": n_r, "sweeps": s_r, "mode": mode, "t_sa_s": t_sa, "total_time_s": total,
             "result4_gap_pct": {k: float((bks - pp["strategies"][k]["mean_best"]) / bks * 100)
                                 for k in ("cim_cut", "random_init")},
             "source": str(d)}
@@ -87,6 +97,8 @@ def random_runs_from_evals(eval_dirs: list[Path], dataset: str, bks: float, swee
     for s in sweeps:
         if not 1 <= runs[s]["runs"] <= MAX_RANDOM_RUNS:
             raise ValueError(f"random runs {runs[s]['runs']} at {s} sweeps outside 1..{MAX_RANDOM_RUNS}")
+        if runs[s]["sweeps"] < s:
+            raise ValueError(f"random sweeps {runs[s]['sweeps']} shorter than the CIM-start SA ({s})")
     return runs
 
 
@@ -139,29 +151,34 @@ def save(out_dir: Path, summary: dict, arrays: dict) -> None:
     np.savez_compressed(out_dir / "raw.npz", **arrays)
 
 
-def run_pools(ctx, tops: np.ndarray, sweeps: list[int], rnd_runs: dict, log: Callable[[str], None],
-              checkpoint: Callable[[int, dict], None]) -> dict:
+def run_pools(ctx, tops: np.ndarray, sweeps: list[int], rnd: dict, log: Callable[[str], None],
+              checkpoint: Callable[[int, dict], None], pools_per_call: int = 1, seed_random: int = SA_SEED_RANDOM) -> dict:
+    """組ごとに CIM 開始の m 本とランダム開始の本を回す。ランダム開始は pools_per_call 組ずつまとめて並列に回す。"""
     pools, m = tops.shape[0], tops.shape[1]
     arrays = {"top_signs": tops}
     for s in sweeps:
         arrays[f"cim_final_S{s}"] = np.zeros((pools, m))
-        arrays[f"random_final_S{s}"] = np.zeros((pools, rnd_runs[s]["runs"]))
+        arrays[f"random_final_S{s}"] = np.zeros((pools, rnd[s]["runs"]))
     init_rng = np.random.default_rng(INIT_SEED_RANDOM)
     t0 = time.perf_counter()
-    for p in range(pools):
+    for c0 in range(0, pools, pools_per_call):
+        chunk = list(range(c0, min(c0 + pools_per_call, pools)))
         for s in sweeps:
-            # 結果①と同じ seed:組 p の 16 本は通し番号 p*m .. p*m+m-1
-            seeds = SA_SEED_CIM + s * 100_000 + p * m + np.arange(m, dtype=np.int64)
-            arrays[f"cim_final_S{s}"][p] = run_sa(ctx, tops[p], seeds, s)
-            n_r = rnd_runs[s]["runs"]
-            init = init_rng.choice(np.array([-1, 1], np.int8), (n_r, ctx.n))
-            seeds = SA_SEED_RANDOM + s * 100_000 + p * MAX_RANDOM_RUNS + np.arange(n_r, dtype=np.int64)
-            arrays[f"random_final_S{s}"][p] = run_sa(ctx, init, seeds, s)
-        line = " ".join(f"S{s}: cim {arrays[f'cim_final_S{s}'][p].max():.0f} rnd {arrays[f'random_final_S{s}'][p].max():.0f}"
-                        for s in sweeps)
-        log(f"pool {p + 1}/{pools} {time.perf_counter() - t0:.0f}s {line}")
-        if (p + 1) % CHECKPOINT_EVERY == 0 or p == pools - 1:
-            checkpoint(p + 1, arrays)
+            for p in chunk:  # 結果①と同じ seed:組 p の 16 本は通し番号 p*m .. p*m+m-1
+                seeds = SA_SEED_CIM + s * 100_000 + p * m + np.arange(m, dtype=np.int64)
+                arrays[f"cim_final_S{s}"][p] = run_sa(ctx, tops[p], seeds, s)
+            n_r, s_r = rnd[s]["runs"], rnd[s]["sweeps"]
+            init = init_rng.choice(np.array([-1, 1], np.int8), (len(chunk) * n_r, ctx.n))
+            seeds = np.concatenate([seed_random + s * 100_000 + p * MAX_RANDOM_RUNS + np.arange(n_r, dtype=np.int64)
+                                    for p in chunk])
+            arrays[f"random_final_S{s}"][chunk] = run_sa(ctx, init, seeds, s_r).reshape(len(chunk), n_r)
+        for p in chunk:
+            line = " ".join(f"S{s}: cim {arrays[f'cim_final_S{s}'][p].max():.0f} "
+                            f"rnd {arrays[f'random_final_S{s}'][p].max():.0f}" for s in sweeps)
+            log(f"pool {p + 1}/{pools} {time.perf_counter() - t0:.0f}s {line}")
+        done = chunk[-1] + 1
+        if done // CHECKPOINT_EVERY > c0 // CHECKPOINT_EVERY or done == pools:
+            checkpoint(done, arrays)
     return arrays
 
 
@@ -174,6 +191,8 @@ def main() -> None:
     ap.add_argument("--m", type=int, default=16)
     ap.add_argument("--sweeps", type=int, nargs="+", default=[500, 5000])
     ap.add_argument("--cim-pools", type=Path, default=None, help="結果①の sa_trajectory 出力(G22 で CIM を再利用)")
+    ap.add_argument("--random-mode", choices=["runs", "sweeps"], default="runs",
+                    help="ランダム開始に時間を回す方向:runs=本数を増やす、sweeps=1 本のスイープ数を増やす")
     ap.add_argument("--tag", default="")
     args = ap.parse_args()
     if args.pools < 2 or not 1 <= args.m <= args.pool_size:
@@ -183,11 +202,12 @@ def main() -> None:
 
     ctx = load_context(args.dataset)
     bks = float(ctx.bks)
-    rnd_runs = random_runs_from_evals(args.evals, args.dataset, bks, args.sweeps, args.pool_size, args.m)
+    rnd_runs = random_runs_from_evals(args.evals, args.dataset, bks, args.sweeps, args.pool_size, args.m,
+                                      args.random_mode)
 
     kind_root = get_kind_root()
     parts = [args.dataset, f"P{args.pools}", f"K{args.pool_size}", f"m{args.m}", f"cim{CIM_ROUNDS}", "T2",
-             "S" + "_".join(map(str, args.sweeps))] + ([args.tag] if args.tag else [])
+             "S" + "_".join(map(str, args.sweeps))] + (["rndlong"] if args.random_mode == "sweeps" else [])         + ([args.tag] if args.tag else [])
     out_dir = kind_root / f"v{next_version(kind_root)}_{'_'.join(parts)}"
     out_dir.mkdir(parents=True)
 
@@ -196,8 +216,8 @@ def main() -> None:
         with (out_dir / "run.log").open("a", encoding="utf-8") as f:
             f.write(msg + "\n")
 
-    log(f"{args.dataset}: random-start runs per pool {{sweeps: runs}} = "
-        f"{ {s: rnd_runs[s]['runs'] for s in args.sweeps} } (from selection_eval)")
+    log(f"{args.dataset}: random mode {args.random_mode}, per pool {{CIM sweeps: (runs, sweeps)}} = "
+        f"{ {s: (rnd_runs[s]['runs'], rnd_runs[s]['sweeps']) for s in args.sweeps} } (time from selection_eval)")
     if args.cim_pools is not None:
         tops = load_cim_pools(args.cim_pools, ctx, args.pools, args.pool_size, args.m, CIM_ROUNDS)
         cim_time, cim_source = None, str(args.cim_pools)
@@ -209,7 +229,8 @@ def main() -> None:
     meta = {"dataset": args.dataset, "bks": bks, "pools": args.pools, "pool_size": args.pool_size, "m": args.m,
             "cim_rounds": CIM_ROUNDS, "cim_source": cim_source, "cim_time_s": cim_time, "t_start": T_START,
             "t_end": T_END, "sweeps": args.sweeps, "random_runs": rnd_runs,
-            "sa_seed_cim": SA_SEED_CIM, "sa_seed_random": SA_SEED_RANDOM, "init_seed_random": INIT_SEED_RANDOM,
+            "random_mode": args.random_mode, "sa_seed_cim": SA_SEED_CIM,
+            "sa_seed_random": SA_SEED_RANDOM if args.random_mode == "runs" else SA_SEED_RANDOM_LONG, "init_seed_random": INIT_SEED_RANDOM,
             "threads": int(os.environ["NUMBA_NUM_THREADS"])}
 
     def build_summary(done: int, arrays: dict) -> dict:
@@ -222,7 +243,8 @@ def main() -> None:
     def checkpoint(done: int, arrays: dict) -> None:
         save(out_dir, build_summary(done, arrays), arrays)
 
-    arrays = run_pools(ctx, tops, args.sweeps, rnd_runs, log, checkpoint)
+    arrays = run_pools(ctx, tops, args.sweeps, rnd_runs, log, checkpoint, POOLS_PER_CALL[args.random_mode],
+                       SA_SEED_RANDOM if args.random_mode == "runs" else SA_SEED_RANDOM_LONG)
     summary = build_summary(args.pools, arrays)
 
     if args.cim_pools is not None:  # 結果①の CIM 開始(T0 = 2.0)を再現しているか
@@ -238,7 +260,7 @@ def main() -> None:
     for s in args.sweeps:
         r = summary["results"][str(s)]
         log(f"S={s}: CIM gap {r['cim']['gap_pct']:.4f}% vs random {r['random']['gap_pct']:.4f}% "
-            f"(runs {rnd_runs[s]['runs']}) diff {r['diff_best_cut']:+.2f} cut {np.round(r['diff_best_cut_ci95'], 2).tolist()} "
+            f"(runs {rnd_runs[s]['runs']} x {rnd_runs[s]['sweeps']} sweeps) diff {r['diff_best_cut']:+.2f} cut {np.round(r['diff_best_cut_ci95'], 2).tolist()} "
             f"p={r['mannwhitney_p']:.3g} | per-run CIM {r['cim']['per_run_mean_gap_pct']:.4f}% "
             f"random {r['random']['per_run_mean_gap_pct']:.4f}%")
     log(f"saved: {out_dir}")
