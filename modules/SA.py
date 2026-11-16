@@ -135,7 +135,8 @@ def _simulate_sa_batch_warm(
     """
     best_cuts_out = np.zeros(num_trials, dtype=np.float64)
     best_signs_out = np.zeros((num_trials, n), dtype=np.int8)
-    log_ratio = np.log(t_end / t_start)
+    # 温度は全試行で同じなので 1 回だけ計算する(式は高速化前と同じ。結果は一致することをテストで確認)
+    temps = _sa_temperatures(num_iters, t_start, t_end)
 
     for trial_idx in prange(num_trials):
         np.random.seed(seeds[trial_idx])
@@ -158,35 +159,60 @@ def _simulate_sa_batch_warm(
 
         best_cut = cur_cut
         best_x = x.copy()
+        # at_best: 今の x が「最後に best_cut を更新した状態」と同じ。best_x へのコピーは、
+        # その状態から離れる直前(悪化か同値の反転)と最後にだけ行う。更新のたびにコピーするのと同じ結果になる。
+        at_best = True
+        # 局所場 h_v = Σ_u w_vu x_u を持ち、反転の利得 delta = x_v h_v を O(1) で得る。
+        # 反転したときだけ隣の h を更新する。重みが整数(G-set・K2000 の ±1)なら高速化前と完全に一致する。
+        h = np.zeros(n, dtype=np.float64)
+        for i in range(n):
+            s = 0.0
+            for k in range(adj_indptr[i], adj_indptr[i + 1]):
+                s += adj_weights[k] * x[adj_indices[k]]
+            h[i] = s
 
         for it in range(num_iters):
-            progress = it / num_iters
-            T = t_start * np.exp(log_ratio * progress)
+            T = temps[it]
             v = np.random.randint(0, n)
-            delta = 0.0
-            for k in range(adj_indptr[v], adj_indptr[v + 1]):
-                u = adj_indices[k]
-                w = adj_weights[k]
-                if x[v] == x[u]:
-                    delta += w
-                else:
-                    delta -= w
+            delta = x[v] * h[v]
+            flip = False
             if delta > 0:
-                x[v] = -x[v]
-                cur_cut += delta
+                flip = True
             elif T > 0:
                 if np.random.random() < np.exp(delta / T):
-                    x[v] = -x[v]
-                    cur_cut += delta
+                    if at_best:
+                        for i in range(n):
+                            best_x[i] = x[i]
+                        at_best = False
+                    flip = True
+            if flip:
+                x[v] = -x[v]
+                cur_cut += delta
+                two_xv = 2.0 * x[v]
+                for k in range(adj_indptr[v], adj_indptr[v + 1]):
+                    h[adj_indices[k]] += two_xv * adj_weights[k]
             if cur_cut > best_cut:
                 best_cut = cur_cut
-                for i in range(n):
-                    best_x[i] = x[i]
+                at_best = True
 
+        if at_best:
+            for i in range(n):
+                best_x[i] = x[i]
         best_cuts_out[trial_idx] = best_cut
         for i in range(n):
             best_signs_out[trial_idx, i] = best_x[i]
     return best_cuts_out, best_signs_out
+
+
+@njit(cache=True, fastmath=True)
+def _sa_temperatures(num_iters: int, t_start: float, t_end: float) -> np.ndarray:
+    """SA の各反復の温度 T(it) = t_start · exp(log(t_end / t_start) · it / num_iters)。"""
+    log_ratio = np.log(t_end / t_start)
+    temps = np.empty(num_iters, dtype=np.float64)
+    for it in range(num_iters):
+        progress = it / num_iters
+        temps[it] = t_start * np.exp(log_ratio * progress)
+    return temps
 
 
 def _build_csr_sa(n, edges, weights):
