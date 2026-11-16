@@ -1,0 +1,5 @@
+result3 cim_T2: verified 1600 runs
+result3 random_T2: verified 1600 runs
+reference solution and its distances reproduce sa_start_distance v1
+collect: 240 runs, 0 BKS hits (51s)
+collect: 480 runs, 0 BKS hits (103s)

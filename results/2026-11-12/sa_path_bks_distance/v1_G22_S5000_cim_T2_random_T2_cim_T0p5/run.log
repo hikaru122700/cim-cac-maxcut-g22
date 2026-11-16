@@ -1,0 +1,8 @@
+starts: 1600 CIM / 1600 random; BKS reference set: 89
+cim_T2: verified final best cuts == sa_trajectory v3 (122s)
+cim_T2: d_bks start 0.166 -> peak 0.326 -> final 0.130; in valley at end 1.8%
+random_T2: verified final best cuts == sa_trajectory v3 (107s)
+random_T2: d_bks start 0.491 -> peak 0.497 -> final 0.250; in valley at end 1.3%
+cim_T0p5: verified final best cuts == sa_trajectory v3 (213s)
+cim_T0p5: d_bks start 0.166 -> peak 0.179 -> final 0.167; in valley at end 0.1%
+saved: C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-11-12\sa_path_bks_distance\v1_G22_S5000_cim_T2_random_T2_cim_T0p5

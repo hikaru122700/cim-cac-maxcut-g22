@@ -1,0 +1,12 @@
+result3 cim_T2: verified 1600 runs
+result3 random_T2: verified 1600 runs
+reference solution and its distances reproduce sa_start_distance v1
+collect: 240 runs, 3 BKS hits (211s)
+collected 3 BKS hits in 240 runs, 3 distinct
+BKS-BKS distance: {'mean': 0.005000000353902578, 'median': 0.004999999888241291, 'q1': 0.004250000114552677, 'q3': 0.005750000011175871, 'min': 0.004000000189989805, 'max': 0.006000000052154064}; clusters (r<0.05): [3]
+original reference to collected BKS: min 0.0035, mean 0.0045
+ random_start: single 0.491  nearest-BKS 0.490  mean-over-BKS 0.491
+    cim_start: single 0.160  nearest-BKS 0.159  mean-over-BKS 0.160
+       cim_sa: single 0.140  nearest-BKS 0.139  mean-over-BKS 0.140
+    random_sa: single 0.278  nearest-BKS 0.277  mean-over-BKS 0.278
+saved: C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-11-11\bks_set_distance\v2_G22_S42104_target3_smoke

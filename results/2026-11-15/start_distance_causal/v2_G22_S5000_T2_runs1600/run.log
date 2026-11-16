@@ -1,0 +1,15 @@
+BKS reference set: 89
+B1: rebuilt 1600 matched SA starts, cuts identical (27s)
+B1: SA from matched SA starts reproduces final cuts (52s)
+B1: start d_bks median CIM 0.166 vs SA-solution 0.240; source effect -0.0314 -> +0.0237 after distance
+B2 d=0.00 (k=0): start gap 0.00% -> final 0.0000% ± 0.0000; final d_bks median 0.000 (25s)
+B2 d=0.02 (k=40): start gap 1.98% -> final 0.0978% ± 0.0039; final d_bks median 0.128 (30s)
+B2 d=0.05 (k=100): start gap 4.79% -> final 0.0951% ± 0.0039; final d_bks median 0.127 (27s)
+B2 d=0.10 (k=200): start gap 9.05% -> final 0.0985% ± 0.0040; final d_bks median 0.127 (29s)
+B2 d=0.16 (k=320): start gap 13.55% -> final 0.1021% ± 0.0041; final d_bks median 0.129 (25s)
+B2 d=0.20 (k=400): start gap 16.12% -> final 0.1005% ± 0.0041; final d_bks median 0.128 (27s)
+B2 d=0.25 (k=500): start gap 18.92% -> final 0.1087% ± 0.0044; final d_bks median 0.130 (25s)
+B2 d=0.30 (k=600): start gap 21.18% -> final 0.1084% ± 0.0046; final d_bks median 0.129 (32s)
+B2 d=0.40 (k=800): start gap 24.21% -> final 0.1515% ± 0.0061; final d_bks median 0.153 (26s)
+B2 d=0.50 (k=1000): start gap 25.19% -> final 0.2342% ± 0.0069; final d_bks median 0.273 (28s)
+saved: C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-11-15\start_distance_causal\v2_G22_S5000_T2_runs1600

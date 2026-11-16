@@ -1,0 +1,16 @@
+G55: n=5000 edges=12498 BKS=10299; top eigenvalues [0.6557, 0.6459, 0.6393]
+R: 24 long SA, best 10289 (BKS 10299, gap 0.097%), 1 hits, 1 distinct (21s)
+CIM pool 1/2: 17s mean=10179.7 top16=10210.5
+CIM pool 2/2: 34s mean=10180.2 top16=10211.2
+S: SA from 32 CIM / random starts (7s): gap 0.5131% vs 0.4639%; start d median CIM 0.275 (raw 0.368), final d median CIM 0.424 random 0.436
+B2 d=0.00: final 0.0971% ± 0.0000, final d median 0.000 (3s)
+B2 d=0.05: final 0.4818% ± 0.0354, final d median 0.447 (3s)
+B2 d=0.10: final 0.4766% ± 0.0354, final d median 0.439 (3s)
+B2 d=0.20: final 0.4916% ± 0.0483, final d median 0.435 (3s)
+B2 d=0.30: final 0.4984% ± 0.0341, final d median 0.434 (3s)
+B2 d=0.40: final 0.5138% ± 0.0443, final d median 0.439 (3s)
+B2 d=0.50: final 0.4984% ± 0.0281, final d median 0.428 (3s)
+C2 sign(u1): start d 0.392 -> final 0.4742% (3s)
+C2 sign(u2): start d 0.403 -> final 0.5437% (3s)
+C1: refs ov1 0.216 ov2 0.194; CIM ov1 0.302 ov2 0.192; SA-after near/far AUC nan
+saved: C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-11-16\valley_other_graphs\v1_G55_P2_ref24_B24_smoke (86s)

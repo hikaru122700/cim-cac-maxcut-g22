@@ -1,0 +1,8 @@
+D1 pool 1/4 (97s)
+D1 pool 2/4 (197s)
+D1 pool 3/4 (300s)
+D1 pool 4/4 (405s)
+D1: k_lin median 236; at k_lin d 0.365 E +0.210; final d 0.381 E +0.085
+D2: reproduced the 960 CIM starts of sa_trajectory v3
+D2: linear-stop start d 0.274 (full 0.167) -> SA 0.1114% vs full 0.0977% (p=0.014, 53s)
+saved: C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-11-14\cim_stage_valley\v2_G22_D1P4_D2P60_sat0.01

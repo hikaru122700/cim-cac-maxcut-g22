@@ -1,0 +1,41 @@
+result3 cim_T2: verified 1600 runs
+result3 random_T2: verified 1600 runs
+reference solution and its distances reproduce sa_start_distance v1
+collect: 240 runs, 3 BKS hits (228s)
+collect: 480 runs, 8 BKS hits (452s)
+collect: 720 runs, 9 BKS hits (702s)
+collect: 960 runs, 15 BKS hits (951s)
+collect: 1200 runs, 16 BKS hits (1205s)
+collect: 1440 runs, 17 BKS hits (1455s)
+collect: 1680 runs, 20 BKS hits (1702s)
+collect: 1920 runs, 21 BKS hits (1948s)
+collect: 2160 runs, 25 BKS hits (2195s)
+collect: 2400 runs, 27 BKS hits (2443s)
+collect: 2640 runs, 33 BKS hits (2690s)
+collect: 2880 runs, 37 BKS hits (2939s)
+collect: 3120 runs, 39 BKS hits (3188s)
+collect: 3360 runs, 40 BKS hits (3435s)
+collect: 3600 runs, 41 BKS hits (3682s)
+collect: 3840 runs, 48 BKS hits (3930s)
+collect: 4080 runs, 53 BKS hits (4177s)
+collect: 4320 runs, 56 BKS hits (4426s)
+collect: 4560 runs, 60 BKS hits (4676s)
+collect: 4800 runs, 64 BKS hits (4925s)
+collect: 5040 runs, 66 BKS hits (5173s)
+collect: 5280 runs, 73 BKS hits (5413s)
+collect: 5520 runs, 76 BKS hits (5555s)
+collect: 5760 runs, 79 BKS hits (5760s)
+collect: 6000 runs, 80 BKS hits (6040s)
+collect: 6240 runs, 83 BKS hits (6322s)
+collect: 6480 runs, 86 BKS hits (6597s)
+collect: 6720 runs, 86 BKS hits (6843s)
+collect: 6960 runs, 88 BKS hits (7071s)
+collect: 7200 runs, 88 BKS hits (7292s)
+collected 88 BKS hits in 7200 runs, 88 distinct
+BKS-BKS distance: {'mean': 0.0038581506814807653, 'median': 0.004000000189989805, 'q1': 0.003000000026077032, 'q3': 0.0044999998062849045, 'min': 0.0005000000237487257, 'max': 0.007499999832361937}; clusters (r<0.05): [88]
+original reference to collected BKS: min 0.0015, mean 0.0040
+ random_start: single 0.491  nearest-BKS 0.489  mean-over-BKS 0.491
+    cim_start: single 0.160  nearest-BKS 0.158  mean-over-BKS 0.160
+       cim_sa: single 0.140  nearest-BKS 0.137  mean-over-BKS 0.140
+    random_sa: single 0.278  nearest-BKS 0.276  mean-over-BKS 0.278
+saved: C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-11-11\bks_set_distance\v3_G22_S42104_target100

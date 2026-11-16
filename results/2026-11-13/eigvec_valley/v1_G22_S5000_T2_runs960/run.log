@@ -1,0 +1,13 @@
+top eigenvalues of J: [0.4505, 0.4475, 0.445, 0.4423, 0.4408, 0.4377, 0.4351, 0.4337, 0.4324, 0.4311]
+C1: reproduced CIM/random SA finals (230s)
+C1: rebuilt matched SA-solution starts (346s)
+C1 bks                ov1 0.388 ov2 0.166 far 0.0%
+C1 cim_start          ov1 0.392 ov2 0.237 far 0.3%  E near +0.157 far -0.295 AUC 1.00
+C1 random_start       ov1 0.017 ov2 0.018 far 100.0%
+C1 cim_final          ov1 0.386 ov2 0.194 far 0.3%  E near +0.194 far -0.293 AUC 1.00
+C1 random_final       ov1 0.303 ov2 0.243 far 45.0%  E near +0.199 far -0.110 AUC 0.88
+C1 sa_solution_start  ov1 0.291 ov2 0.251 far 27.6%  E near +0.154 far -0.257 AUC 0.89
+C2 sign_u1: start gap 4.90% d_bks 0.303 -> final 0.1508% ± 0.0078, far 18.0% (61s)
+C2 sign_u2: start gap 4.51% d_bks 0.414 -> final 0.2838% ± 0.0067, far 77.1% (49s)
+C2 sign_u3: start gap 4.78% d_bks 0.368 -> final 0.2132% ± 0.0090, far 38.4% (50s)
+saved: C:\Users\owner\igarashi\cim-cac-maxcut-g22\results\2026-11-13\eigvec_valley\v1_G22_S5000_T2_runs960
