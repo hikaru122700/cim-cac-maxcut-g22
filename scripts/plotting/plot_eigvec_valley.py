@@ -6,12 +6,15 @@
   c1_overlap_counts.png  c1_overlap と同じ値で、各棒の本数と分け方をラベルに書いた版(counts を付けたときだけ)
 
 usage:
-  python scripts/plotting/plot_eigvec_valley.py <eigvec_valley の出力ディレクトリ> [slide] [counts]
+  python scripts/plotting/plot_eigvec_valley.py <eigvec_valley の出力ディレクトリ> [slide] [counts] [kinbo]
   slide を付けると、スライドに小さく貼る用に小さく描き、*_slide.png に保存する。
+  kinbo を付けると、counts の図のラベルを「谷の中 / 別の谷」から「近傍内 / 近傍外」に変え、
+  results/<今日>/eigvec_valley/v{N}_relabel_kinbo/ に保存する(元の図は残す)。
 """
 
 import json
 import sys
+from datetime import date
 from pathlib import Path
 
 import matplotlib
@@ -36,6 +39,7 @@ plt.rcParams.update({
 RED, BLUE, GREEN, GRAY, ORANGE = "#d62728", "#1f77b4", "#2ca02c", "#555555", "#ff7f0e"
 FIGSIZE = (9, 5.2)
 SUFFIX = ""
+NEAR_FAR = ("谷の中", "別の谷")
 
 
 def _save(fig, path: Path) -> None:
@@ -45,6 +49,17 @@ def _save(fig, path: Path) -> None:
     fig.savefig(path, dpi=200, bbox_inches="tight")
     plt.close(fig)
     print("saved", path)
+
+
+def new_version_dir(desc: str) -> Path:
+    """results/<今日>/eigvec_valley/v{N}_<desc> を作る(N は既存の最大 + 1)。"""
+    root = Path("results") / date.today().isoformat() / "eigvec_valley"
+    root.mkdir(parents=True, exist_ok=True)
+    nums = [int(d.name.split("_", 1)[0][1:]) for d in root.iterdir()
+            if d.is_dir() and d.name.startswith("v") and d.name.split("_", 1)[0][1:].isdigit()]
+    out = root / f"v{max(nums, default=0) + 1}_{desc}"
+    out.mkdir()
+    return out
 
 
 def plot_c1(out: Path, res: dict) -> None:
@@ -77,8 +92,8 @@ def plot_c1_counts(out: Path, res: dict) -> None:
     groups = [(f"最良解\n({c1['bks']['n']} 個)", c1["bks"]["ov1"]["mean"], c1["bks"]["ov2"]["mean"]),
               (f"CIM の解\n({c1['cim_start']['n']} 本)", c1["cim_start"]["ov1"]["mean"],
                c1["cim_start"]["ov2"]["mean"]),
-              (f"SA 後\n谷の中\n({rnd['near']['n']} 本)", rnd["near"]["ov1_mean"], rnd["near"]["ov2_mean"]),
-              (f"SA 後\n別の谷\n({rnd['far']['n']} 本)", rnd["far"]["ov1_mean"], rnd["far"]["ov2_mean"])]
+              (f"SA 後\n{NEAR_FAR[0]}\n({rnd['near']['n']} 本)", rnd["near"]["ov1_mean"], rnd["near"]["ov2_mean"]),
+              (f"SA 後\n{NEAR_FAR[1]}\n({rnd['far']['n']} 本)", rnd["far"]["ov1_mean"], rnd["far"]["ov2_mean"])]
     fig, ax = plt.subplots(figsize=FIGSIZE)
     x = np.arange(len(groups))
     w = 0.38
@@ -121,16 +136,20 @@ def plot_c2(out: Path, res: dict) -> None:
 
 
 def main() -> None:
-    global FIGSIZE, SUFFIX
+    global FIGSIZE, SUFFIX, NEAR_FAR
     flags = sys.argv[2:]
-    if len(sys.argv) < 2 or any(f not in ("slide", "counts") for f in flags) or len(set(flags)) != len(flags):
+    if len(sys.argv) < 2 or any(f not in ("slide", "counts", "kinbo") for f in flags) or len(set(flags)) != len(flags):
         sys.exit(__doc__)
     if "slide" in flags:
         FIGSIZE, SUFFIX = (6.2, 4.6), "_slide"
     out = Path(sys.argv[1])
     res = json.loads((out / "summary.json").read_text(encoding="utf-8"))["results"]
     if "counts" in flags:
-        plot_c1_counts(out, res)
+        dest = out
+        if "kinbo" in flags:
+            NEAR_FAR = ("近傍内", "近傍外")
+            dest = new_version_dir("relabel_kinbo")
+        plot_c1_counts(dest, res)
         return
     plot_c1(out, res)
     plot_c2(out, res)
