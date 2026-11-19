@@ -4,7 +4,8 @@
   spin_settle.png   1 本の CIM で、各スピンが最良解と同じ向きか(上位の解 / 選ばれない解)。横軸ラウンド、縦軸スピン。
 
 usage:
-  python scripts/plotting/plot_cim_bks_approach.py <cim_bks_approach の出力ディレクトリ> [slide]
+  python scripts/plotting/plot_cim_bks_approach.py <cim_bks_approach の出力ディレクトリ> [slide] [kinbo]
+  kinbo を付けると、ファイル名の末尾に _kinbo を付けて出す(ラベルを「最良解の近傍」にした版、2026-11-19)。
 """
 
 import sys
@@ -46,7 +47,7 @@ def plot_approach(z, out: Path, suffix: str, size) -> None:
         ax.plot(r[m], med, color=col, lw=3, label=lab)
     ax.axvline(k, color=RED, ls="--", lw=2)
     ax.text(k / 2, 0.06, "線形段", ha="center", fontsize=20)
-    ax.text(X_MAX * 0.98, 0.31, "谷の境 0.3", ha="right", va="bottom", fontsize=18, color=GRAY)
+    ax.text(X_MAX * 0.98, 0.31, "最良解の近傍の境 0.3", ha="right", va="bottom", fontsize=18, color=GRAY)
     ax.set_xlim(0, X_MAX)
     ax.set_ylim(0, 0.55)
     ax.set_xlabel("CIM のラウンド")
@@ -79,11 +80,11 @@ def plot_settle(z, out: Path, suffix: str, size) -> None:
 
 def main() -> None:
     flags = sys.argv[2:]
-    if len(sys.argv) < 2 or flags not in ([], ["slide"]):
+    if len(sys.argv) < 2 or flags not in ([], ["slide"], ["slide", "kinbo"]):
         sys.exit(__doc__)
     out = Path(sys.argv[1])
     z = np.load(out / "raw.npz")
-    suffix = "_slide" if flags else ""
+    suffix = ("_slide" if flags else "") + ("_kinbo" if "kinbo" in flags else "")
     plot_approach(z, out, suffix, (6.2, 4.6) if flags else (9, 5.2))
     plot_settle(z, out, suffix, (9, 4.6) if flags else (12, 5.2))
 

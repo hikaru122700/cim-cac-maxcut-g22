@@ -1,7 +1,7 @@
 """実験 E(valley_other_graphs)の G55 と G70 を 1 枚に並べる比較図(スライド用)。
 
   b2_compare_slide.png      最良解を d だけ崩した開始解からの SA 後のギャップ(グラフごとの線)。CIM の解からの SA を星で重ねる
-  valley_frac_slide.png     カット値上位 16/256 の CIM の解のうち、最良解の谷(d < 0.3)の中にある割合(G22・G55・G70)
+  valley_frac_slide.png     カット値上位 16/256 の CIM の解のうち、最良解の近傍(d < 0.3)にある割合(G22・G55・G70)
 
 出力先は results/<今日>/valley_graphs_compare/v{N}_<グラフ名>/(既存の図は上書きしない)。
 
@@ -27,7 +27,7 @@ plt.rcParams.update({
 EXPERIMENT_KIND = "valley_graphs_compare"
 COLORS = ("#1f77b4", "#d62728", "#2ca02c", "#ff7f0e")
 VALLEY_EDGE = "0.3"
-# G22 の値は results/2026-11-14/cim_stage_valley/v2_G22_D1P4_D2P60_sat0.01/RESULTS.md(上位 16/256 の 99.7% が谷の中)
+# G22 の値は results/2026-11-14/cim_stage_valley/v2_G22_D1P4_D2P60_sat0.01/RESULTS.md(上位 16/256 の 99.7% が最良解の近傍内)
 G22_VALLEY_FRAC = 0.997
 SLIDE_SIZE = (6.2, 4.6)
 
@@ -77,7 +77,7 @@ def plot_valley_frac(out: Path, runs: list[dict]) -> None:
     fig, ax = plt.subplots(figsize=SLIDE_SIZE)
     bars = ax.bar(names, fracs, color=["#222222"] + list(COLORS[:len(runs)]), width=0.6)
     ax.bar_label(bars, labels=[f"{f:.1f}%" for f in fracs], fontsize=18, padding=3)
-    ax.set_ylabel("谷の中の割合 (%)")
+    ax.set_ylabel("最良解の近傍内の割合 (%)")
     ax.set_ylim(0, 115)
     ax.tick_params(direction="in", which="both", top=True, right=True)
     save(fig, out / "valley_frac_slide.png")
